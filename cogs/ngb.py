@@ -106,12 +106,12 @@ class Ngb(commands.Cog):
                 role = discord.utils.get(msg.guild.roles, name = '宮殿')
                 await msg.author.add_roles(role)
                 reply = f'{msg.author.mention} をロール「宮殿」へ割り振ったわ 感謝しなさい！'
-                await channel.send(reply)
+                await msg.channel.send(reply)
             elif msg.content == '3':
                 role = discord.utils.get(msg.guild.roles, name = '城下町')
                 await msg.author.add_roles(role)
                 reply = f'{msg.author.mention} をロール「城下町」へ割り振ったわ 感謝しなさい！'
-                await channel.send(reply)
+                await msg.channel.send(reply)
 
 
     @commands.Cog.listener()
