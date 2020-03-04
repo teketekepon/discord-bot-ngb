@@ -148,37 +148,37 @@ class SaveResult(commands.Cog):
     async def day1(self, ctx):
         for i in range(len(col)):
             col[i] = 3
-            await ctx.send('記録位置を1日目にセットしました')
+        await ctx.send('記録位置を1日目にセットしました')
 
     @day.command('2')
     async def day2(self, ctx):
         for i in range(len(col)):
             col[i] = 10
-            await ctx.send('記録位置を2日目にセットしました')
+        await ctx.send('記録位置を2日目にセットしました')
 
     @day.command('3')
     async def day3(self, ctx):
         for i in range(len(col)):
             col[i] = 17
-            await ctx.send('記録位置を3日目にセットしました')
+        await ctx.send('記録位置を3日目にセットしました')
 
     @day.command('4')
     async def day4(self, ctx):
         for i in range(len(col)):
             col[i] = 24
-            await ctx.send('記録位置を4日目にセットしました')
+        await ctx.send('記録位置を4日目にセットしました')
 
     @day.command('5')
     async def day5(self, ctx):
         for i in range(len(col)):
             col[i] = 31
-            await ctx.send('記録位置を5日目にセットしました')
+        await ctx.send('記録位置を5日目にセットしました')
 
     @day.command('6')
     async def day6(self, ctx):
         for i in range(len(col)):
             col[i] = 38
-            await ctx.send('記録位置を6日目にセットしました')
+        await ctx.send('記録位置を6日目にセットしました')
 
     @commands.Cog.listener()
     async def on_message(self, message):
