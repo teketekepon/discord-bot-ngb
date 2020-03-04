@@ -11,7 +11,8 @@ logger.addHandler(handler)
 TOKEN = 'NjQxMjEyMTE0MDczMTU3NjMy.XcFH-A.x903A9-ohN5A96rcP3Wc-GJ_VaY'
 # 読み込むコグの名前を格納しておく。
 INITIAL_EXTENSIONS = [
-    'cogs.ngb'
+    'cogs.ngb',
+    'cogs.saveresult'
 ]
 # クラスの定義。ClientのサブクラスであるBotクラスを継承。
 class MyBot(commands.Bot):
@@ -19,7 +20,6 @@ class MyBot(commands.Bot):
     def __init__(self, command_prefix):
         # スーパークラスのコンストラクタに値を渡して実行。
         super().__init__(command_prefix)
-
         # INITIAL_COGSに格納されている名前から、コグを読み込む。
         # エラーが発生した場合は、エラー内容を表示。
         for cog in INITIAL_EXTENSIONS:

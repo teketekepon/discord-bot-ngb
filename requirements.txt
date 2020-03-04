@@ -5,3 +5,4 @@ pyocr
 aiohttp
 asyncio
 discord.py
+openpyxl
