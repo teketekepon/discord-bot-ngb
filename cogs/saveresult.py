@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pyocr
 import pyocr.builders
 from PIL import Image
@@ -57,14 +58,14 @@ class SaveResult(commands.Cog):
         im_gray = np.array(im_crop.convert('L'))
         im_bin = (im_gray > thresh) * maxval
         # Save Binarized Image
-        Image.fromarray(np.uint8(im_bin)).save('./tmp/tmp.png')
+        Image.fromarray(np.uint8(im_bin)).save(tmp_path)
         return
 
     def useOCR(self, image):
         # tesseractのpathを通す
-        if path_tesseract not in os.environ['PATH'].split(os.pathsep):
-            os.environ['PATH'] += os.pathsep + path_tesseract
-            os.environ['TRSSDATA_PREFIX'] = path_tesseract + r'/tessdata'
+        if path_tesseract not in os.environ["PATH"].split(os.pathsep):
+            os.environ["PATH"] += os.pathsep + path_tesseract
+            os.environ["TRSSDATA_PREFIX"] = path_tesseract + r'/tessdata'
         tools = pyocr.get_available_tools()
         if len(tools) == 0:
             print('No OCR tool found')
@@ -144,16 +145,15 @@ class SaveResult(commands.Cog):
     async def day(self, ctx):
         if ctx.channel.id == work_channel_id:
             if ctx.invoked_subcommand is None:
-                y = max(self.col)
-                if y > 10:
+                if self.rej == 9:
                     mes = '現在1日目です'
-                elif y > 17:
+                elif self.rej == 16:
                     mes = '現在2日目です'
-                elif y > 24:
+                elif self.rej == 23:
                     mes = '現在3日目です'
-                elif y > 31:
+                elif self.rej == 30:
                     mes = '現在4日目です'
-                elif y > 38:
+                elif self.rej == 37:
                     mes = '現在5日目です'
                 else:
                     mes = '現在6日目です'
