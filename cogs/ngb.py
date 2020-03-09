@@ -20,7 +20,7 @@ class Ngb(commands.Cog):
     async def role(self, ctx):
         # サブコマンドが指定されていない場合、メッセージを送信する。
         if ctx.invoked_subcommand is None:
-            await ctx.send('サブコマンド(操作,人,役職)が必要です。')
+            await ctx.send('サブコマンド(add or remove,member,role)が必要です。')
 
     @role.command()
     async def add(self, ctx, member: discord.Member, role: discord.Role):
@@ -47,7 +47,7 @@ class Ngb(commands.Cog):
         except asyncio.TimeoutError:
             await ctx.send(f'{ctx.author.mention} タイムアウト')
         else:
-            #すでにいずれかの権限がある場合削除
+            # すでにいずれかの権限がある場合削除
             find = discord.utils.find(lambda o: o.name == '王宮', msg.guild.roles)
             if find is not None:
                 await msg.author.remove_roles(find)
@@ -57,7 +57,7 @@ class Ngb(commands.Cog):
             find = discord.utils.find(lambda o: o.name == '城下町', msg.guild.roles)
             if find is not None:
                 await msg.author.remove_roles(find)
-            #対応する権限を付与
+            # 対応する権限を付与
             if msg.content == '1':
                 role = discord.utils.get(msg.guild.roles, name = '王宮')
                 await msg.author.add_roles(role)
@@ -80,9 +80,9 @@ class Ngb(commands.Cog):
         if dm is None:
             dm = await member.create_dm()
         await dm.send(f'{member.mention} さん。ナイトガーデングループへようこそ！'\
-                      '\n温泉郷チャンネルで「/bot」と発言すると、あなたの所属するクラン'\
-                      '専用のチャットが見れるようになります。ご活用ください！')
+                                '\n温泉郷チャンネルで「/bot」と発言すると、あなたの所属するクラン'\
+                                '専用のチャットが見れるようになります。ご活用ください！')
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
-    bot.add_cog(Ngb(bot)) # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。
+    bot.add_cog(Ngb(bot))  # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。
