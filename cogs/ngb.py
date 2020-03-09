@@ -12,10 +12,6 @@ class Ngb(commands.Cog):
         self.bot = bot
 
     # コマンドの作成。コマンドはcommandデコレータで必ず修飾する。
-    @commands.command()
-    async def ping(self, ctx):
-        await ctx.send('pong!')
-
     @commands.group()
     async def role(self, ctx):
         # サブコマンドが指定されていない場合、メッセージを送信する。
