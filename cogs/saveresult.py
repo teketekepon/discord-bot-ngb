@@ -69,9 +69,9 @@ class SaveResult(commands.Cog):
 
     def useOCR(self, image):
         # tesseractのpathを通す
-        if path_tesseract not in os.environ["PATH"].split(os.pathsep):
-            os.environ["PATH"] += os.pathsep + path_tesseract
-            # os.environ["TESSDATA_PREFIX"] = path_tesseract + r'\tessdata'
+        #if path_tesseract not in os.environ["PATH"].split(os.pathsep):
+        #    os.environ["PATH"] += os.pathsep + path_tesseract
+        #    os.environ["TESSDATA_PREFIX"] = path_tesseract + r'\tessdata'
         tools = pyocr.get_available_tools()
         if len(tools) == 0:
             print('No OCR tool found')
@@ -165,43 +165,37 @@ class SaveResult(commands.Cog):
 
     @day.command('1')
     async def day1(self, ctx):
-        for i in self.col:
-            self.col = 3
+        self.col = [3] * 30
         self.rej = 9
         await ctx.send('記録位置を1日目にセットしました')
 
     @day.command('2')
     async def day2(self, ctx):
-        for i in self.col:
-            self.col = 10
+        self.col = [10] * 30
         self.rej = 16
         await ctx.send('記録位置を2日目にセットしました')
 
     @day.command('3')
     async def day3(self, ctx):
-        for i in self.col:
-            self.col = 17
+        self.col = [17] * 30
         self.rej = 23
         await ctx.send('記録位置を3日目にセットしました')
 
     @day.command('4')
     async def day4(self, ctx):
-        for i in self.col:
-            self.col = 24
+        self.col = [24] * 30
         self.rej = 30
         await ctx.send('記録位置を4日目にセットしました')
 
     @day.command('5')
     async def day5(self, ctx):
-        for i in self.col:
-            self.col = 31
+        self.col = [31] * 30
         self.rej = 37
         await ctx.send('記録位置を5日目にセットしました')
 
     @day.command('6')
     async def day6(self, ctx):
-        for i in self.col:
-            self.col = 38
+        self.col = [38] * 30
         self.rej = 44
         await ctx.send('記録位置を6日目にセットしました')
 
