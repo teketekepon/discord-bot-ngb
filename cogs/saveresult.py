@@ -2,12 +2,12 @@
 import pyocr
 import pyocr.builders
 import pickle
-from PIL import Image
 import numpy as np
 import aiohttp
 import os
 import re
 import discord
+from PIL import Image
 from discord.ext import commands
 from openpyxl import load_workbook
 
@@ -15,9 +15,9 @@ path_tesseract = r'./vendor/tesseract-ocr'
 temp_path = r'./tmp/'
 image_path = r'./downloads/image.png'
 excel_path = r'./clan_battle_template.xlsx'
-work_channel_id = 641248473546489876  # バトルログのスクショを貼るチャンネルのID
 BOSSES = ['ワイバーン', 'ワイルドグリフォン', 'ライデン', 'ネプテリオン', 'アクアリオス']  # 1月のボス
 STUMPS = ['〇', '△', '◆', '□', '◎', '☆']  # 左から[凸,1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA]
+work_channel_id = 641248473546489876  # バトルログのスクショを貼るチャンネルのID
 
 class SaveResult(commands.Cog):
         # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
@@ -47,31 +47,50 @@ class SaveResult(commands.Cog):
                             if not chunk:
                                 break
                             fi.write(chunk)
-        return
 
     def image_binarize(self, image):
-        thresh = 193
-        maxval = 255
-        img_wigth = 1920
-        img_height = 1080
-        # アス比16:9なら読み取れる たぶん
+        resolutions = [(1284, 715),
+                                (1280, 720),
+                                (1334, 750),
+                                (1920, 1080),  # ここまで16:9
+                                (2224, 1668),  # 4:3
+                                (2880, 1440),  # 2_1a
+                                (3040, 1440),  # 2_1a(左160黒い)
+                                (2436, 1125),  # 2_1b
+                                (2688, 1242)]  # 2_1b
+        # resolutionsにある解像度なら読み取れる
         im = Image.open(image)
-        # PIL.Imageからバトルログを切りだし
-        im_hd = im.resize((img_wigth, img_height), Image.LANCZOS)
-        im_crop = im_hd.crop(((img_wigth // 100) * 73,(img_height // 100) * 19,\
-                            (img_wigth // 180) * 171,(img_height // 100) * 91))
+        for i, res in enumerate(resolutions):
+            if im.size == res:
+                num = i
+                break
+        if num is None:
+            print('非対応の解像度です')
+            return
+        if num <= 3:  # 16:9
+            im_hd = im.resize((1920, 1080), Image.LANCZOS)
+            im_crop = im_hd.crop((1400, 205, 1720, 920))
+        elif num == 4:  # 4:3
+            im_crop = im.crop((1625, 650, 1980, 1480))
+        elif num == 5:  # 2_1a
+            im_crop = im.crop((2200, 280, 2620, 1220))
+        elif num == 6:  # 2_1a(左160黒い)
+            im_crop = im.crop((2360, 280, 2780, 1220))
+        else:  # 2_1b
+            im_hd = im.resize((2668, 1242), Image.LANCZOS)
+            im_crop = im_hd.crop((1965, 225, 2290, 1000))
         # numpyで2値化
         im_gray = np.array(im_crop.convert('L'))
-        im_bin = (im_gray > thresh) * maxval
+        im_bin = (im_gray > 193) * 255
         # Save Binarized Image
         Image.fromarray(np.uint8(im_bin)).save(temp_path + 'temp.png')
         return
 
     def useOCR(self, image):
-        # tesseractのpathを通す
-        #if path_tesseract not in os.environ["PATH"].split(os.pathsep):
-        #    os.environ["PATH"] += os.pathsep + path_tesseract
-        #    os.environ["TESSDATA_PREFIX"] = path_tesseract + r'\tessdata'
+        # ローカル環境の場合tesseractのpathを通す heroku環境の場合buildpackを使用するため不要
+        if path_tesseract not in os.environ["PATH"].split(os.pathsep):
+            os.environ["PATH"] += os.pathsep + path_tesseract
+        #     os.environ["TESSDATA_PREFIX"] = path_tesseract + r'\share\tessdata'
         tools = pyocr.get_available_tools()
         if len(tools) == 0:
             print('No OCR tool found')
@@ -79,14 +98,14 @@ class SaveResult(commands.Cog):
         tool = tools[0]
         # 日本語と英数字をOCR
         res = tool.image_to_string(Image.open(image),
-                                                       lang='jpn+eng',
-                                                       builder=pyocr.builders.WordBoxBuilder(tesseract_layout=6))
+                                   lang='jpn+eng',
+                                   builder=pyocr.builders.WordBoxBuilder(tesseract_layout=6))
         text = ''
         for d in res:
             text = text + d.content
         # log/ocr_result.txtにocr結果を保存
         print(text)
-        with open('./log/ocr_result.txt', mode = 'w',encoding = 'UTF-8') as f:
+        with open('./log/ocr_result.txt', mode = 'w', encoding = 'UTF-8') as f:
             f.write(text)
         return text
 
@@ -132,7 +151,7 @@ class SaveResult(commands.Cog):
                     # 凸なので〇スタンプをセット
                     stu = 0
                 if  isMatch:
-                    cell = sheet.cell(row = row, column = self.col[i], value = STUMPS[stu])
+                    cell = sheet.cell(row=row, column=self.col[i], value=STUMPS[stu])
                     self.col[i] += 1
                 continue
             if isMatch:
@@ -143,9 +162,44 @@ class SaveResult(commands.Cog):
         workbook.save(excel_path)
         # ロードしたExcelファイルを閉じる
         workbook.close()
-        return
 
-    @commands.group()
+    def clear_excel(self, kwd):
+        # 任意のセルへ2次元配列を書き込む関数
+        def write_list_2d(sheet, l_2d, start_row, start_col):
+            for y, row in enumerate(l_2d):
+                for x, cell in enumerate(row):
+                    sheet.cell(row=start_row + y, column=start_col + x, value=l_2d[y][x])
+        # 6*30の空の2次元配列を作る
+        brank_list = [['' for row in range(6)] for col in range(30)]
+        workbook = load_workbook(excel_path)
+        sheet = workbook['Battle_log']
+        if kwd == 'day1':  # 内容をクリア
+            write_list_2d(sheet, brank_list, 2, 3)
+        elif kwd == 'day2':
+            write_list_2d(sheet, brank_list, 2, 10)
+        elif kwd == 'day3':
+            write_list_2d(sheet, brank_list, 2, 17)
+        elif kwd == 'day4':
+            write_list_2d(sheet, brank_list, 2, 24)
+        elif kwd == 'day5':
+            write_list_2d(sheet, brank_list, 2, 31)
+        elif kwd == 'day6':
+            write_list_2d(sheet, brank_list, 2, 38)
+        elif kwd == 'all':
+            write_list_2d(sheet, brank_list, 2, 3)
+            write_list_2d(sheet, brank_list, 2, 10)
+            write_list_2d(sheet, brank_list, 2, 17)
+            write_list_2d(sheet, brank_list, 2, 24)
+            write_list_2d(sheet, brank_list, 2, 31)
+            write_list_2d(sheet, brank_list, 2, 38)
+        else:
+            print('clear_excel error: 無効な引数です')
+        # Excelファイルのセーブ
+        workbook.save(excel_path)
+        # ロードしたExcelファイルを閉じる
+        workbook.close()
+
+    @commands.group()  # 記録する位置を変更するコマンドグループ 全員の横位置がリセットされる
     async def day(self, ctx):
         if ctx.channel.id == work_channel_id:
             if ctx.invoked_subcommand is None:
@@ -161,43 +215,73 @@ class SaveResult(commands.Cog):
                     mes = '現在5日目です'
                 else:
                     mes = '現在6日目です'
-                await ctx.send(f'{mes} サブコマンドで何日目か教えてください')
+                await ctx.send(f'{mes} サブコマンドで何日目か教えてください ([1-6])')
 
     @day.command('1')
     async def day1(self, ctx):
         self.col = [3] * 30
         self.rej = 9
         await ctx.send('記録位置を1日目にセットしました')
-
     @day.command('2')
     async def day2(self, ctx):
         self.col = [10] * 30
         self.rej = 16
         await ctx.send('記録位置を2日目にセットしました')
-
     @day.command('3')
     async def day3(self, ctx):
         self.col = [17] * 30
         self.rej = 23
         await ctx.send('記録位置を3日目にセットしました')
-
     @day.command('4')
     async def day4(self, ctx):
         self.col = [24] * 30
         self.rej = 30
         await ctx.send('記録位置を4日目にセットしました')
-
     @day.command('5')
     async def day5(self, ctx):
         self.col = [31] * 30
         self.rej = 37
         await ctx.send('記録位置を5日目にセットしました')
-
     @day.command('6')
     async def day6(self, ctx):
         self.col = [38] * 30
         self.rej = 44
         await ctx.send('記録位置を6日目にセットしました')
+
+    @commands.group()  # セルの内容を消去(Noneに上書き)するコマンドグループ
+    async def clear(self, ctx):
+        if ctx.channel.id == work_channel_id:
+            if ctx.invoked_subcommand is None:
+                await ctx.send('サブコマンドで何日目の記録を消去するか指定してください([1-6] または all)')
+
+    @clear.command('1')
+    async def clear_day1(self, ctx):
+        self.clear_excel('day1')
+        await ctx.send('1日目の記録内容を消去しました')
+    @clear.command('2')
+    async def clear_day2(self, ctx):
+        self.clear_excel('day2')
+        await ctx.send('2日目の記録内容を消去しました')
+    @clear.command('3')
+    async def clear_day3(self, ctx):
+        self.clear_excel('day3')
+        await ctx.send('3日目の記録内容を消去しました')
+    @clear.command('4')
+    async def clear_day4(self, ctx):
+        self.clear_excel('day4')
+        await ctx.send('4日目の記録内容を消去しました')
+    @clear.command('5')
+    async def clear_day5(self, ctx):
+        self.clear_excel('day5')
+        await ctx.send('5日目の記録内容を消去しました')
+    @clear.command('6')
+    async def clear_day6(self, ctx):
+        self.clear_excel('day6')
+        await ctx.send('6日目の記録内容を消去しました')
+    @clear.command('all')
+    async def clear_all(self, ctx):
+        self.clear_excel('all')
+        await ctx.send('すべての記録内容を消去しました')
 
     @commands.command()
     async def pull(self, ctx):
@@ -210,7 +294,7 @@ class SaveResult(commands.Cog):
 
         if message.channel.id == work_channel_id:
             if len(message.attachments) > 0:
-                # messageに添付画像があり、特定のチャンネルの場合動作する
+                # messageに添付画像があり、指定のチャンネルの場合動作する
                 await self.download_img(message.attachments[0].url, image_path)
                 self.image_binarize(image_path)
                 ocr_result = self.useOCR(temp_path + 'temp.png')
