@@ -71,7 +71,7 @@ class SaveResult(commands.Cog):
             im_hd = im.resize((1920, 1080), Image.LANCZOS)
             im_crop = im_hd.crop((1400, 205, 1720, 920))
         elif num == 4:  # 4:3
-            im_crop = im.crop((1625, 650, 1980, 1480))
+            im_crop = im.crop((1625, 645, 1980, 1480))
         elif num == 5:  # 2_1a
             im_crop = im.crop((2200, 280, 2620, 1220))
         elif num == 6:  # 2_1a(左160黒い)
@@ -300,7 +300,7 @@ class SaveResult(commands.Cog):
                 ocr_result = self.useOCR(temp_path + 'temp.png')
                 if ocr_result is not None:
                     self.save_excel(ocr_result)
-                # await message.channel.send(file=discord.File(temp_path + 'temp.png'))
+                    await message.channel.send(file=discord.File(temp_path + 'temp.png'))
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(SaveResult(bot)) # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。
