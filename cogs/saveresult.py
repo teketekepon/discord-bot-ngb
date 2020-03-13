@@ -88,8 +88,8 @@ class SaveResult(commands.Cog):
 
     def useOCR(self, image):
         # ローカル環境の場合tesseractのpathを通す heroku環境の場合buildpackを使用するため不要
-        if path_tesseract not in os.environ["PATH"].split(os.pathsep):
-            os.environ["PATH"] += os.pathsep + path_tesseract
+        # if path_tesseract not in os.environ["PATH"].split(os.pathsep):
+        #     os.environ["PATH"] += os.pathsep + path_tesseract
         #     os.environ["TESSDATA_PREFIX"] = path_tesseract + r'\share\tessdata'
         tools = pyocr.get_available_tools()
         if len(tools) == 0:
