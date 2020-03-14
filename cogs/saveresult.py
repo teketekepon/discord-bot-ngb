@@ -15,8 +15,8 @@ path_tesseract = r'./vendor/tesseract-ocr'
 temp_path = r'./tmp/'
 image_path = r'./downloads/image.png'
 excel_path = r'./clan_battle_template.xlsx'
-BOSSES = ['ワイバーン', 'ワイルドグリフォン', 'ライデン', 'ネプテリオン', 'アクアリオス']  # 1月のボス
-STUMPS = ['〇', '△', '◆', '□', '◎', '☆']  # 左から[凸,1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA]
+BOSSES = ['ワイバーン', 'ライライ', 'シードレイク', 'ムーバ', 'トルペドン']  # 2月のボス
+STUMPS = ['△', '◆', '□', '◎', '☆', '〇']  # 左から[1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA,凸]
 work_channel_id = 641248473546489876  # バトルログのスクショを貼るチャンネルのID
 
 class SaveResult(commands.Cog):
@@ -47,7 +47,7 @@ class SaveResult(commands.Cog):
                             if not chunk:
                                 break
                             fi.write(chunk)
-
+    # スクショからバトルログを抽出し2値化する関数
     def image_binarize(self, image):
         resolutions = [(1284, 715),
                                 (1280, 720),
@@ -66,7 +66,7 @@ class SaveResult(commands.Cog):
                 break
         if num is None:
             print('非対応の解像度です')
-            return
+            return False
         if num <= 3:  # 16:9
             im_hd = im.resize((1920, 1080), Image.LANCZOS)
             im_crop = im_hd.crop((1400, 205, 1720, 920))
@@ -84,13 +84,13 @@ class SaveResult(commands.Cog):
         im_bin = (im_gray > 193) * 255
         # Save Binarized Image
         Image.fromarray(np.uint8(im_bin)).save(temp_path + 'temp.png')
-        return
+        return True
 
     def useOCR(self, image):
         # ローカル環境の場合tesseractのpathを通す heroku環境の場合buildpackを使用するため不要
         # if path_tesseract not in os.environ["PATH"].split(os.pathsep):
         #     os.environ["PATH"] += os.pathsep + path_tesseract
-        #     os.environ["TESSDATA_PREFIX"] = path_tesseract + r'\share\tessdata'
+        #     os.environ["TESSDATA_PREFIX"] = path_tesseract + r'/share/tessdata'
         tools = pyocr.get_available_tools()
         if len(tools) == 0:
             print('No OCR tool found')
@@ -110,26 +110,19 @@ class SaveResult(commands.Cog):
         return text
 
     def save_excel(self, text):
-        def get_value_list(t_2d):
-            return([[cell.value for cell in tmp] for tmp in t_2d])
-
-        attack = re.compile(r'[グジで\\](.+?)が(.+?)に(.\d+)')
-        damege = re.compile(r'ダメージ.')
-        # Excelファイルのロード(読み取り専用)
         workbook = load_workbook(excel_path)
         sheet = workbook['Battle_log']
-        member_2l = get_value_list(sheet['A2:A31'])
+        member_2l = [[cell.value for cell in tmp] for tmp in sheet['A2:A31']]
         member = sum(member_2l, [])  # 2次元配列なので1次元化
-        data = re.findall(attack, text)  # 名前とボスとダメージのリスト
+        data = re.findall(r'[グジで\\\w](.+?)が(.+?)に(.\d+)', text)  # 名前とボスとダメージのリスト
         if len(data) < 4:
             print('一部うまく読み取れなかったようです')
         # 凸かLAか判定するためのリスト('ダメージ'or'ダメージで'で判定するため'で'で始まる名前の人がいると使えません)
-        isLA = re.findall(damege, text)
-        # こっから判定
+        isLA = re.findall(r'ダメージ.', text)
         for n, m in enumerate(data):  # nは添え字,mはタプル
             isMatch = False
             for i, j in enumerate(member):  # iは添え字,jはリスト
-                if j is None:
+                if j is None:  # 空のセルは判定しない
                     break
                 name_match = re.search(j, m[0])
                 if name_match is None:
@@ -141,15 +134,13 @@ class SaveResult(commands.Cog):
                     print('1日6個以上のスタンプは押せません')
                     return
                 if 'で' in isLA[n]:
-                    # LAなのでどのボスか判定
-                    for x, y in enumerate(BOSSES):
+                    for x, y in enumerate(BOSSES):  # LAなのでどのボスか判定
                         boss_match = re.search(y, m[1])
                         if boss_match is not None:
-                            stu = x + 1
+                            stu = x
                             break
                 else:
-                    # 凸なので〇スタンプをセット
-                    stu = 0
+                    stu = 5  # 凸なので〇スタンプをセット
                 if  isMatch:
                     cell = sheet.cell(row=row, column=self.col[i], value=STUMPS[stu])
                     self.col[i] += 1
@@ -157,12 +148,12 @@ class SaveResult(commands.Cog):
             if isMatch:
                 print(f'{data[n]} は {cell} に\'{STUMPS[stu]}\'と書き込みました')
             else:
-                print(f'{data[n]} はうまく読み取れませんでした')
-        # Excelファイルのセーブ
+                print(f'{data[n]} はメンバーとマッチしなかった為書き込まれません')
+        # Excelファイルをセーブして閉じる
         workbook.save(excel_path)
-        # ロードしたExcelファイルを閉じる
         workbook.close()
 
+    # clearコマンドで利用する関数
     def clear_excel(self, kwd):
         # 任意のセルへ2次元配列を書き込む関数
         def write_list_2d(sheet, l_2d, start_row, start_col):
@@ -186,20 +177,15 @@ class SaveResult(commands.Cog):
         elif kwd == 'day6':
             write_list_2d(sheet, brank_list, 2, 38)
         elif kwd == 'all':
-            write_list_2d(sheet, brank_list, 2, 3)
-            write_list_2d(sheet, brank_list, 2, 10)
-            write_list_2d(sheet, brank_list, 2, 17)
-            write_list_2d(sheet, brank_list, 2, 24)
-            write_list_2d(sheet, brank_list, 2, 31)
-            write_list_2d(sheet, brank_list, 2, 38)
+            for i in range(3, 39, 7):
+                write_list_2d(sheet, brank_list, 2, i)
         else:
             print('clear_excel error: 無効な引数です')
-        # Excelファイルのセーブ
+        # Excelファイルをセーブして閉じる
         workbook.save(excel_path)
-        # ロードしたExcelファイルを閉じる
         workbook.close()
 
-    @commands.group()  # 記録する位置を変更するコマンドグループ 全員の横位置がリセットされる
+    @commands.group()  # 記録する位置を変更するコマンドグループ 全員の列位置が変更される
     async def day(self, ctx):
         if ctx.channel.id == work_channel_id:
             if ctx.invoked_subcommand is None:
@@ -287,6 +273,17 @@ class SaveResult(commands.Cog):
     async def pull(self, ctx):
         await ctx.send(file=discord.File(excel_path))
 
+    @commands.command('残凸')
+    async def zantotu(self, ctx):
+        workbook = load_workbook('./clan_battle_template.xlsx', data_only=True)
+        sheet = workbook['Battle_log']
+        for i in range(9, 45, 7):
+            if i == self.rej:
+                r = sheet.cell(row=32, column=i-2).value
+        if r is not None:
+            await ctx.send(f'残り凸数は {r} です')
+        workbook.close()
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
@@ -296,11 +293,11 @@ class SaveResult(commands.Cog):
             if len(message.attachments) > 0:
                 # messageに添付画像があり、指定のチャンネルの場合動作する
                 await self.download_img(message.attachments[0].url, image_path)
-                self.image_binarize(image_path)
-                ocr_result = self.useOCR(temp_path + 'temp.png')
+                if self.image_binarize(image_path):
+                    ocr_result = self.useOCR(temp_path + 'temp.png')
                 if ocr_result is not None:
                     self.save_excel(ocr_result)
-                    await message.channel.send(file=discord.File(temp_path + 'temp.png'))
+                # await message.channel.send(file=discord.File(temp_path + 'temp.png'))
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(SaveResult(bot)) # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。

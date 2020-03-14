@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-from PIL import Image
-import aiohttp
 import asyncio
 import discord
 from discord.ext import commands
-# コグとして用いるクラスを定義。
-class Ngb(commands.Cog):
 
+class Ngb(commands.Cog):
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
@@ -43,7 +40,7 @@ class Ngb(commands.Cog):
         except asyncio.TimeoutError:
             await ctx.send(f'{ctx.author.mention} タイムアウト')
         else:
-            # すでにいずれかの権限がある場合削除
+            # すでにいずれかのroleがある場合削除
             find = discord.utils.find(lambda o: o.name == '王宮', msg.guild.roles)
             if find is not None:
                 await msg.author.remove_roles(find)
