@@ -1,3 +1,4 @@
-/downloads/
-/log/
-/tmp/
+/downloads/*
+/log/*
+/tmp/*
+!.gitkeep
