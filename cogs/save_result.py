@@ -91,7 +91,7 @@ class SaveResult(commands.Cog):
         Image.fromarray(np.uint8(im_bin)).save(temp_path + 'temp.png')
         return True
 
-    def useOCR(self, image):
+    def use_ocr(self, image):
         # ローカル環境の場合tesseractのpathを通す heroku環境の場合buildpackを使用するため不要
         # if path_tesseract not in os.environ["PATH"].split(os.pathsep):
         #     os.environ["PATH"] += os.pathsep + r'./vendor/tesseract-ocr'
@@ -302,7 +302,7 @@ class SaveResult(commands.Cog):
                 # messageに添付画像があり、指定のチャンネルの場合動作する
                 await self.download_img(message.attachments[0].url, image_path)
                 if self.image_binarize(image_path):
-                    ocr_result = self.useOCR(temp_path + 'temp.png')
+                    ocr_result = self.use_ocr(temp_path + 'temp.png')
                 if ocr_result is not None:
                     self.save_excel(ocr_result)
                 # await message.channel.send(file=discord.File(temp_path + 'temp.png'))
