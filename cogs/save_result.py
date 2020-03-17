@@ -62,11 +62,9 @@ class SaveResult(commands.Cog):
                                 (2688, 1242)]  # 11 19.5:9 iPhoneXS,11Pro max
         # RESOLUTIONSにある解像度なら読み取れる
         im = Image.open(image)
-        for i, res in enumerate(RESOLUTIONS):
-            if im.size == res:
-                num = i
-                break
-        if num is None:
+        if im.size in RESOLUTIONS:
+            num = RESOLUTIONS.index(im.size)
+        else:
             print('非対応の解像度です')
             return False
         if num <= 3:  # 16:9
