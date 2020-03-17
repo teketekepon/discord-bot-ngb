@@ -16,7 +16,7 @@ image_path = r'./downloads/image.png'
 excel_path = r'./clan_battle_template.xlsx'
 BOSSES = ['ワイバーン', 'ライライ', 'シードレイク', 'ムーバ', 'トルペドン']  # 2月のボス
 STUMPS = ['△', '◆', '□', '◎', '☆', '〇']  # 左から[1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA,凸]
-WORK_CHANNEL_ID = 641248473546489876  # バトルログのスクショを貼るチャンネルのID
+work_channel_id = 641248473546489876  # バトルログのスクショを貼るチャンネルのID
 
 class SaveResult(commands.Cog):
         # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
@@ -83,7 +83,7 @@ class SaveResult(commands.Cog):
         # numpyで2値化
         im_gray = np.array(im_crop.convert('L'))
         im_bin = (im_gray > 193) * 255
-        if np.count_nonzero(im_bin == 255) > im_bin.size // 10 * 9:
+        if np.count_nonzero(im_bin == 0) > im_bin.size // 10 * 9:
             return False
         # Save Binarized Image
         Image.fromarray(np.uint8(im_bin)).save(temp_path + 'temp.png')
@@ -119,8 +119,6 @@ class SaveResult(commands.Cog):
         member = sum(member_2l, [])  # 2次元配列なので1次元化
         text = re.sub(r'A-', 'ダメージで', text)  # A-を置換(誤認識が多いため)
         data = re.findall(r'[グジで\\\w](.+?)が(.+?)に(.\d+)', text)  # 名前とボスとダメージのリスト抽出
-        if len(data) < 4:
-            print('一部うまく読み取れなかったようです')
         # 凸かLAか判定するためのリスト('ダメージ'or'ダメージで'で判定するため'で'で始まる名前の人がいると使えません)
         last_attack = re.findall(r'ダメージ.', text)
         for n, m in enumerate(data):  # nは添え字,mはタプル
@@ -192,7 +190,7 @@ class SaveResult(commands.Cog):
 
     @commands.group()  # 記録する位置を変更するコマンドグループ 全員の列位置が変更される
     async def day(self, ctx):
-        if ctx.channel.id == WORK_CHANNEL_ID:
+        if ctx.channel.id == work_channel_id:
             if ctx.invoked_subcommand is None:
                 if self.rej == 9:
                     mes = '現在1日目です'
@@ -241,7 +239,7 @@ class SaveResult(commands.Cog):
 
     @commands.group()  # セルの内容を消去(Noneに上書き)するコマンドグループ
     async def clear(self, ctx):
-        if ctx.channel.id == WORK_CHANNEL_ID:
+        if ctx.channel.id == work_channel_id:
             if ctx.invoked_subcommand is None:
                 await ctx.send('サブコマンドで何日目の記録を消去するか指定してください([1-6] または all)')
 
@@ -276,7 +274,7 @@ class SaveResult(commands.Cog):
 
     @commands.command()
     async def pull(self, ctx):
-        if ctx.channel.id == WORK_CHANNEL_ID:
+        if ctx.channel.id == work_channel_id:
             await ctx.send(file=discord.File(excel_path))
 
     @commands.command('残凸')
@@ -290,19 +288,28 @@ class SaveResult(commands.Cog):
             await ctx.send(f'残り凸数は {r} です')
         workbook.close()
 
+    @commands.command()
+    async def init(self, ctx):
+        work_channel_id = ctx.chennel.id
+        await ctx.send(f'作業チャンネルを{ctx.channel.name}に変更しました')
+
+    @commands.command()
+    async def member(self, ctx):
+        return
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
             return
 
-        if message.channel.id == WORK_CHANNEL_ID:
+        if message.channel.id == work_channel_id:
             if len(message.attachments) > 0:
                 # messageに添付画像があり、指定のチャンネルの場合動作する
                 await self.download_img(message.attachments[0].url, image_path)
                 if self.image_binarize(image_path):
                     ocr_result = self.use_ocr(temp_path + 'temp.png')
-                if ocr_result is not None:
-                    self.save_excel(ocr_result)
+                    if ocr_result is not None:
+                        self.save_excel(ocr_result)
                 # await message.channel.send(file=discord.File(temp_path + 'temp.png'))
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
