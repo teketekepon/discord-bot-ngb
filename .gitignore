@@ -1,2 +1,3 @@
-/tmp/*
-/downloads/*
+/downloads/
+/log/
+/tmp/
