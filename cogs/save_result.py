@@ -14,7 +14,7 @@ from discord.ext import commands
 temp_path = r'./tmp/'
 image_path = r'./downloads/image.png'
 excel_path = r'./clan_battle_template.xlsx'
-BOSSES = ['ワイバーン', 'ライライ', 'シードレイク', 'ムーバ', 'トルペドン']  # 2月のボス
+BOSSES = ['ワイバーン', 'グリフォン', 'マダムプリズム', 'サイクロプス', 'メサルティム']  # 3月のボス
 STUMPS = ['△', '◆', '□', '◎', '☆', '〇']  # 左から[1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA,凸]
 work_channel_id = 641248473546489876  # バトルログのスクショを貼るチャンネルのID
 
@@ -164,24 +164,24 @@ class SaveResult(commands.Cog):
                 for x, cell in enumerate(row):
                     sheet.cell(row=start_row + y, column=start_col + x, value=l_2d[y][x])
         # 6*30の空の2次元配列を作る
-        brank_list = [['' for row in range(6)] for col in range(30)]
+        blank_list = [['' for row in range(6)] for col in range(30)]
         workbook = load_workbook(excel_path)
         sheet = workbook['Battle_log']
         if kwd == 'day1':  # 内容をクリア
-            write_list_2d(sheet, brank_list, 2, 3)
+            write_list_2d(sheet, blank_list, 2, 3)
         elif kwd == 'day2':
-            write_list_2d(sheet, brank_list, 2, 10)
+            write_list_2d(sheet, blank_list, 2, 10)
         elif kwd == 'day3':
-            write_list_2d(sheet, brank_list, 2, 17)
+            write_list_2d(sheet, blank_list, 2, 17)
         elif kwd == 'day4':
-            write_list_2d(sheet, brank_list, 2, 24)
+            write_list_2d(sheet, blank_list, 2, 24)
         elif kwd == 'day5':
-            write_list_2d(sheet, brank_list, 2, 31)
+            write_list_2d(sheet, blank_list, 2, 31)
         elif kwd == 'day6':
-            write_list_2d(sheet, brank_list, 2, 38)
+            write_list_2d(sheet, blank_list, 2, 38)
         elif kwd == 'all':
             for i in range(3, 39, 7):
-                write_list_2d(sheet, brank_list, 2, i)
+                write_list_2d(sheet, blank_list, 2, i)
         else:
             print('clear_excel error: 無効な引数です')
         # Excelファイルをセーブして閉じる
