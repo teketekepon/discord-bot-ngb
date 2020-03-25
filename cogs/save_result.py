@@ -117,7 +117,7 @@ class SaveResult(commands.Cog):
         sheet = workbook['Battle_log']
         member_2l = [[cell.value for cell in tmp] for tmp in sheet['A2:A31']]
         member = sum(member_2l, [])  # 2次元配列なので1次元化
-        text = re.sub(r'A-', 'ダメージで', text)  # A-を置換(誤認識が多いため)
+        text = re.sub(r'[A-Z]{1,3}?-[A-Z]{1,3}?', 'ダメージで', text)  # A-を置換(誤認識が多いため)
         data = re.findall(r'[グジで\\\w](.+?)が(.+?)に(.\d+)', text)  # 名前とボスとダメージのリスト抽出
         # 凸かLAか判定するためのリスト('ダメージ'or'ダメージで'で判定するため'で'で始まる名前の人がいると使えません)
         last_attack = re.findall(r'ダメージ.', text)
