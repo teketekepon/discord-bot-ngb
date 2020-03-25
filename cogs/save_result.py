@@ -63,30 +63,23 @@ class SaveResult(commands.Cog):
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
             if im.height - 10 < i[1] < im.height + 10 and im.width - 10 < i[0] < im.width + 10:
+                if num <= 2:  # 16:9
+                    im_hd = im.resize((1920, 1080), Image.LANCZOS)
+                    im_crop = im_hd.crop((1400, 205, 1720, 920))
+                elif num <= 5:  # 4:3 iPad
+                    im_hd = im.resize((2224, 1668), Image.LANCZOS)
+                    im_crop = im.crop((1625, 645, 1980, 1480))
+                elif num == 6:  # 2_1 android
+                    im_crop = im.crop((2200, 280, 2620, 1220))
+                elif num == 7:  # 2_1 Galaxy
+                    im_crop = im.crop((2360, 280, 2780, 1220))
+                else:  # 19.5:9 iPhone
+                    im_hd = im.resize((2668, 1242), Image.LANCZOS)
+                    im_crop = im_hd.crop((1965, 225, 2290, 1000))
                 break
         else:
             print('非対応の解像度です')
             return False
-        '''
-        if im.size in RESOLUTIONS:
-            num = RESOLUTIONS.index(im.size)
-        else:
-            print('非対応の解像度です')
-            return False
-        '''
-        if num <= 2:  # 16:9
-            im_hd = im.resize((1920, 1080), Image.LANCZOS)
-            im_crop = im_hd.crop((1400, 205, 1720, 920))
-        elif num <= 5:  # 4:3 iPad
-            im_hd = im.resize((2224, 1668), Image.LANCZOS)
-            im_crop = im.crop((1625, 645, 1980, 1480))
-        elif num == 6:  # 2_1 android
-            im_crop = im.crop((2200, 280, 2620, 1220))
-        elif num == 7:  # 2_1 Galaxy
-            im_crop = im.crop((2360, 280, 2780, 1220))
-        else:  # 19.5:9 iPhone
-            im_hd = im.resize((2668, 1242), Image.LANCZOS)
-            im_crop = im_hd.crop((1965, 225, 2290, 1000))
         # numpyで2値化
         im_gray = np.array(im_crop.convert('L'))
         im_bin = (im_gray > 193) * 255
