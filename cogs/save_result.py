@@ -48,8 +48,7 @@ class SaveResult(commands.Cog):
                             fi.write(chunk)
     # スクショからバトルログを抽出し2値化する関数
     def image_binarize(self, image):
-        RESOLUTIONS = [(1284, 715),  # 0
-                                (1280, 720),   # 1
+        RESOLUTIONS = [(1280, 720),  # 1
                                 (1334, 750),   # 2
                                 (1920, 1080),  # 3 ここまで16:9
                                 (2048, 1536),  # 4
@@ -62,20 +61,28 @@ class SaveResult(commands.Cog):
                                 (2688, 1242)]  # 11 19.5:9 iPhoneXS,11Pro max
         # RESOLUTIONSにある解像度なら読み取れる
         im = Image.open(image)
+        for num, i in enumerate(RESOLUTIONS):
+            if im.height - 10 < i[1] < im.height + 10 and im.width - 10 < i[0] < im.width + 10:
+                break
+        else:
+            print('非対応の解像度です')
+            return False
+        '''
         if im.size in RESOLUTIONS:
             num = RESOLUTIONS.index(im.size)
         else:
             print('非対応の解像度です')
             return False
-        if num <= 3:  # 16:9
+        '''
+        if num <= 2:  # 16:9
             im_hd = im.resize((1920, 1080), Image.LANCZOS)
             im_crop = im_hd.crop((1400, 205, 1720, 920))
-        elif num <= 6:  # 4:3 iPad
+        elif num <= 5:  # 4:3 iPad
             im_hd = im.resize((2224, 1668), Image.LANCZOS)
             im_crop = im.crop((1625, 645, 1980, 1480))
-        elif num == 7:  # 2_1 android
+        elif num == 6:  # 2_1 android
             im_crop = im.crop((2200, 280, 2620, 1220))
-        elif num == 8:  # 2_1 Galaxy
+        elif num == 7:  # 2_1 Galaxy
             im_crop = im.crop((2360, 280, 2780, 1220))
         else:  # 19.5:9 iPhone
             im_hd = im.resize((2668, 1242), Image.LANCZOS)
@@ -135,15 +142,21 @@ class SaveResult(commands.Cog):
                 if self.col[i] == self.rej:
                     print('1日6個以上のスタンプは押せません')
                     return
-                if 'で' in last_attack[n]:
-                    for x, y in enumerate(BOSSES):  # LAなのでどのボスか判定
-                        boss_match = re.search(y, m[1])
-                        if boss_match is not None:
-                            stu = x
-                            break
-                        stu = 5  # ボスとマッチしなければとりあえず〇
-                else:
-                    stu = 5  # 凸なので〇スタンプをセット
+                try:
+                    if 'で' in last_attack[n]:
+                        for x, y in enumerate(BOSSES):  # LAなのでどのボスか判定
+                            boss_match = re.search(y, m[1])
+                            if boss_match is not None:
+                                s = x
+                                break
+                    else:
+                        s = 5  # 凸なので〇スタンプをセット
+                except IndexError as e:
+                    print(e)
+                    if s is None:
+                        s = 5
+                finally:
+                    stu = s
                 if  isMatch:
                     cell = sheet.cell(row=row, column=self.col[i], value=STUMPS[stu])
                     self.col[i] += 1
