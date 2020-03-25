@@ -163,9 +163,9 @@ class SaveResult(commands.Cog):
                     self.col[i] += 1
                 continue
             if isMatch:
-                print(f'{data[n]} は {cell} に\'{STUMPS[stu]}\'と書き込みました')
+                print(f'{data[-n]} は {cell} に\'{STUMPS[stu]}\'と書き込みました')
             else:
-                print(f'{data[n]} はメンバーとマッチしなかった為書き込まれません')
+                print(f'{data[-n]} はメンバーとマッチしなかった為書き込まれません')
         # Excelファイルをセーブして閉じる
         workbook.save(excel_path)
         workbook.close()
