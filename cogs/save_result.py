@@ -128,7 +128,8 @@ class SaveResult(commands.Cog):
         data = re.findall(r'[グジで\\\w](.+?)が(.+?)に(.\d+)', text)  # 名前とボスとダメージのリスト抽出
         # 凸かLAか判定するためのリスト('ダメージ'or'ダメージで'で判定するため'で'で始まる名前の人がいると使えません)
         last_attack = re.findall(r'ダメージ.', text)
-        for n, m in enumerate(data):  # nは添え字,mはタプル
+        isla = list(reversed(last_attack))
+        for n, m in enumerate(reversed(data)):  # nは添え字,mはタプル
             isMatch = False
             for i, j in enumerate(member):  # iは添え字,jはリスト
                 if j is None:  # 空のセルは判定しない
@@ -143,7 +144,7 @@ class SaveResult(commands.Cog):
                     print('1日6個以上のスタンプは押せません')
                     return
                 try:
-                    if 'で' in last_attack[n]:
+                    if 'で' in isla[n]:
                         for x, y in enumerate(BOSSES):  # LAなのでどのボスか判定
                             boss_match = re.search(y, m[1])
                             if boss_match is not None:
