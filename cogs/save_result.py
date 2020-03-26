@@ -13,10 +13,21 @@ from discord.ext import commands
 
 temp_path = r'./tmp/'
 image_path = r'./downloads/image.png'
-excel_path = r'./clan_battle_template.xlsx'
+excel_path = r'./BattleLog.xlsx'
 BOSSES = ['ワイバーン', 'グリフォン', 'マダムプリズム', 'サイクロプス', 'メサルティム']  # 3月のボス
 STUMPS = ['△', '◆', '□', '◎', '☆', '〇']  # 左から[1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA,凸]
 work_channel_id = 641248473546489876  # バトルログのスクショを貼るチャンネルのID
+RESOLUTIONS = [(1280, 720),  # 1
+                        (1334, 750),   # 2
+                        (1920, 1080),  # 3 ここまで16:9
+                        (2048, 1536),  # 4 4:3
+                        (2224, 1668),  # 5 4:3 iPad
+                        (2732, 2048),  # 6 4:3
+                        (2880, 1440),  # 7 2_1 android
+                        (3040, 1440),  # 8 2_1 Galaxy系(左160黒い)
+                        (1792, 828),   # 9 19.5:9 iPhoneXR,11
+                        (2436, 1125),  # 10 19.5:9 iPhoneX,XS,11Pro
+                        (2688, 1242)]  # 11 19.5:9 iPhoneXS,11Pro max
 
 class SaveResult(commands.Cog):
         # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
@@ -48,17 +59,6 @@ class SaveResult(commands.Cog):
                             fi.write(chunk)
     # スクショからバトルログを抽出し2値化する関数
     def image_binarize(self, image):
-        RESOLUTIONS = [(1280, 720),  # 1
-                                (1334, 750),   # 2
-                                (1920, 1080),  # 3 ここまで16:9
-                                (2048, 1536),  # 4
-                                (2224, 1668),  # 5 4:3 iPad
-                                (2732, 2048),  # 6
-                                (2880, 1440),  # 7 2_1 android
-                                (3040, 1440),  # 8 2_1 Galaxy系(左160黒い)
-                                (1792, 828),   # 9 19.5:9 iPhoneXR,11
-                                (2436, 1125),  # 10 19.5:9 iPhoneX,XS,11Pro
-                                (2688, 1242)]  # 11 19.5:9 iPhoneXS,11Pro max
         # RESOLUTIONSにある解像度なら読み取れる
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
@@ -107,7 +107,7 @@ class SaveResult(commands.Cog):
         for d in res:
             text = text + d.content
         # log/ocr_result.txtにocr結果を保存
-        print(text)
+        print(text, end='\n-------------------------------------------\n')
         with open('./log/ocr_result.txt', mode = 'w', encoding = 'UTF-8') as f:
             f.write(text)
         return text
@@ -156,7 +156,7 @@ class SaveResult(commands.Cog):
                     self.col[i] += 1
                 continue
             if isMatch:
-                print(f'{m} は {cell} に\'{STUMPS[stu]}\'と書き込みました')
+                print(f'{m} は{cell.coordinate}に\'{STUMPS[stu]}\'と書き込みました')
             else:
                 print(f'{m} はメンバーとマッチしなかった為書き込まれません')
         # Excelファイルをセーブして閉じる
@@ -209,8 +209,10 @@ class SaveResult(commands.Cog):
                     mes = '現在4日目です'
                 elif self.rej == 37:
                     mes = '現在5日目です'
-                else:
+                elif self.rej == 44:
                     mes = '現在6日目です'
+                else:
+                    return
                 await ctx.send(f'{mes} サブコマンドで何日目か教えてください ([1-6])')
 
     @day.command('1')
@@ -286,7 +288,7 @@ class SaveResult(commands.Cog):
 
     @commands.command('残凸')
     async def zantotu(self, ctx):
-        workbook = load_workbook('./clan_battle_template.xlsx', data_only=True)
+        workbook = load_workbook(excel_path, data_only=True)
         sheet = workbook['Battle_log']
         for i in range(9, 45, 7):
             if i == self.rej:

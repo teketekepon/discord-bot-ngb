@@ -33,11 +33,11 @@ class MyBot(commands.Bot):
 
     # Botの準備完了時に呼び出されるイベント
     async def on_ready(self):
-        print('-----')
+        print('--------------')
         print('Logged in as')
         print(self.user.name)
         print(self.user.id)
-        print('-----')
+        print('--------------')
 
 
 # MyBotのインスタンス化及び起動処理。
