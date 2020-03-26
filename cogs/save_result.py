@@ -107,9 +107,9 @@ class SaveResult(commands.Cog):
         for d in res:
             text = text + d.content
         # log/ocr_result.txtにocr結果を保存
-        print(text, end='\n-------------------------------------------\n')
-        with open('./log/ocr_result.txt', mode = 'w', encoding = 'UTF-8') as f:
-            f.write(text)
+        # with open('./log/ocr_result.txt', mode = 'w', encoding = 'UTF-8') as f:
+        #    f.write(text)
+        print(text, end='\n----------------------OCR Result---------------------\n')
         return text
 
     def save_excel(self, text):
@@ -117,11 +117,13 @@ class SaveResult(commands.Cog):
         sheet = workbook['Battle_log']
         member_2l = [[cell.value for cell in tmp] for tmp in sheet['A2:A31']]
         member = sum(member_2l, [])  # 2次元配列なので1次元化
-        text = re.sub(r'[A-Z]{1,3}?-[A-Z]{1,3}?', 'ダメージで', text)  # A-を置換(誤認識が多いため)
+        text = re.sub(r'[A-Z]+?-[A-Z]*?', 'ダメージで', text)  # A-を置換(誤認識が多いため)
         data = re.findall(r'[グジで\\\w](.+?)が(.+?)に(.\d+)', text)  # 名前とボスとダメージのリスト抽出
         # 凸かLAか判定するためのリスト('ダメージ'or'ダメージで'で判定するため'で'で始まる名前の人がいると使えません)
         last_attack = re.findall(r'ダメージ.', text)
         isla = list(reversed(last_attack))
+        print(data, end='\n----------------------DATA---------------------\n')
+        print(isla, end='\n----------------------isLA---------------------\n')
         for n, m in enumerate(reversed(data)):  # nは添え字,mはタプル
             isMatch = False
             for i, j in enumerate(member):  # iは添え字,jはリスト
@@ -134,7 +136,7 @@ class SaveResult(commands.Cog):
                     isMatch = True
                 row = i + 2  # cell[A2]から始まるため+2する
                 if self.col[i] == self.rej:
-                    print('1日6個以上のスタンプは押せません')
+                    print(f'{m} 1日6個以上のスタンプは押せません')
                     return
                 try:
                     if 'で' in isla[n]:
@@ -147,8 +149,7 @@ class SaveResult(commands.Cog):
                         s = 5  # 凸なので〇スタンプをセット
                 except IndexError as e:
                     print(e)
-                    if s is None:
-                        s = 5
+                    s = 5
                 finally:
                     stu = s
                 if  isMatch:
@@ -293,8 +294,11 @@ class SaveResult(commands.Cog):
         for i in range(9, 45, 7):
             if i == self.rej:
                 r = sheet.cell(row=32, column=i-2).value
-        if r is not None:
+        try:
+            print(r)
             await ctx.send(f'残り凸数は {r} です')
+        except UnboundLocalError:
+            print('エクセルの取得が正常に行われませんでした')
         workbook.close()
 
     @commands.command()
