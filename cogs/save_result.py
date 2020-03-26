@@ -109,7 +109,7 @@ class SaveResult(commands.Cog):
         # log/ocr_result.txtにocr結果を保存
         # with open('./log/ocr_result.txt', mode = 'w', encoding = 'UTF-8') as f:
         #    f.write(text)
-        print(text, end='\n----------------------OCR Result---------------------\n')
+        print(text, end='\n--------------------OCR Result-------------------\n')
         return text
 
     def save_excel(self, text):
@@ -118,18 +118,18 @@ class SaveResult(commands.Cog):
         member_2l = [[cell.value for cell in tmp] for tmp in sheet['A2:A31']]
         member = sum(member_2l, [])  # 2次元配列なので1次元化
         text = re.sub(r'[A-Z]+?-[A-Z]*?', 'ダメージで', text)  # A-を置換(誤認識が多いため)
-        data = re.findall(r'[グジで\\\w](.+?)が(.+?)に(.\d+)', text)  # 名前とボスとダメージのリスト抽出
+        data = re.findall(r'[グジで\S](.+?)が(.+?)に(.\d+)', text)  # 名前とボスとダメージのリスト抽出
         # 凸かLAか判定するためのリスト('ダメージ'or'ダメージで'で判定するため'で'で始まる名前の人がいると使えません)
         last_attack = re.findall(r'ダメージ.', text)
         isla = list(reversed(last_attack))
-        print(data, end='\n----------------------DATA---------------------\n')
-        print(isla, end='\n----------------------isLA---------------------\n')
+        print(reversed(data), end='\n-----------------------DATA----------------------\n')
+        print(isla, end='\n-----------------------isLA----------------------\n')
         for n, m in enumerate(reversed(data)):  # nは添え字,mはタプル
             isMatch = False
             for i, j in enumerate(member):  # iは添え字,jはリスト
                 if j is None:  # 空のセルは判定しない
                     break
-                name_match = re.search(j, m[0])
+                name_match = re.search(re.escape(j), m[0])
                 if name_match is None:
                     continue
                 else:
