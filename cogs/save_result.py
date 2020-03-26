@@ -7,6 +7,7 @@ import aiohttp
 import os
 import re
 import discord
+import xlrd
 from PIL import Image
 from openpyxl import load_workbook
 from discord.ext import commands
@@ -113,8 +114,8 @@ class SaveResult(commands.Cog):
         return text
 
     def save_excel(self, text):
-        workbook = load_workbook(excel_path)
-        sheet = workbook['Battle_log']
+        wb = load_workbook(excel_path)
+        sheet = wb['Battle_log']
         member_2l = [[cell.value for cell in tmp] for tmp in sheet['A2:A31']]
         member = sum(member_2l, [])  # 2次元配列なので1次元化
         text = re.sub(r'[A-Z]+?-[A-Z]*?', 'ダメージで', text)  # A-を置換(誤認識が多いため)
@@ -122,7 +123,7 @@ class SaveResult(commands.Cog):
         # 凸かLAか判定するためのリスト('ダメージ'or'ダメージで'で判定するため'で'で始まる名前の人がいると使えません)
         last_attack = re.findall(r'ダメージ.', text)
         isla = list(reversed(last_attack))
-        print(reversed(data), end='\n-----------------------DATA----------------------\n')
+        print(list(reversed(data)), end='\n-----------------------DATA----------------------\n')
         print(isla, end='\n-----------------------isLA----------------------\n')
         for n, m in enumerate(reversed(data)):  # nは添え字,mはタプル
             isMatch = False
@@ -157,12 +158,12 @@ class SaveResult(commands.Cog):
                     self.col[i] += 1
                 continue
             if isMatch:
-                print(f'{m} は{cell.coordinate}に\'{STUMPS[stu]}\'と書き込みました')
+                print(f'{m} は\'{cell.coordinate}\'に\'{STUMPS[stu]}\'と書き込みました')
             else:
                 print(f'{m} はメンバーとマッチしなかった為書き込まれません')
         # Excelファイルをセーブして閉じる
-        workbook.save(excel_path)
-        workbook.close()
+        wb.save(excel_path)
+        wb.close()
 
     # clearコマンドで利用する関数
     def clear_excel(self, kwd):
@@ -173,8 +174,8 @@ class SaveResult(commands.Cog):
                     sheet.cell(row=start_row + y, column=start_col + x, value=l_2d[y][x])
         # 6*30の空の2次元配列を作る
         blank_list = [['' for row in range(6)] for col in range(30)]
-        workbook = load_workbook(excel_path)
-        sheet = workbook['Battle_log']
+        wb = load_workbook(excel_path)
+        sheet = wb['Battle_log']
         if kwd == 'day1':  # 内容をクリア
             write_list_2d(sheet, blank_list, 2, 3)
         elif kwd == 'day2':
@@ -193,8 +194,8 @@ class SaveResult(commands.Cog):
         else:
             print('clear_excel error: 無効な引数です')
         # Excelファイルをセーブして閉じる
-        workbook.save(excel_path)
-        workbook.close()
+        wb.save(excel_path)
+        wb.close()
 
     @commands.group()  # 記録する位置を変更するコマンドグループ 全員の列位置が変更される
     async def day(self, ctx):
@@ -287,19 +288,18 @@ class SaveResult(commands.Cog):
         if ctx.channel.id == work_channel_id:
             await ctx.send(file=discord.File(excel_path))
 
-    @commands.command('残凸')
+    @commands.command('残凸')  # openpyxlだと保存した後はNoneが返されることが判明。xlrdを使う
     async def zantotu(self, ctx):
-        workbook = load_workbook(excel_path, data_only=True)
-        sheet = workbook['Battle_log']
+        wb = xlrd.open_workbook(excel_path)
+        sheet = wb.sheet_by_name('Battle_log')
         for i in range(9, 45, 7):
             if i == self.rej:
-                r = sheet.cell(row=32, column=i-2).value
+                r = sheet.cell(31, i-3).value
         try:
-            print(r)
             await ctx.send(f'残り凸数は {r} です')
         except UnboundLocalError:
             print('エクセルの取得が正常に行われませんでした')
-        workbook.close()
+        wb.close()
 
     @commands.command()
     async def init(self, ctx):
@@ -323,7 +323,6 @@ class SaveResult(commands.Cog):
                     ocr_result = self.use_ocr(temp_path + 'temp.png')
                     if ocr_result is not None:
                         self.save_excel(ocr_result)
-                # await message.channel.send(file=discord.File(temp_path + 'temp.png'))
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(SaveResult(bot)) # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。

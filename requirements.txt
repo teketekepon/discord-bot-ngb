@@ -5,3 +5,4 @@ aiohttp
 asyncio
 discord.py
 openpyxl
+xlrd
