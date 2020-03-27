@@ -117,8 +117,8 @@ class SaveResult(commands.Cog):
         wb = load_workbook(excel_path)
         sheet = wb['Battle_log']
         member = sum([[cell.value for cell in tmp] for tmp in sheet['A2:A31']], [])  # excelからメンバーリストを取得
-        text = re.sub(r'[A-Z]+?-[A-Z]*?', 'ダメージで', text)  # 誤認識が多いため置換
-        data = re.findall(r'[グジで\S](.+?)が(.+?)に(.\d+)(.{5})', text)  # 名前とボスとダメージのリスト抽出
+        text = re.sub(r'[A-Z]*?-[A-Z]*?', 'ダメージで', text)  # 誤認識が多いため置換
+        data = re.findall(r'[グジで\S](.+?)が(.+?)に(.\d+)(?=(.*?[ジで]))', text)  # 名前とボスとダメージのリスト抽出
         # 凸かLAか判定するためのリスト('ダメージ'or'ダメージで'で判定するため'で'で始まる名前の人がいると使えません)
         last_attack = re.findall(r'ダメージ.', text)
         isla = list(reversed(last_attack))
