@@ -16,7 +16,7 @@ image_path = r'./downloads/image.png'
 excel_path = r'./BattleLog.xlsx'
 BOSSES = ['ワイバーン', 'グリフォン', 'マダムプリズム', 'サイクロプス', 'メサルティム']  # 3月のボス
 STUMPS = ['△', '◆', '□', '◎', '☆', '〇', '?']  # 左から[1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA,凸,不明]
-work_channel_id = 641248473546489876  # バトルログのスクショを貼るチャンネルのID
+work_channel_id = []  # バトルログのスクショを貼るチャンネルのID
 RESOLUTIONS = [(1280, 720),  # 1
                         (1334, 750),   # 2
                         (1920, 1080),  # 3 ここまで16:9
@@ -191,7 +191,7 @@ class SaveResult(commands.Cog):
 
     @commands.group()  # 記録する位置を変更するコマンドグループ 全員の列位置が変更される
     async def day(self, ctx):
-        if ctx.channel.id == work_channel_id:
+        if ctx.channel.id in work_channel_id:
             if ctx.invoked_subcommand is None:
                 if self.rej == 9:
                     mes = '現在1日目です'
@@ -248,7 +248,7 @@ class SaveResult(commands.Cog):
 
     @commands.group()  # セルの内容を消去(Noneに上書き)するコマンドグループ
     async def clear(self, ctx):
-        if ctx.channel.id == work_channel_id:
+        if ctx.channel.id in work_channel_id:
             if ctx.invoked_subcommand is None:
                 await ctx.send('サブコマンドで何日目の記録を消去するか指定してください([1-6] または all)')
 
@@ -283,7 +283,7 @@ class SaveResult(commands.Cog):
 
     @commands.command()
     async def pull(self, ctx):
-        if ctx.channel.id == work_channel_id:
+        if ctx.channel.id in work_channel_id:
             await ctx.send(file=discord.File(excel_path))
 
     @commands.command('残凸')
@@ -291,9 +291,20 @@ class SaveResult(commands.Cog):
         await ctx.send(f'残り凸数は {90-self.totu} です')
 
     @commands.command()
-    async def init(self, ctx):
-        work_channel_id = ctx.chennel.id
-        await ctx.send(f'作業チャンネルを{ctx.channel.name}に変更しました')
+    async def append(self, ctx):
+        if ctx.channel.id in work_channel_id:
+            await ctx.send(f'{ctx.channel.name} はすでに作業チャンネルです')
+        else:
+            work_channel_id.append(ctx.channel.id)
+            await ctx.send(f'{ctx.channel.name} を作業チャンネルに追加しました')
+
+    @commands.command()
+    async def remove(self, ctx):
+        if ctx.channel.id in work_channel_id:
+            work_channel_id.remove(ctx.channel.id)
+            await ctx.send(f'{ctx.channel.name} を作業チャンネルから除外しました')
+        else:
+            await ctx.send(f'{ctx.channel.name} は作業チャンネルではありません')
 
     @commands.command()
     async def member(self, ctx):
@@ -304,7 +315,7 @@ class SaveResult(commands.Cog):
         if message.author.bot:
             return
 
-        if message.channel.id == work_channel_id:
+        if message.channel.id in work_channel_id:
             if len(message.attachments) > 0:
                 # messageに添付画像があり、指定のチャンネルの場合動作する
                 await self.download_img(message.attachments[0].url, image_path)
