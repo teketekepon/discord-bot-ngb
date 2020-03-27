@@ -7,7 +7,6 @@ import aiohttp
 import os
 import re
 import discord
-import xlrd
 from PIL import Image
 from openpyxl import load_workbook
 from discord.ext import commands
@@ -16,7 +15,7 @@ temp_path = r'./tmp/'
 image_path = r'./downloads/image.png'
 excel_path = r'./BattleLog.xlsx'
 BOSSES = ['ワイバーン', 'グリフォン', 'マダムプリズム', 'サイクロプス', 'メサルティム']  # 3月のボス
-STUMPS = ['△', '◆', '□', '◎', '☆', '〇']  # 左から[1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA,凸]
+STUMPS = ['△', '◆', '□', '◎', '☆', '〇', '?']  # 左から[1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA,凸,不明]
 work_channel_id = 641248473546489876  # バトルログのスクショを貼るチャンネルのID
 RESOLUTIONS = [(1280, 720),  # 1
                         (1334, 750),   # 2
@@ -37,15 +36,19 @@ class SaveResult(commands.Cog):
         if not os.path.isfile(temp_path + 'col.pkl'):
             self.col = [3] * 30
             self.rej = 9
+            self.totu = 0
             pickle.dump(self.col, open(temp_path + 'col.pkl','wb'))
             pickle.dump(self.rej, open(temp_path + 'rej.pkl','wb'))
+            pickle.dump(self.totu, open(temp_path + 'totu.pkl','wb'))
         else:
             self.col = pickle.load(open(temp_path + 'col.pkl','rb'))
             self.rej = pickle.load(open(temp_path + 'rej.pkl','rb'))
+            self.totu = pickle.load(open(temp_path + 'totu.pkl','rb'))
 
     def cog_unload(self):
         pickle.dump(self.col, open(temp_path + 'col.pkl','wb'))
         pickle.dump(self.rej, open(temp_path + 'rej.pkl','wb'))
+        pickle.dump(self.totu, open(temp_path + 'totu.pkl','wb'))
 
     async def download_img(self, url, file_name):
         chunk_size = 32
@@ -107,18 +110,14 @@ class SaveResult(commands.Cog):
         text = ''
         for d in res:
             text = text + d.content
-        # log/ocr_result.txtにocr結果を保存
-        # with open('./log/ocr_result.txt', mode = 'w', encoding = 'UTF-8') as f:
-        #    f.write(text)
         print(text, end='\n--------------------OCR Result-------------------\n')
         return text
 
     def save_excel(self, text):
         wb = load_workbook(excel_path)
         sheet = wb['Battle_log']
-        member_2l = [[cell.value for cell in tmp] for tmp in sheet['A2:A31']]
-        member = sum(member_2l, [])  # 2次元配列なので1次元化
-        text = re.sub(r'[A-Z]+?-[A-Z]*?', 'ダメージで', text)  # A-を置換(誤認識が多いため)
+        member = sum([[cell.value for cell in tmp] for tmp in sheet['A2:A31']], [])  # excelからメンバーリストを取得
+        text = re.sub(r'[A-Z]+?-[A-Z]*?', 'ダメージで', text)  # 誤認識が多いため置換
         data = re.findall(r'[グジで\S](.+?)が(.+?)に(.\d+)', text)  # 名前とボスとダメージのリスト抽出
         # 凸かLAか判定するためのリスト('ダメージ'or'ダメージで'で判定するため'で'で始まる名前の人がいると使えません)
         last_attack = re.findall(r'ダメージ.', text)
@@ -149,13 +148,14 @@ class SaveResult(commands.Cog):
                     else:
                         s = 5  # 凸なので〇スタンプをセット
                 except IndexError as e:
-                    print(e)
-                    s = 5
+                    s = 6
                 finally:
                     stu = s
                 if  isMatch:
                     cell = sheet.cell(row=row, column=self.col[i], value=STUMPS[stu])
                     self.col[i] += 1
+                    if stu == 5:
+                        self.totu += 1
                 continue
             if isMatch:
                 print(f'{m} は\'{cell.coordinate}\'に\'{STUMPS[stu]}\'と書き込みました')
@@ -221,31 +221,37 @@ class SaveResult(commands.Cog):
     async def day1(self, ctx):
         self.col = [3] * 30
         self.rej = 9
+        self.totu = 0
         await ctx.send('記録位置を1日目にセットしました')
     @day.command('2')
     async def day2(self, ctx):
         self.col = [10] * 30
         self.rej = 16
+        self.totu = 0
         await ctx.send('記録位置を2日目にセットしました')
     @day.command('3')
     async def day3(self, ctx):
         self.col = [17] * 30
         self.rej = 23
+        self.totu = 0
         await ctx.send('記録位置を3日目にセットしました')
     @day.command('4')
     async def day4(self, ctx):
         self.col = [24] * 30
         self.rej = 30
+        self.totu = 0
         await ctx.send('記録位置を4日目にセットしました')
     @day.command('5')
     async def day5(self, ctx):
         self.col = [31] * 30
         self.rej = 37
+        self.totu = 0
         await ctx.send('記録位置を5日目にセットしました')
     @day.command('6')
     async def day6(self, ctx):
         self.col = [38] * 30
         self.rej = 44
+        self.totu = 0
         await ctx.send('記録位置を6日目にセットしました')
 
     @commands.group()  # セルの内容を消去(Noneに上書き)するコマンドグループ
@@ -288,18 +294,9 @@ class SaveResult(commands.Cog):
         if ctx.channel.id == work_channel_id:
             await ctx.send(file=discord.File(excel_path))
 
-    @commands.command('残凸')  # openpyxlだと保存した後はNoneが返されることが判明。xlrdを使う
+    @commands.command('残凸')
     async def zantotu(self, ctx):
-        wb = xlrd.open_workbook(excel_path)
-        sheet = wb.sheet_by_name('Battle_log')
-        for i in range(9, 45, 7):
-            if i == self.rej:
-                r = sheet.cell(31, i-3).value
-        try:
-            await ctx.send(f'残り凸数は {r} です')
-        except UnboundLocalError:
-            print('エクセルの取得が正常に行われませんでした')
-        wb.close()
+        await ctx.send(f'残り凸数は {90-self.totu} です')
 
     @commands.command()
     async def init(self, ctx):
