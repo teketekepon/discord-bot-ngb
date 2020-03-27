@@ -117,13 +117,12 @@ class SaveResult(commands.Cog):
         wb = load_workbook(excel_path)
         sheet = wb['Battle_log']
         member = sum([[cell.value for cell in tmp] for tmp in sheet['A2:A31']], [])  # excelからメンバーリストを取得
-        text = re.sub(r'[A-Z]*?-[A-Z]*?', 'ダメージで', text)  # 誤認識が多いため置換
-        data = re.findall(r'[グジで\S](.+?)が(.+?)に(.\d+)(?=(.*?[ジで]))', text)  # 名前とボスとダメージのリスト抽出
+        print(f'置換数 {len(re.findall(r'[A-Z]*—[A-Z]*', text))}')
+        text = re.sub(r'[A-Z]*?—[A-Z]*?', 'ダメージで', text)  # 誤認識が多いため置換
+        print(text, end='\n-----------------------置換後----------------------\n')
+        data = re.findall(r'[グジで\S](.+?)が(.+?)に(.\d+)(?=([ダ].*?[ジで]))', text)  # 名前とボスとダメージのリスト抽出
         # 凸かLAか判定するためのリスト('ダメージ'or'ダメージで'で判定するため'で'で始まる名前の人がいると使えません)
-        last_attack = re.findall(r'ダメージ.', text)
-        isla = list(reversed(last_attack))
         print(list(reversed(data)), end='\n-----------------------DATA----------------------\n')
-        print(isla, end='\n-----------------------isLA----------------------\n')
         for n, m in enumerate(reversed(data)):  # nは添え字,mはタプル
             isMatch = False
             for i, j in enumerate(member):  # iは添え字,jはリスト
@@ -139,7 +138,7 @@ class SaveResult(commands.Cog):
                     print(f'{m} 1日6個以上のスタンプは押せません')
                     return
                 try:
-                    if 'で' in isla[n]:
+                    if 'で' in m[3]:
                         for x, y in enumerate(BOSSES):  # LAなのでどのボスか判定
                             boss_match = re.search(y, m[1])
                             if boss_match is not None:
