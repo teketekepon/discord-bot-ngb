@@ -117,11 +117,10 @@ class SaveResult(commands.Cog):
         wb = load_workbook(excel_path)
         sheet = wb['Battle_log']
         member = sum([[cell.value for cell in tmp] for tmp in sheet['A2:A31']], [])  # excelからメンバーリストを取得
-        text = re.sub(r'[A-Z]*?[\u2012-\u2015][A-Z]*?', 'ダメージで', text)  # 誤認識が多いため置換
+        text = re.sub(r'[A-Z]+?[\u2012-\u2015][A-Z]*?', 'ダメージで', text)  # 誤認識が多いため置換
         print(text, end='\n-----------------------置換後----------------------\n')
-        data = re.findall(r'[グジで\S](.+?)が(.+?)に(.\d+)(?=([ダ].*?[ジで]))', text)  # 名前とボスとダメージのリスト抽出
-        # 凸かLAか判定するためのリスト('ダメージ'or'ダメージで'で判定するため'で'で始まる名前の人がいると使えません)
-        print(list(reversed(data)), end='\n-----------------------DATA----------------------\n')
+        data = re.findall(r'[グジで\S](.+?)が(.+?)に(.\d+)(?=([ダ].{4}))', text)  # 名前とボスとダメージのリスト抽出
+        # 凸かLAか判定するためのリスト('ダメージ'or'ダメージで'で判定するため'で'で始まる名前の人がいると誤認します)
         for n, m in enumerate(reversed(data)):  # nは添え字,mはタプル
             isMatch = False
             for i, j in enumerate(member):  # iは添え字,jはリスト
@@ -136,19 +135,14 @@ class SaveResult(commands.Cog):
                 if self.col[i] == self.rej:
                     print(f'{m} 1日6個以上のスタンプは押せません')
                     return
-                try:
-                    if 'で' in m[3]:
-                        for x, y in enumerate(BOSSES):  # LAなのでどのボスか判定
-                            boss_match = re.search(y, m[1])
-                            if boss_match is not None:
-                                s = x
-                                break
-                    else:
-                        s = 5  # 凸なので〇スタンプをセット
-                except IndexError as e:
-                    s = 6
-                finally:
-                    stu = s
+                if 'で' in m[3]:
+                    for x, y in enumerate(BOSSES):  # LAなのでどのボスか判定
+                        boss_match = re.search(y, m[1])
+                        if boss_match is not None:
+                            stu = x
+                            break
+                else:
+                    stu = 5  # 凸なので〇スタンプをセット
                 if  isMatch:
                     cell = sheet.cell(row=row, column=self.col[i], value=STUMPS[stu])
                     self.col[i] += 1
