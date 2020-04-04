@@ -51,16 +51,13 @@ class SaveResult(commands.Cog):
         pickle.dump(self.totu, open(temp_path + 'totu.pkl','wb'))
 
     async def download_img(self, url, file_name):
-        chunk_size = 32
         async with aiohttp.ClientSession() as session:
-            async with session.get(url) as r:
-                if r.status == 200:
-                    with open(file_name, mode = 'wb') as fi:
-                        while True:
-                            chunk = await r.content.read(chunk_size)
-                            if not chunk:
-                                break
-                            fi.write(chunk)
+            async with session.get(url) as resp:
+                if resp.status == 200:
+                    f = await aiofiles.open(file_name, mode = 'wb')
+                    await f.write(await resp.read())
+                    await f.close()
+
     # スクショからバトルログを抽出し2値化する関数
     def image_binarize(self, image):
         # RESOLUTIONSにある解像度なら読み取れる
@@ -211,40 +208,46 @@ class SaveResult(commands.Cog):
 
     @day.command('1')
     async def day1(self, ctx):
-        self.col = [3] * 30
-        self.rej = 9
-        self.totu = 0
-        await ctx.send('記録位置を1日目にセットしました')
+        if ctx.channel.id in work_channel_id:
+            self.col = [3] * 30
+            self.rej = 9
+            self.totu = 0
+            await ctx.send('記録位置を1日目にセットしました')
     @day.command('2')
     async def day2(self, ctx):
-        self.col = [10] * 30
-        self.rej = 16
-        self.totu = 0
-        await ctx.send('記録位置を2日目にセットしました')
+        if ctx.channel.id in work_channel_id:
+            self.col = [10] * 30
+            self.rej = 16
+            self.totu = 0
+            await ctx.send('記録位置を2日目にセットしました')
     @day.command('3')
     async def day3(self, ctx):
-        self.col = [17] * 30
-        self.rej = 23
-        self.totu = 0
-        await ctx.send('記録位置を3日目にセットしました')
+        if ctx.channel.id in work_channel_id:
+            self.col = [17] * 30
+            self.rej = 23
+            self.totu = 0
+            await ctx.send('記録位置を3日目にセットしました')
     @day.command('4')
     async def day4(self, ctx):
-        self.col = [24] * 30
-        self.rej = 30
-        self.totu = 0
-        await ctx.send('記録位置を4日目にセットしました')
+        if ctx.channel.id in work_channel_id:
+            self.col = [24] * 30
+            self.rej = 30
+            self.totu = 0
+            await ctx.send('記録位置を4日目にセットしました')
     @day.command('5')
     async def day5(self, ctx):
-        self.col = [31] * 30
-        self.rej = 37
-        self.totu = 0
-        await ctx.send('記録位置を5日目にセットしました')
+        if ctx.channel.id in work_channel_id:
+            self.col = [31] * 30
+            self.rej = 37
+            self.totu = 0
+            await ctx.send('記録位置を5日目にセットしました')
     @day.command('6')
     async def day6(self, ctx):
-        self.col = [38] * 30
-        self.rej = 44
-        self.totu = 0
-        await ctx.send('記録位置を6日目にセットしました')
+        if ctx.channel.id in work_channel_id:
+            self.col = [38] * 30
+            self.rej = 44
+            self.totu = 0
+            await ctx.send('記録位置を6日目にセットしました')
 
     @commands.group()  # セルの内容を消去(Noneに上書き)するコマンドグループ
     async def clear(self, ctx):
@@ -254,32 +257,57 @@ class SaveResult(commands.Cog):
 
     @clear.command('1')
     async def clear_day1(self, ctx):
-        self.clear_excel('day1')
-        await ctx.send('1日目の記録内容を消去しました')
+        if ctx.channel.id in work_channel_id:
+            self.clear_excel('day1')
+            await ctx.send('1日目の記録内容を消去しました')
     @clear.command('2')
     async def clear_day2(self, ctx):
-        self.clear_excel('day2')
-        await ctx.send('2日目の記録内容を消去しました')
+        if ctx.channel.id in work_channel_id:
+            self.clear_excel('day2')
+            await ctx.send('2日目の記録内容を消去しました')
     @clear.command('3')
     async def clear_day3(self, ctx):
-        self.clear_excel('day3')
-        await ctx.send('3日目の記録内容を消去しました')
+        if ctx.channel.id in work_channel_id:
+            self.clear_excel('day3')
+            await ctx.send('3日目の記録内容を消去しました')
     @clear.command('4')
     async def clear_day4(self, ctx):
-        self.clear_excel('day4')
-        await ctx.send('4日目の記録内容を消去しました')
+        if ctx.channel.id in work_channel_id:
+            self.clear_excel('day4')
+            await ctx.send('4日目の記録内容を消去しました')
     @clear.command('5')
     async def clear_day5(self, ctx):
-        self.clear_excel('day5')
-        await ctx.send('5日目の記録内容を消去しました')
+        if ctx.channel.id in work_channel_id:
+            self.clear_excel('day5')
+            await ctx.send('5日目の記録内容を消去しました')
     @clear.command('6')
     async def clear_day6(self, ctx):
-        self.clear_excel('day6')
-        await ctx.send('6日目の記録内容を消去しました')
+        if ctx.channel.id in work_channel_id:
+            self.clear_excel('day6')
+            await ctx.send('6日目の記録内容を消去しました')
     @clear.command('all')
     async def clear_all(self, ctx):
-        self.clear_excel('all')
-        await ctx.send('すべての記録内容を消去しました')
+        if ctx.channel.id in work_channel_id:
+            self.clear_excel('all')
+            await ctx.send('すべての記録内容を消去しました')
+
+    @commands.group()
+    async def member(self, ctx):
+        if ctx.channel.id in work_channel_id:
+            if ctx.invoked_subcommand is None:
+                await ctx.send(f'現在のメンバー一覧です\n')
+
+    @member.command()
+    async def add(self, ctx):
+        if ctx.channel.id in work_channel_id:
+            await ctx.send(f'{ctx.content}をメンバーに登録します')
+            await ctx.send(f'現在のメンバー一覧です\n')
+
+    @member.command()
+    async def remove(self, ctx):
+        if ctx.channel.id in work_channel_id:
+            await ctx.send(f'{ctx.content}をメンバーにから削除します')
+            await ctx.send(f'現在のメンバー一覧です\n')
 
     @commands.command()
     async def pull(self, ctx):
@@ -287,7 +315,7 @@ class SaveResult(commands.Cog):
             await ctx.send(file=discord.File(excel_path))
 
     @commands.command('残凸')
-    async def zantotu(self, ctx):
+    async def totu(self, ctx):
         await ctx.send(f'残り凸数は {90-self.totu} です')
 
     @commands.command()
@@ -305,10 +333,6 @@ class SaveResult(commands.Cog):
             await ctx.send(f'{ctx.channel.name} を作業チャンネルから除外しました')
         else:
             await ctx.send(f'{ctx.channel.name} は作業チャンネルではありません')
-
-    @commands.command()
-    async def member(self, ctx):
-        return
 
     @commands.Cog.listener()
     async def on_message(self, message):
