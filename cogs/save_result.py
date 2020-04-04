@@ -4,6 +4,7 @@ import pyocr.builders
 import pickle
 import numpy as np
 import aiohttp
+import aiofiles
 import os
 import re
 import discord

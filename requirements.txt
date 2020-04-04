@@ -2,6 +2,7 @@ Pillow
 numpy
 pyocr
 aiohttp
+aiofiles
 asyncio
 discord.py
 openpyxl
