@@ -131,6 +131,7 @@ class SaveResult(commands.Cog):
             for m in member:
                 try:
                     mlist.remove(m)
+                    mlist.append('')
                 except ValueError:
                     tmp.append(m)
         elif op == 'clear':
@@ -139,6 +140,7 @@ class SaveResult(commands.Cog):
             wb.close()
             return ','.join(map(str, mlist))
         mlist = sorted(mlist, key=lambda x: (x is None, x))
+
         for num, w in enumerate(mlist):
             sheet.cell(row=num+2, column=1, value=w)
         wb.save(excel_path)
