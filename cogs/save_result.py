@@ -134,13 +134,21 @@ class SaveResult(commands.Cog):
                     mlist.append('')
                 except ValueError:
                     tmp.append(m)
+        elif op == 'delete':
+            if all(mlist):
+                break
+            for i, item in enumerate(mlist):
+                if item is None:
+                    mlist[i-1] = ''
+                    break
+            else:
+                mlist[30] = ''
         elif op == 'clear':
             mlist = ['' for n in range(30)]
         else:
             wb.close()
             return ','.join(map(str, mlist))
         mlist = sorted(mlist, key=lambda x: (x is None, x))
-
         for num, w in enumerate(mlist):
             sheet.cell(row=num+2, column=1, value=w)
         wb.save(excel_path)
