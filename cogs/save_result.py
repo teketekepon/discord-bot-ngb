@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
+import os
+import re
+import pickle
+import typing
 import pyocr
 import pyocr.builders
-import pickle
 import numpy as np
 import aiohttp
 import aiofiles
-import os
-import re
 import discord
 from PIL import Image
 from openpyxl import load_workbook
@@ -182,14 +183,24 @@ class SaveResult(commands.Cog):
                 write_list_2d(sheet, blank_list, 2, i)
         else:
             print('clear_excel error: 無効な引数です')
+            return False
         # Excelファイルをセーブして閉じる
         wb.save(excel_path)
         wb.close()
+        return True
 
-    @commands.group()  # 記録する位置を変更するコマンドグループ 全員の列位置が変更される
-    async def day(self, ctx):
+    @commands.command()  # 記録する位置を変更するコマンド 全員の列位置が変更される
+    async def day(self, ctx, a :typing.Optional[int] = None):
         if ctx.channel.id in self.work_channel_id:
-            if ctx.invoked_subcommand is None:
+            if a is not None:
+                if 0 < a < 6:
+                    self.col = [3+7*(a-1)] * 30
+                    self.rej = 9+7*(a-1)
+                    self.totu = 0
+                    await ctx.send(f'記録位置を{a}日目にセットしました')
+                else:
+                    await ctx.send('引数は半角数字の1～6で入力してください')
+            else:
                 if self.rej == 9:
                     mes = '現在1日目です'
                 elif self.rej == 16:
@@ -202,94 +213,28 @@ class SaveResult(commands.Cog):
                     mes = '現在5日目です'
                 elif self.rej == 44:
                     mes = '現在6日目です'
+                await ctx.send(f'{mes} 引数で何日目か教えてください 1～6')
+        else:
+            await ctx.send('このチャンネルでの操作は許可されていません\n'
+                                      '/append コマンドで作業チャンネルに登録してください')
+
+    @commands.command()  # セルの内容を消去(Noneに上書き)するコマンド
+    async def clear(self, ctx, a: typing.Optional[str] = None):
+        if ctx.channel.id in self.work_channel_id:
+            if a is not None:
+                if len(a) < 2:
+                    b = self.clear_excel('day' + a)
                 else:
-                    return
-                await ctx.send(f'{mes} サブコマンドで何日目か教えてください ([1-6])')
-
-    @day.command('1')
-    async def day1(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.col = [3] * 30
-            self.rej = 9
-            self.totu = 0
-            await ctx.send('記録位置を1日目にセットしました')
-    @day.command('2')
-    async def day2(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.col = [10] * 30
-            self.rej = 16
-            self.totu = 0
-            await ctx.send('記録位置を2日目にセットしました')
-    @day.command('3')
-    async def day3(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.col = [17] * 30
-            self.rej = 23
-            self.totu = 0
-            await ctx.send('記録位置を3日目にセットしました')
-    @day.command('4')
-    async def day4(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.col = [24] * 30
-            self.rej = 30
-            self.totu = 0
-            await ctx.send('記録位置を4日目にセットしました')
-    @day.command('5')
-    async def day5(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.col = [31] * 30
-            self.rej = 37
-            self.totu = 0
-            await ctx.send('記録位置を5日目にセットしました')
-    @day.command('6')
-    async def day6(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.col = [38] * 30
-            self.rej = 44
-            self.totu = 0
-            await ctx.send('記録位置を6日目にセットしました')
-
-    @commands.group()  # セルの内容を消去(Noneに上書き)するコマンドグループ
-    async def clear(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            if ctx.invoked_subcommand is None:
-                await ctx.send('サブコマンドで何日目の記録を消去するか指定してください([1-6] または all)')
-
-    @clear.command('1')
-    async def clear_day1(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.clear_excel('day1')
-            await ctx.send('1日目の記録内容を消去しました')
-    @clear.command('2')
-    async def clear_day2(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.clear_excel('day2')
-            await ctx.send('2日目の記録内容を消去しました')
-    @clear.command('3')
-    async def clear_day3(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.clear_excel('day3')
-            await ctx.send('3日目の記録内容を消去しました')
-    @clear.command('4')
-    async def clear_day4(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.clear_excel('day4')
-            await ctx.send('4日目の記録内容を消去しました')
-    @clear.command('5')
-    async def clear_day5(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.clear_excel('day5')
-            await ctx.send('5日目の記録内容を消去しました')
-    @clear.command('6')
-    async def clear_day6(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.clear_excel('day6')
-            await ctx.send('6日目の記録内容を消去しました')
-    @clear.command('all')
-    async def clear_all(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.clear_excel('all')
-            await ctx.send('すべての記録内容を消去しました')
+                    b = self.clear_excel(a)
+                if b:
+                    await ctx.send(f'{a} の内容を消去しました')
+                else:
+                    await ctx.send('引数が無効です')
+            else:
+                await ctx.send('何日目の記録を消去するか指定してください(1～6 または all)')
+        else:
+            await ctx.send('このチャンネルでの操作は許可されていません\n'
+                                      '/append コマンドで作業チャンネルに登録してください')
 
     @commands.group()
     async def member(self, ctx):
@@ -314,7 +259,7 @@ class SaveResult(commands.Cog):
         if ctx.channel.id in self.work_channel_id:
             await ctx.send(file=discord.File(excel_path))
 
-    @commands.command('残凸')
+    @commands.command()
     async def totu(self, ctx):
         await ctx.send(f'残り凸数は {90-self.totu} です')
 
