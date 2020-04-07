@@ -17,7 +17,6 @@ image_path = r'./downloads/image.png'
 excel_path = r'./BattleLog.xlsx'
 BOSSES = ['ワイバーン', 'グリフォン', 'マダムプリズム', 'サイクロプス', 'メサルティム']  # 3月のボス
 STUMPS = ['△', '◆', '□', '◎', '☆', '〇', '?']  # 左から[1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA,凸,不明]
-work_channel_id = []  # バトルログのスクショを貼るチャンネルのID
 RESOLUTIONS = [(1280, 720),  # 1
                         (1334, 750),   # 2
                         (1920, 1080),  # 3 ここまで16:9
@@ -38,18 +37,18 @@ class SaveResult(commands.Cog):
             self.col = [3] * 30
             self.rej = 9
             self.totu = 0
-            pickle.dump(self.col, open(temp_path + 'col.pkl','wb'))
-            pickle.dump(self.rej, open(temp_path + 'rej.pkl','wb'))
-            pickle.dump(self.totu, open(temp_path + 'totu.pkl','wb'))
+            self.work_channel_id = []  # バトルログのスクショを貼るチャンネルのID
         else:
             self.col = pickle.load(open(temp_path + 'col.pkl','rb'))
             self.rej = pickle.load(open(temp_path + 'rej.pkl','rb'))
             self.totu = pickle.load(open(temp_path + 'totu.pkl','rb'))
+            self.work_channel_id = pickle.load(open(temp_path + 'work_channel_id.pkl','rb'))
 
     def cog_unload(self):
         pickle.dump(self.col, open(temp_path + 'col.pkl','wb'))
         pickle.dump(self.rej, open(temp_path + 'rej.pkl','wb'))
         pickle.dump(self.totu, open(temp_path + 'totu.pkl','wb'))
+        pickle.dump(self.work_channel_id, open(temp_path + 'work_channel_id.pkl','wb'))
 
     async def download_img(self, url, file_name):
         async with aiohttp.ClientSession() as session:
@@ -157,7 +156,7 @@ class SaveResult(commands.Cog):
 
     # clearコマンドで利用する関数
     def clear_excel(self, kwd):
-        # 任意のセルへ2次元配列を書き込む関数
+        # 任意のセルを始点に2次元配列を書き込む関数
         def write_list_2d(sheet, l_2d, start_row, start_col):
             for y, row in enumerate(l_2d):
                 for x, cell in enumerate(row):
@@ -189,7 +188,7 @@ class SaveResult(commands.Cog):
 
     @commands.group()  # 記録する位置を変更するコマンドグループ 全員の列位置が変更される
     async def day(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             if ctx.invoked_subcommand is None:
                 if self.rej == 9:
                     mes = '現在1日目です'
@@ -209,42 +208,42 @@ class SaveResult(commands.Cog):
 
     @day.command('1')
     async def day1(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             self.col = [3] * 30
             self.rej = 9
             self.totu = 0
             await ctx.send('記録位置を1日目にセットしました')
     @day.command('2')
     async def day2(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             self.col = [10] * 30
             self.rej = 16
             self.totu = 0
             await ctx.send('記録位置を2日目にセットしました')
     @day.command('3')
     async def day3(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             self.col = [17] * 30
             self.rej = 23
             self.totu = 0
             await ctx.send('記録位置を3日目にセットしました')
     @day.command('4')
     async def day4(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             self.col = [24] * 30
             self.rej = 30
             self.totu = 0
             await ctx.send('記録位置を4日目にセットしました')
     @day.command('5')
     async def day5(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             self.col = [31] * 30
             self.rej = 37
             self.totu = 0
             await ctx.send('記録位置を5日目にセットしました')
     @day.command('6')
     async def day6(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             self.col = [38] * 30
             self.rej = 44
             self.totu = 0
@@ -252,67 +251,67 @@ class SaveResult(commands.Cog):
 
     @commands.group()  # セルの内容を消去(Noneに上書き)するコマンドグループ
     async def clear(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             if ctx.invoked_subcommand is None:
                 await ctx.send('サブコマンドで何日目の記録を消去するか指定してください([1-6] または all)')
 
     @clear.command('1')
     async def clear_day1(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             self.clear_excel('day1')
             await ctx.send('1日目の記録内容を消去しました')
     @clear.command('2')
     async def clear_day2(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             self.clear_excel('day2')
             await ctx.send('2日目の記録内容を消去しました')
     @clear.command('3')
     async def clear_day3(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             self.clear_excel('day3')
             await ctx.send('3日目の記録内容を消去しました')
     @clear.command('4')
     async def clear_day4(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             self.clear_excel('day4')
             await ctx.send('4日目の記録内容を消去しました')
     @clear.command('5')
     async def clear_day5(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             self.clear_excel('day5')
             await ctx.send('5日目の記録内容を消去しました')
     @clear.command('6')
     async def clear_day6(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             self.clear_excel('day6')
             await ctx.send('6日目の記録内容を消去しました')
     @clear.command('all')
     async def clear_all(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             self.clear_excel('all')
             await ctx.send('すべての記録内容を消去しました')
 
     @commands.group()
     async def member(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             if ctx.invoked_subcommand is None:
                 await ctx.send(f'現在のメンバー一覧です\n')
 
     @member.command()
     async def add(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             await ctx.send(f'{ctx.content}をメンバーに登録します')
             await ctx.send(f'現在のメンバー一覧です\n')
 
     @member.command()
     async def remove(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             await ctx.send(f'{ctx.content}をメンバーにから削除します')
             await ctx.send(f'現在のメンバー一覧です\n')
 
     @commands.command()
     async def pull(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             await ctx.send(file=discord.File(excel_path))
 
     @commands.command('残凸')
@@ -321,16 +320,16 @@ class SaveResult(commands.Cog):
 
     @commands.command()
     async def append(self, ctx):
-        if ctx.channel.id in work_channel_id:
+        if ctx.channel.id in self.work_channel_id:
             await ctx.send(f'{ctx.channel.name} はすでに作業チャンネルです')
         else:
-            work_channel_id.append(ctx.channel.id)
+            self.work_channel_id.append(ctx.channel.id)
             await ctx.send(f'{ctx.channel.name} を作業チャンネルに追加しました')
 
     @commands.command()
     async def remove(self, ctx):
-        if ctx.channel.id in work_channel_id:
-            work_channel_id.remove(ctx.channel.id)
+        if ctx.channel.id in self.work_channel_id:
+            self.work_channel_id.remove(ctx.channel.id)
             await ctx.send(f'{ctx.channel.name} を作業チャンネルから除外しました')
         else:
             await ctx.send(f'{ctx.channel.name} は作業チャンネルではありません')
@@ -340,7 +339,7 @@ class SaveResult(commands.Cog):
         if message.author.bot:
             return
 
-        if message.channel.id in work_channel_id:
+        if message.channel.id in self.work_channel_id:
             if len(message.attachments) > 0:
                 # messageに添付画像があり、指定のチャンネルの場合動作する
                 await self.download_img(message.attachments[0].url, image_path)
