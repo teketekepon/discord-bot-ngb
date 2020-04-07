@@ -111,6 +111,40 @@ class SaveResult(commands.Cog):
         print(text, end='\n--------------------OCR Result-------------------\n')
         return text
 
+    def member_edit(self, op=None, *member):
+        wb = load_workbook(excel_path)
+        sheet = wb['Battle_log']
+        mlist = sum([[cell.value for cell in tmp] for tmp in sheet['A2:A31']], [])
+        tmp = []
+        if op is None:
+            wb.close()
+            return ','.join(map(str, mlist))
+        elif op == 'add':
+            for m in member:
+                if mlist not in member:
+                    for i, item in enumerate(mlist):
+                        if item is None:
+                            mlist[i] = m
+                            break
+                tmp.append(m)
+        elif op == 'remove':
+            for m in member:
+                try:
+                    mlist.remove(m)
+                except ValueError:
+                    tmp.append(m)
+        elif op == 'clear':
+            mlist = ['' for n in range(30)]
+        else:
+            wb.close()
+            return ','.join(map(str, mlist))
+        mlist = sorted(mlist, key=lambda x: (x is None, x))
+        for num, w in enumerate(mlist):
+            sheet.cell(row=num+2, column=1, value=w)
+        wb.save(excel_path)
+        wb.close()
+        return ','.join(map(str, mlist))
+
     def save_excel(self, text):
         wb = load_workbook(excel_path)
         sheet = wb['Battle_log']
@@ -227,7 +261,9 @@ class SaveResult(commands.Cog):
                 else:
                     b = self.clear_excel(a)
                 if b:
-                    await ctx.send(f'{a} の内容を消去しました')
+                    self.col = [self.rej - 6] * 30
+                    self.totu = 0
+                    await ctx.send(f'「{a}」日目の内容を消去しました\nそれに伴い記録位置もリセットされました')
                 else:
                     await ctx.send('引数が無効です')
             else:
@@ -236,23 +272,14 @@ class SaveResult(commands.Cog):
             await ctx.send('このチャンネルでの操作は許可されていません\n'
                                       '/append コマンドで作業チャンネルに登録してください')
 
-    @commands.group()
-    async def member(self, ctx):
+    @commands.command()
+    async def member(self, ctx, op=None, *member):
         if ctx.channel.id in self.work_channel_id:
-            if ctx.invoked_subcommand is None:
-                await ctx.send(f'現在のメンバー一覧です\n')
-
-    @member.command()
-    async def add(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            await ctx.send(f'{ctx.content}をメンバーに登録します')
-            await ctx.send(f'現在のメンバー一覧です\n')
-
-    @member.command()
-    async def remove(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            await ctx.send(f'{ctx.content}をメンバーにから削除します')
-            await ctx.send(f'現在のメンバー一覧です\n')
+            res = self.member_edit(op, *member)
+            await ctx.send(f'現在のメンバー一覧です\n{res}')
+        else:
+            await ctx.send('このチャンネルでの操作は許可されていません\n'
+                                      '/append コマンドで作業チャンネルに登録してください')
 
     @commands.command()
     async def pull(self, ctx):
