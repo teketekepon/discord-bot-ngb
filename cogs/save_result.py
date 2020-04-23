@@ -115,7 +115,7 @@ class SaveResult(commands.Cog):
         wb = load_workbook(excel_path)
         sheet = wb['Battle_log']
         mlist = sum([[cell.value for cell in tmp] for tmp in sheet['A2:A31']], [])
-        tmp = []
+        temp = []
         if op is None:
             wb.close()
             return ','.join(map(str, mlist))
@@ -126,21 +126,20 @@ class SaveResult(commands.Cog):
                         if item is None:
                             mlist[i] = m
                             break
-                tmp.append(m)
+                temp.append(m)
         elif op == 'remove':
             for m in member:
                 try:
                     mlist.remove(m)
                     mlist.append('')
                 except ValueError:
-                    tmp.append(m)
+                    temp.append(m)
         elif op == 'delete':
             if all(mlist):
-                break
-            for i, item in enumerate(mlist):
-                if item is None:
-                    mlist[i-1] = ''
-                    break
+                for i, item in enumerate(mlist):
+                    if item is None:
+                        mlist[i-1] = ''
+                        break
             else:
                 mlist[30] = ''
         elif op == 'clear':
