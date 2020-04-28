@@ -41,14 +41,12 @@ class Ngb(commands.Cog):
             await ctx.send(f'{ctx.author.mention} タイムアウト')
         else:
             # すでにいずれかのroleがある場合削除
-            rem = []
             if (a := discord.utils.find(lambda o: o.name == '王宮', msg.guild.roles)) is not None:
-                rem.append(a)
+                await msg.author.remove_roles(a)
             if (b := discord.utils.find(lambda o: o.name == '宮殿', msg.guild.roles)) is not None:
-                rem.append(b)
+                await msg.author.remove_roles(b)
             if (c := discord.utils.find(lambda o: o.name == '城下町', msg.guild.roles)) is not None:
-                rem.append(c)
-            await msg.author.remove_roles(rem)
+                await msg.author.remove_roles(c)
             # 対応する権限を付与
             if msg.content == '1':
                 role = discord.utils.get(msg.guild.roles, name = '王宮')
