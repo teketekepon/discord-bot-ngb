@@ -34,28 +34,27 @@ class Ngb(commands.Cog):
                 return n.content == '2' and n.author == ctx.author
             if n.content.startswith('3'):
                 return n.content == '3' and n.author == ctx.author
-
         try:
-            msg = await self.bot.wait_for('message', timeout = 20.0, check=check)
+            msg = await self.bot.wait_for('message', timeout=20.0, check=check)
         except asyncio.TimeoutError:
             await ctx.send(f'{ctx.author.mention} タイムアウト')
         else:
             # すでにいずれかのroleがある場合削除
-            if (a := discord.utils.find(lambda o: o.name == '王宮', msg.guild.roles)) is not None:
+            if (a := discord.utils.find(lambda o: o.name == '王宮', msg.author.roles)) is not None:
                 await msg.author.remove_roles(a)
-            if (b := discord.utils.find(lambda o: o.name == '宮殿', msg.guild.roles)) is not None:
+            if (b := discord.utils.find(lambda o: o.name == '宮殿', msg.author.roles)) is not None:
                 await msg.author.remove_roles(b)
-            if (c := discord.utils.find(lambda o: o.name == '城下町', msg.guild.roles)) is not None:
+            if (c := discord.utils.find(lambda o: o.name == '城下町', msg.author.roles)) is not None:
                 await msg.author.remove_roles(c)
             # 対応する権限を付与
             if msg.content == '1':
-                role = discord.utils.get(msg.guild.roles, name = '王宮')
+                role = discord.utils.get(msg.guild.roles, name='王宮')
                 reply = f'{msg.author.mention} をロール「{role}」へ割り振ったわ 感謝しなさい！'
             elif msg.content == '2':
-                role = discord.utils.get(msg.guild.roles, name = '宮殿')
+                role = discord.utils.get(msg.guild.roles, name='宮殿')
                 reply = f'{msg.author.mention} をロール「{role}」へ割り振ったわ 感謝しなさい！'
             elif msg.content == '3':
-                role = discord.utils.get(msg.guild.roles, name = '城下町')
+                role = discord.utils.get(msg.guild.roles, name='城下町')
                 reply = f'{msg.author.mention} をロール「{role}」へ割り振ったわ 感謝しなさい！'
             await msg.author.add_roles(role)
             await msg.channel.send(reply)
