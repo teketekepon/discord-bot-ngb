@@ -36,36 +36,31 @@ class Ngb(commands.Cog):
                 return n.content == '3' and n.author == ctx.author
 
         try:
-            msg = await self.bot.wait_for('message',timeout = 20.0,check = check)
+            msg = await self.bot.wait_for('message', timeout = 20.0, check=check)
         except asyncio.TimeoutError:
             await ctx.send(f'{ctx.author.mention} タイムアウト')
         else:
             # すでにいずれかのroleがある場合削除
-            find = discord.utils.find(lambda o: o.name == '王宮', msg.guild.roles)
-            if find is not None:
-                await msg.author.remove_roles(find)
-            find = discord.utils.find(lambda o: o.name == '宮殿', msg.guild.roles)
-            if find is not None:
-                await msg.author.remove_roles(find)
-            find = discord.utils.find(lambda o: o.name == '城下町', msg.guild.roles)
-            if find is not None:
-                await msg.author.remove_roles(find)
+            rem = []
+            if (a := discord.utils.find(lambda o: o.name == '王宮', msg.guild.roles)) is not None:
+                rem.append(a)
+            if (b := discord.utils.find(lambda o: o.name == '宮殿', msg.guild.roles)) is not None:
+                rem.append(b)
+            if (c := discord.utils.find(lambda o: o.name == '城下町', msg.guild.roles)) is not None:
+                rem.append(c)
+            await msg.author.remove_roles(rem)
             # 対応する権限を付与
             if msg.content == '1':
                 role = discord.utils.get(msg.guild.roles, name = '王宮')
-                await msg.author.add_roles(role)
                 reply = f'{msg.author.mention} をロール「{role}」へ割り振ったわ 感謝しなさい！'
-                await msg.channel.send(reply)
             elif msg.content == '2':
                 role = discord.utils.get(msg.guild.roles, name = '宮殿')
-                await msg.author.add_roles(role)
                 reply = f'{msg.author.mention} をロール「{role}」へ割り振ったわ 感謝しなさい！'
-                await msg.channel.send(reply)
             elif msg.content == '3':
                 role = discord.utils.get(msg.guild.roles, name = '城下町')
-                await msg.author.add_roles(role)
                 reply = f'{msg.author.mention} をロール「{role}」へ割り振ったわ 感謝しなさい！'
-                await msg.channel.send(reply)
+            await msg.author.add_roles(role)
+            await msg.channel.send(reply)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
