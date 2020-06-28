@@ -31,7 +31,7 @@ RESOLUTIONS = [(1280, 720),  # 1
                         (2688, 1242)]  # 11 19.5:9 iPhoneXS,11Pro max
 
 class SaveResult(commands.Cog):
-        # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
+    # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
         if not os.path.isfile(temp_path + 'col.pkl'):

@@ -16,7 +16,8 @@ TOKEN = os.environ["ACCESS_TOKEN"]
 # 読み込むコグの名前を格納しておく。
 INITIAL_EXTENSIONS = [
     'cogs.ngb',
-    'cogs.save_result'
+    'cogs.save_result',
+    'cogs.reserve'
 ]
 # クラスの定義。ClientのサブクラスであるBotクラスを継承。
 class MyBot(commands.Bot):
