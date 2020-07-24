@@ -13,9 +13,9 @@ from PIL import Image
 from openpyxl import load_workbook
 from discord.ext import commands
 
-temp_path = r'./tmp/'
-image_path = r'./downloads/image.png'
-excel_path = r'./BattleLog.xlsx'
+TEMP_PATH = r'./tmp/'
+IMAGE_PATH = r'./downloads/image.png'
+EXCEL_PATH = r'./BattleLog.xlsx'
 BOSSES = ['ワイバーン', 'グリフォン', 'マダムプリズム', 'サイクロプス', 'メサルティム']  # 3月のボス
 STUMPS = ['△', '◆', '□', '◎', '☆', '〇', '?']  # 左から[1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA,凸,不明]
 RESOLUTIONS = [(1280, 720),  # 1
@@ -34,22 +34,22 @@ class SaveResult(commands.Cog):
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
-        if not os.path.isfile(temp_path + 'col.pkl'):
+        if not os.path.isfile(TEMP_PATH + 'col.pkl'):
             self.col = [3] * 30
             self.rej = 9
             self.totu = 0
             self.work_channel_id = []  # バトルログのスクショを貼るチャンネルのID
         else:
-            self.col = pickle.load(open(temp_path + 'col.pkl','rb'))
-            self.rej = pickle.load(open(temp_path + 'rej.pkl','rb'))
-            self.totu = pickle.load(open(temp_path + 'totu.pkl','rb'))
-            self.work_channel_id = pickle.load(open(temp_path + 'work_channel_id.pkl','rb'))
+            self.col = pickle.load(open(TEMP_PATH + 'col.pkl','rb'))
+            self.rej = pickle.load(open(TEMP_PATH + 'rej.pkl','rb'))
+            self.totu = pickle.load(open(TEMP_PATH + 'totu.pkl','rb'))
+            self.work_channel_id = pickle.load(open(TEMP_PATH + 'work_channel_id.pkl','rb'))
 
     def cog_unload(self):
-        pickle.dump(self.col, open(temp_path + 'col.pkl','wb'))
-        pickle.dump(self.rej, open(temp_path + 'rej.pkl','wb'))
-        pickle.dump(self.totu, open(temp_path + 'totu.pkl','wb'))
-        pickle.dump(self.work_channel_id, open(temp_path + 'work_channel_id.pkl','wb'))
+        pickle.dump(self.col, open(TEMP_PATH + 'col.pkl','wb'))
+        pickle.dump(self.rej, open(TEMP_PATH + 'rej.pkl','wb'))
+        pickle.dump(self.totu, open(TEMP_PATH + 'totu.pkl','wb'))
+        pickle.dump(self.work_channel_id, open(TEMP_PATH + 'work_channel_id.pkl','wb'))
 
     async def download_img(self, url, file_name):
         async with aiohttp.ClientSession() as session:
@@ -88,7 +88,7 @@ class SaveResult(commands.Cog):
         if np.count_nonzero(im_bin == 0) > im_bin.size // 10 * 9:
             return False
         # Save Binarized Image
-        Image.fromarray(np.uint8(im_bin)).save(temp_path + 'temp.png')
+        Image.fromarray(np.uint8(im_bin)).save(TEMP_PATH + 'temp.png')
         return True
 
     def use_ocr(self, image):
@@ -112,7 +112,7 @@ class SaveResult(commands.Cog):
         return text
 
     def member_edit(self, op=None, *member):
-        wb = load_workbook(excel_path)
+        wb = load_workbook(EXCEL_PATH)
         sheet = wb['Battle_log']
         mlist = sum([[cell.value for cell in tmp] for tmp in sheet['A2:A31']], [])
         temp = []
@@ -150,12 +150,12 @@ class SaveResult(commands.Cog):
         mlist = sorted(mlist, key=lambda x: (x is None, x))
         for num, w in enumerate(mlist):
             sheet.cell(row=num+2, column=1, value=w)
-        wb.save(excel_path)
+        wb.save(EXCEL_PATH)
         wb.close()
         return ','.join(map(str, mlist))
 
     def save_excel(self, text):
-        wb = load_workbook(excel_path)
+        wb = load_workbook(EXCEL_PATH)
         sheet = wb['Battle_log']
         member = sum([[cell.value for cell in tmp] for tmp in sheet['A2:A31']], [])  # excelからメンバーリストを取得
         text = re.sub(r'[A-MP-Z]+?[\u2012-\u2015][A-MP-Z]*?', 'ダメージで', text)  # 誤認識が多いため置換
@@ -195,7 +195,7 @@ class SaveResult(commands.Cog):
             else:
                 print(f'{m} はメンバーとマッチしなかった為書き込まれません')
         # Excelファイルをセーブして閉じる
-        wb.save(excel_path)
+        wb.save(EXCEL_PATH)
         wb.close()
 
     # clearコマンドで利用する関数
@@ -207,7 +207,7 @@ class SaveResult(commands.Cog):
                     sheet.cell(row=start_row + y, column=start_col + x, value=l_2d[y][x])
         # 6*30の空の2次元配列を作る
         blank_list = [['' for row in range(6)] for col in range(30)]
-        wb = load_workbook(excel_path)
+        wb = load_workbook(EXCEL_PATH)
         sheet = wb['Battle_log']
         if kwd == 'day1':  # 内容をクリア
             write_list_2d(sheet, blank_list, 2, 3)
@@ -228,7 +228,7 @@ class SaveResult(commands.Cog):
             print('clear_excel error: 無効な引数です')
             return False
         # Excelファイルをセーブして閉じる
-        wb.save(excel_path)
+        wb.save(EXCEL_PATH)
         wb.close()
         return True
 
@@ -293,7 +293,7 @@ class SaveResult(commands.Cog):
     @commands.command()
     async def pull(self, ctx):
         if ctx.channel.id in self.work_channel_id:
-            await ctx.send(file=discord.File(excel_path))
+            await ctx.send(file=discord.File(EXCEL_PATH))
 
     @commands.command()
     async def totu(self, ctx):
@@ -323,9 +323,9 @@ class SaveResult(commands.Cog):
         if message.channel.id in self.work_channel_id:
             if len(message.attachments) > 0:
                 # messageに添付画像があり、指定のチャンネルの場合動作する
-                await self.download_img(message.attachments[0].url, image_path)
-                if self.image_binarize(image_path):
-                    ocr_result = self.use_ocr(temp_path + 'temp.png')
+                await self.download_img(message.attachments[0].url, IMAGE_PATH)
+                if self.image_binarize(IMAGE_PATH):
+                    ocr_result = self.use_ocr(TEMP_PATH + 'temp.png')
                     if ocr_result is not None:
                         self.save_excel(ocr_result)
 # Bot本体側からコグを読み込む際に呼び出される関数。

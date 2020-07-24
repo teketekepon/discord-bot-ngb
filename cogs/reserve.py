@@ -40,8 +40,13 @@ class Reserve(commands.Cog):
         self.res = zip_longest(res_b1, res_b2, res_b3, res_b4, res_b5)
         pickle.dump(self.res, open(TEMP_PATH + 'res.pkl','wb'))
 
-    @commands.command()
-    async def yoyaku(self, ctx):
+    def overlap_check(self, user):  # 重複防止
+        if user in res_b1 or user in res_b2 or user in res_b3 or user in res_b4 or user in res_b5:
+            return True
+        return False
+
+    @commands.command(aliases=['予約','凸予約','予定'])
+    async def yoyaku(self, ctx):  # 予約内容の確認
         boss1 = '|'.join(res_b1)
         boss2 = '|'.join(res_b2)
         boss3 = '|'.join(res_b3)
@@ -52,36 +57,41 @@ class Reserve(commands.Cog):
 
     @commands.command(name=BOSSES[0])
     async def res1(self, ctx):
-        if ctx.author.name in res_b1:
+        if self.overlap_check(ctx.author.name):
+            await ctx.send('予約はひとり1つまでです。')
             return
         res_b1.append(ctx.author.name)
 
     @commands.command(name=BOSSES[1])
     async def res2(self, ctx):
-        if ctx.author.name in res_b2:
+        if self.overlap_check(ctx.author.name):
+            await ctx.send('予約はひとり1つまでです。')
             return
         res_b2.append(ctx.author.name)
 
     @commands.command(name=BOSSES[2])
     async def res3(self, ctx):
-        if ctx.author.name in res_b3:
+        if self.overlap_check(ctx.author.name):
+            await ctx.send('予約はひとり1つまでです。')
             return
         res_b3.append(ctx.author.name)
 
     @commands.command(name=BOSSES[3])
     async def res4(self, ctx):
-        if ctx.author.name in res_b4:
+        if self.overlap_check(ctx.author.name):
+            await ctx.send('予約はひとり1つまでです。')
             return
         res_b4.append(ctx.author.name)
 
     @commands.command(name=BOSSES[4])
     async def res5(self, ctx):
-        if ctx.author.name in res_b5:
+        if self.overlap_check(ctx.author.name):
+            await ctx.send('予約はひとり1つまでです。')
             return
         res_b5.append(ctx.author.name)
 
-    @commands.command(name='凸完了')
-    async def kantotu(self, ctx):
+    @commands.command(aliases=['凸完了','完了','クリア'])
+    async def kantotu(self, ctx):  #予約を削除
         if ctx.author.name in res_b1:
             res_b1.remove(ctx.author.name)
         if ctx.author.name in res_b2:
@@ -92,7 +102,6 @@ class Reserve(commands.Cog):
             res_b4.remove(ctx.author.name)
         if ctx.author.name in res_b5:
             res_b5.remove(ctx.author.name)
-          #予約を削除
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(Reserve(bot))  # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。
