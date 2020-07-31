@@ -174,7 +174,7 @@ class TotuCount(commands.Cog):
                     ocr_result = self.use_ocr(TEMP_PATH + 'temp.png')
                     if ocr_result is not None:
                         x = self.count(ocr_result)
-                        await message.channel.send(f'{n}凸カウント')
+                        await message.channel.send(f'{x}凸カウント')
                     else:
                         await message.channel.send('画像読み込みに失敗しました')
 # Bot本体側からコグを読み込む際に呼び出される関数。
