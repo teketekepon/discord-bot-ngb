@@ -155,10 +155,13 @@ class SaveResult(commands.Cog):
         return ','.join(map(str, mlist))
 
     def totu_count(self, text):
+        n = 0
         data = re.findall(r'ダメージ.', text)  # OCRtextから凸部分のみ抽出
         for i in data:
             if not 'で' in i:
                 self.totu += 1
+                n += 1
+        print(f'{n}凸カウント')
         return
 
     def save_excel(self, text):
