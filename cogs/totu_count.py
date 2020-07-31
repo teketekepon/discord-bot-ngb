@@ -4,7 +4,6 @@ import re
 import pickle
 import pyocr
 import pyocr.builders
-import numpy as np
 import aiohttp
 import aiofiles
 import discord
@@ -72,13 +71,10 @@ class TotuCount(commands.Cog):
         else:
             print('非対応の解像度です')
             return False
-        # numpyで2値化
-        im_gray = np.array(im_crop.convert('L'))
-        im_bin = (im_gray > 193) * 255
-        if np.count_nonzero(im_bin == 0) > im_bin.size // 10 * 9:
-            return False
-        # Save Binarized Image
-        Image.fromarray(np.uint8(im_bin)).save(TEMP_PATH + 'temp.png')
+        # Pillowで2値化
+        im_gray = im_crop.convert('L')
+        im_bin = im_gray.point(lambda x: 255 if x > 193 else 0, mode='L')
+        im_bin.save(TEMP_PATH + 'temp.png')
         return True
 
     def use_ocr(self, image):
