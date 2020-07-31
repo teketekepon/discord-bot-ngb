@@ -174,9 +174,9 @@ class TotuCount(commands.Cog):
                     ocr_result = self.use_ocr(TEMP_PATH + 'temp.png')
                     if ocr_result is not None:
                         x = self.count(ocr_result)
-                        await ctx.send(f'{n}凸カウント')
+                        await message.channel.send(f'{n}凸カウント')
                     else:
-                        await ctx.send('画像読み込みに失敗しました')
+                        await message.channel.send('画像読み込みに失敗しました')
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(TotuCount(bot)) # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。
