@@ -103,7 +103,7 @@ class SaveResult(commands.Cog):
         tool = tools[0]
         # 日本語と英数字をOCR
         res = tool.image_to_string(Image.open(image),
-                                   lang='jpn+eng',
+                                   lang='jpn',  # 'jpn+eng'
                                    builder=pyocr.builders.WordBoxBuilder(tesseract_layout=6))
         text = ''
         for d in res:
