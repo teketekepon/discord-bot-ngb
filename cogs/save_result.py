@@ -156,8 +156,9 @@ class SaveResult(commands.Cog):
 
     def totu_count(self, text):
         n = 0
-        data = re.findall(r'ダメージ.', text)  # OCRtextから凸部分のみ抽出
-
+        data = re.findall(r'ダメージで|ダメージ', text)  # OCRtextから凸部分のみ抽出
+        if len(data) >= 5:
+            del data[0]  # 1枚4件までのため
         for i in data:
             if not 'で' in i:
                 self.totu += 1
