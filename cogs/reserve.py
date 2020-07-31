@@ -6,7 +6,7 @@ from discord.ext import commands
 from itertools import zip_longest
 
 TEMP_PATH = r'./tmp/'
-BOSSES = ['ワイバーン', 'グリフォン', 'マダムプリズム', 'サイクロプス', 'メサルティム']  # 3月のボス
+BOSSES = ['ワイバーン', 'ランドスロース', 'ムシュフシュ', 'ティタノタートル', 'オルレオン']  # 7月のボス
 res_b1 = []
 res_b2 = []
 res_b3 = []

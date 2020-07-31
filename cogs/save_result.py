@@ -16,7 +16,7 @@ from discord.ext import commands
 TEMP_PATH = r'./tmp/'
 IMAGE_PATH = r'./downloads/image.png'
 EXCEL_PATH = r'./BattleLog.xlsx'
-BOSSES = ['ワイバーン', 'グリフォン', 'マダムプリズム', 'サイクロプス', 'メサルティム']  # 3月のボス
+BOSSES = ['ワイバーン', 'ランドスロース', 'ムシュフシュ', 'ティタノタートル', 'オルレオン']  # 7月のボス
 STUMPS = ['△', '◆', '□', '◎', '☆', '〇', '?']  # 左から[1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA,凸,不明]
 RESOLUTIONS = [(1280, 720),  # 1
                         (1334, 750),   # 2
@@ -153,6 +153,13 @@ class SaveResult(commands.Cog):
         wb.save(EXCEL_PATH)
         wb.close()
         return ','.join(map(str, mlist))
+
+    def totu_count(self, text):
+        data = re.findall(r'ダメージ.', text)  # OCRtextから凸部分のみ抽出
+        for i in data:
+            if not 'で' in i:
+                self.totu += 1
+        return
 
     def save_excel(self, text):
         wb = load_workbook(EXCEL_PATH)
@@ -327,7 +334,7 @@ class SaveResult(commands.Cog):
                 if self.image_binarize(IMAGE_PATH):
                     ocr_result = self.use_ocr(TEMP_PATH + 'temp.png')
                     if ocr_result is not None:
-                        self.save_excel(ocr_result)
+                        self.totu_count(ocr_result)
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(SaveResult(bot)) # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。
