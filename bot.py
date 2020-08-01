@@ -56,7 +56,7 @@ class Help(commands.HelpCommand):
         return f'{command.qualified_name} にサブコマンドは登録されていません。'
     # 引数なしのhelpコマンドの場合
     async def send_bot_help(self,mapping):
-        content = ''
+        content = 'コグ、コマンド一覧\n'
         for cog in mapping:  # 各コグのコマンド一覧を content に追加していく
             command_list = await self.filter_commands(mapping[cog])
             if not command_list:  # 表示できるコマンドがないので、他のコグの処理に移る
@@ -64,27 +64,32 @@ class Help(commands.HelpCommand):
             if cog is None:  # コグが未設定のコマンドなので、no_category属性を参照する
                 content += f'```\n{self.no_category}```'
             else:
-                content += f'```\n{cog.qualified_name} / {cog.description}\n```'
+                content += f'\nコグ:{cog.qualified_name}\n```{cog.description}```'
             for command in command_list:
-                content += f'`{command.name}` / {command.description}\n'
+                content += f'`{command.name}` : {command.short_doc}\n'
             content += '\n'
-        embed = discord.Embed(title='コマンドリスト', description=content,color=0x00ff00)
-        embed.set_footer(text=f'コマンドのヘルプ {self.context.prefix}help コマンド名')
+        embed = discord.Embed(title=f'NGBヘルプ', description=content,color=0x00ff00)
+        embed.set_footer(text=f'詳しいヘルプ {self.context.prefix}help コグ名またはコマンド名')
         await self.get_destination().send(embed=embed)
     # cogが指定された場合
     async def send_cog_help(self,cog):
         content = ''
         command_list = await self.filter_commands(cog.get_commands())
-
-        content += f'```\n{cog.qualified_name} / {cog.description}\n```'
+        content += f'```\n{cog.qualified_name} : {cog.description}\n```'
         for command in command_list:
-            content += f'`{command.name}` / {command.description}\n'
+            content += f'`{command.name}` : {command.help}\n'
         content += '\n'
         if not content:
             content = '表示できるコマンドがありません。'
-
-        embed = discord.Embed(title='コマンドリスト',description=content,color=0x00ff00)
+        embed = discord.Embed(title=f'{cog.qualified_name}',description=content,color=0x00ff00)
         embed.set_footer(text=f'コマンドのヘルプ {self.context.prefix}help コマンド名')
+        await self.get_destination().send(embed=embed)
+
+    async def send_command_help(self,command):
+        embed = discord.Embed(title=self.get_command_signature(command),description=command.short_doc,color=0x00ff00)
+        if command.help:
+            embed.add_field(name="ヘルプテキスト：",value=command.help,inline=False)
+        embed.set_footer(text=f"コマンドのヘルプ {self.context.prefix}help コマンド名")
         await self.get_destination().send(embed=embed)
 
     async def send_error_message(self,error):  # エラー発生時
