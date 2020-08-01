@@ -31,7 +31,6 @@ class MyBot(commands.Bot):
                 self.load_extension(cog)
             except Exception:
                 traceback.print_exc()
-
     # Botの準備完了時に呼び出されるイベント
     async def on_ready(self):
         print('--------------')
@@ -48,11 +47,13 @@ class Help(commands.HelpCommand):
     # ここでメソッドのオーバーライドを行います。
     def command_not_found(self,string):  # コマンドが見つからない場合
         return f'{string} というコマンドは存在しません。'
+
     def subcommand_not_found(self,command,string):  # サブコマンドが見つからない場合
         if isinstance(command, commands.Group) and len(command.all_commands) > 0:
             # もし、そのコマンドにサブコマンドが存在しているなら
             return f'{command.qualified_name} に {string} というサブコマンドは登録されていません。'
         return f'{command.qualified_name} にサブコマンドは登録されていません。'
+
     async def send_bot_help(self,mapping):  # 引数なしのヘルプコマンド
         content = ''
         for cog in mapping:
@@ -73,6 +74,7 @@ class Help(commands.HelpCommand):
             description=content,color=0x00ff00)
         embed.set_footer(text=f'コマンドのヘルプ {self.context.prefix}help コマンド名')
         await self.get_destination().send(embed=embed)
+
     async def send_cog_help(self,cog):  # コグが指定された場合
         content = ''
         command_list = await self.filter_commands(cog.get_commands())
@@ -87,6 +89,7 @@ class Help(commands.HelpCommand):
         embed = discord.Embed(title='コマンドリスト',description=content,color=0x00ff00)
         embed.set_footer(text=f'コマンドのヘルプ {self.context.prefix}help コマンド名')
         await self.get_destination().send(embed=embed)
+
     async def send_error_message(self,error):  # エラー発生時
         embed = discord.Embed(title='ヘルプ表示のエラー',description=error,
             color=0xff0000)
