@@ -29,7 +29,7 @@ class Ngb(commands.Cog):
     @commands.command()
     async def bot(self, ctx):
         """
-        コマンドを実行したユーザーに、各クランに対応したロールを付与します。
+        実行したユーザーに、各クランに対応したロールを付与します。
         botがメンションを返すので、続けて希望の数字を半角で送信してください。
         """
         await ctx.send(f'{ctx.author.mention} 割り振り先を選びなさい♪(1:王宮2:宮殿3:城下町)')
