@@ -4,6 +4,9 @@ import discord
 from discord.ext import commands
 
 class Ngb(commands.Cog):
+    """
+    プリコネクラン「ナイトガーデン」グループのdiscord用botです。
+    """
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
@@ -25,6 +28,10 @@ class Ngb(commands.Cog):
 
     @commands.command()
     async def bot(self, ctx):
+        """
+        コマンドを実行したユーザーに、各クランに対応したロールを付与します。
+        botがメンションを返すので、続けて希望の数字を送信してください。
+        """
         await ctx.send(f'{ctx.author.mention} 割り振り先を選びなさい♪(1:王宮2:宮殿3:城下町)')
 
         def check(n):

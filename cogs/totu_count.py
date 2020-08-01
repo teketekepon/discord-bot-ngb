@@ -26,6 +26,9 @@ RESOLUTIONS = [(1280, 720),  # 1
                         (2688, 1242)]  # 11 19.5:9 iPhoneXS,11Pro max
 
 class TotuCount(commands.Cog):
+    """
+    /defineコマンドを実行したチャンネルにクラバトログのスクショを張り付けることで、凸の消化回数をカウントします。
+    """
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
@@ -109,20 +112,30 @@ class TotuCount(commands.Cog):
                 n += 1
         return n
 
-    @commands.command()  # 凸カウントをリセットするコマンド
+    @commands.command()
     async def clear(self, ctx):
+        """
+        凸カウントをリセットするコマンド
+        """
         if ctx.channel.id in self.work_channel_id:
             self.totu = 0
             await ctx.send('凸カウントをリセットしました')
         else:
             await ctx.send('このチャンネルでの操作は許可されていません')
 
-    @commands.command()  # 残凸数を返すコマンド
+    @commands.command()
     async def totu(self, ctx):
+        """
+        残凸数を返すコマンド
+        """
         await ctx.send(f'現在 {self.totu} 凸して残り凸数は {90-self.totu} です')
 
-    @commands.command()  # 凸カウントを増やすコマンド
+    @commands.command()
     async def add(self, ctx, arg1):
+        """
+        凸カウントを増やすコマンド
+        例えば /add 1 とすると1凸増やします
+        """
         try:
             n = int(arg1)
         except ValueError:
@@ -131,8 +144,12 @@ class TotuCount(commands.Cog):
         self.totu += n
         await ctx.send(f'凸数を{n}足して{self.totu}になりました')
 
-    @commands.command()  # 凸カウントを増やすコマンド
+    @commands.command()
     async def sub(self, ctx, arg1):
+        """
+        凸カウントを減らすコマンド
+        例えば /sub 1 とすると1凸減らします
+        """
         try:
             n = int(arg1)
         except ValueError:
@@ -141,16 +158,22 @@ class TotuCount(commands.Cog):
         self.totu -= n
         await ctx.send(f'凸数を{n}引いて{self.totu}になりました')
 
-    @commands.command()  # 機能を有効にするチャンネルとして登録するコマンド
+    @commands.command()
     async def define(self, ctx):
+        """
+        機能を有効にするチャンネルとして登録するコマンド
+        """
         if ctx.channel.id in self.work_channel_id:
             await ctx.send(f'{ctx.channel.name} はすでに作業チャンネルです')
         else:
             self.work_channel_id.append(ctx.channel.id)
             await ctx.send(f'{ctx.channel.name} を作業チャンネルに追加しました')
 
-    @commands.command()  # 機能を無効にするチャンネルとして登録するコマンド
+    @commands.command()
     async def remove(self, ctx):
+        """
+        機能を無効にするチャンネルとして登録するコマンド
+        """
         if ctx.channel.id in self.work_channel_id:
             self.work_channel_id.remove(ctx.channel.id)
             await ctx.send(f'{ctx.channel.name} を作業チャンネルから除外しました')
