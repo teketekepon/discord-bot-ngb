@@ -21,10 +21,9 @@ INITIAL_EXTENSIONS = [
 ]
 # クラスの定義。ClientのサブクラスであるBotクラスを継承。
 class MyBot(commands.Bot):
-    # MyBotのコンストラクタ。
-    def __init__(self, command_prefix):
+    def __init__(self, command_prefix, help_command):
         # スーパークラスのコンストラクタに値を渡して実行。
-        super().__init__(command_prefix)
+        super().__init__(command_prefix, help_command)
         # INITIAL_COGSに格納されている名前から、コグを読み込む。
         # エラーが発生した場合は、エラー内容を表示。
         for cog in INITIAL_EXTENSIONS:
@@ -41,8 +40,58 @@ class MyBot(commands.Bot):
         print(self.user.id)
         print('--------------')
 
+class Help(commands.HelpCommand):
+    def __init__(self):
+        super().__init__()
+        self.no_category = 'カテゴリ未設定'
+        self.command_attrs['description'] = 'コマンドリストを表示します。'
+    # ここでメソッドのオーバーライドを行います。
+    def command_not_found(self,string):  # コマンドが見つからない場合
+        return f'{string} というコマンドは存在しません。'
+    def subcommand_not_found(self,command,string):  # サブコマンドが見つからない場合
+        if isinstance(command, commands.Group) and len(command.all_commands) > 0:
+            # もし、そのコマンドにサブコマンドが存在しているなら
+            return f'{command.qualified_name} に {string} というサブコマンドは登録されていません。'
+        return f'{command.qualified_name} にサブコマンドは登録されていません。'
+    async def send_bot_help(self,mapping):  # 引数なしのヘルプコマンド
+        content = ''
+        for cog in mapping:
+            # 各コグのコマンド一覧を content に追加していく
+            command_list = await self.filter_commands(mapping[cog])
+            if not command_list:
+                # 表示できるコマンドがないので、他のコグの処理に移る
+                continue
+            if cog is None:
+                # コグが未設定のコマンドなので、no_category属性を参照する
+                content += f'```\n{self.no_category}```'
+            else:
+                content += f'```\n{cog.qualified_name} / {cog.description}\n```'
+            for command in command_list:
+                content += f'`{command.name}` / {command.description}\n'
+            content += '\n'
+        embed = discord.Embed(title='コマンドリスト',
+            description=content,color=0x00ff00)
+        embed.set_footer(text=f'コマンドのヘルプ {self.context.prefix}help コマンド名')
+        await self.get_destination().send(embed=embed)
+    async def send_cog_help(self,cog):  # コグが指定された場合
+        content = ''
+        command_list = await self.filter_commands(cog.get_commands())
 
+        content += f'```\n{cog.qualified_name} / {cog.description}\n```'
+        for command in command_list:
+            content += f'`{command.name}` / {command.description}\n'
+        content += '\n'
+        if not content:
+            content = '表示できるコマンドがありません。'
+
+        embed = discord.Embed(title='コマンドリスト',description=content,color=0x00ff00)
+        embed.set_footer(text=f'コマンドのヘルプ {self.context.prefix}help コマンド名')
+        await self.get_destination().send(embed=embed)
+    async def send_error_message(self,error):  # エラー発生時
+        embed = discord.Embed(title='ヘルプ表示のエラー',description=error,
+            color=0xff0000)
+        await self.get_destination().send(embed=embed)
 # MyBotのインスタンス化及び起動処理。
 if __name__ == '__main__':
-    bot = MyBot(command_prefix='/') # command_prefixはコマンドの最初の文字として使うもの。
+    bot = MyBot(command_prefix='/', help_command=Help()) # command_prefixはコマンドの最初の文字として使うもの。
     bot.run(TOKEN) # Botを動かす
