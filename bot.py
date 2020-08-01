@@ -64,10 +64,9 @@ class Help(commands.HelpCommand):
             if cog is None:  # コグが未設定のコマンドなので、no_category属性を参照する
                 content += f'```\n{self.no_category}```'
             else:
-                content += f'\nコグ:{cog.qualified_name}\n```{cog.description}```'
+                content += f'\n**{cog.qualified_name}**\n```{cog.description}```\nコマンドリスト\n'
             for command in command_list:
-                content += f'`{command.name}` : {command.short_doc}\n'
-            content += '\n'
+                content += f'`{self.context.prefix}{command.name}` : {command.short_doc}\n'
         embed = discord.Embed(title=f'NGBヘルプ', description=content,color=0x00ff00)
         embed.set_footer(text=f'詳しいヘルプ {self.context.prefix}help コグ名またはコマンド名')
         await self.get_destination().send(embed=embed)
@@ -75,9 +74,9 @@ class Help(commands.HelpCommand):
     async def send_cog_help(self,cog):
         content = ''
         command_list = await self.filter_commands(cog.get_commands())
-        content += f'```\n{cog.qualified_name} : {cog.description}\n```'
+        content += f'```\n{cog.qualified_name} : {cog.description}```\nコマンドリスト\n'
         for command in command_list:
-            content += f'`{command.name}` : {command.help}\n'
+            content += f'`{self.context.prefix}{command.name}` : {command.help}\n'
         content += '\n'
         if not content:
             content = '表示できるコマンドがありません。'
