@@ -51,11 +51,11 @@ class Reserve(commands.Cog):
 
     @commands.command(aliases=['予約','凸予約','予定'])
     async def yoyaku(self, ctx):  # 予約内容の確認
-    """
-    各ボスを希望するメンバー一覧を返します。
-    左から早い者順になっています。
-    /予約 /凸予約 /予定 でも反応します。
-    """
+        """
+        各ボスを希望するメンバー一覧を返します。
+        左から早い者順になっています。
+        /予約 /凸予約 /予定 でも反応します。
+        """
         boss1 = '|'.join(res_b1)
         boss2 = '|'.join(res_b2)
         boss3 = '|'.join(res_b3)
@@ -101,10 +101,10 @@ class Reserve(commands.Cog):
 
     @commands.command(aliases=['凸完了','完了','クリア'])
     async def kantotu(self, ctx):  #予約を削除
-    """
-    実行したユーザーの凸希望を削除します。
-    /凸完了 /完了 /クリア でも反応します。
-    """
+        """
+        実行したユーザーの凸希望を削除します。
+        /凸完了 /完了 /クリア でも反応します。
+        """
         if ctx.author.name in res_b1:
             res_b1.remove(ctx.author.name)
         if ctx.author.name in res_b2:
