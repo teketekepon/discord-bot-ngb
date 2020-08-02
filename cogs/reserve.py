@@ -60,11 +60,11 @@ class Reserve(commands.Cog):
         /予約 /凸予約 /予定 でも反応します。
         """
         embed = discord.Embed(title='**現在の凸希望者**',color=0x0000ff)
-        embed.add_field(name=f'{BOSSES[0]}',value=' '.join(res_b1))
-        embed.add_field(name=f'{BOSSES[1]}',value=' '.join(res_b2))
-        embed.add_field(name=f'{BOSSES[2]}',value=' '.join(res_b3))
-        embed.add_field(name=f'{BOSSES[3]}',value=' '.join(res_b4))
-        embed.add_field(name=f'{BOSSES[4]}',value=' '.join(res_b5))
+        embed.add_field(name=f'{BOSSES[0]}',value='\u200' + ' '.join(res_b1))
+        embed.add_field(name=f'{BOSSES[1]}',value='\u200' + ' '.join(res_b2))
+        embed.add_field(name=f'{BOSSES[2]}',value='\u200' + ' '.join(res_b3))
+        embed.add_field(name=f'{BOSSES[3]}',value='\u200' + ' '.join(res_b4))
+        embed.add_field(name=f'{BOSSES[4]}',value='\u200' + ' '.join(res_b5))
         await ctx.send(embed=embed)
 
     @commands.command(name=BOSSES[0])
