@@ -60,11 +60,11 @@ class Reserve(commands.Cog):
         /予約 /凸予約 /予定 でも反応します。
         """
         embed = discord.Embed(title='**現在の凸希望者**',color=0x0000ff)
-        embed.add_field(name=f'{BOSSES[0]}',value='\u200b' + ' '.join(res_b1))
-        embed.add_field(name=f'{BOSSES[1]}',value='\u200b' + ' '.join(res_b2))
-        embed.add_field(name=f'{BOSSES[2]}',value='\u200b' + ' '.join(res_b3))
-        embed.add_field(name=f'{BOSSES[3]}',value='\u200b' + ' '.join(res_b4))
-        embed.add_field(name=f'{BOSSES[4]}',value='\u200b' + ' '.join(res_b5))
+        embed.add_field(name=f'{BOSSES[0]}',value='まだ誰もいません' if not res_b1 else ' '.join(res_b1),inline=False)
+        embed.add_field(name=f'{BOSSES[1]}',value='まだ誰もいません' if not res_b2 else ' '.join(res_b2),inline=False)
+        embed.add_field(name=f'{BOSSES[2]}',value='まだ誰もいません' if not res_b3 else ' '.join(res_b3),inline=False)
+        embed.add_field(name=f'{BOSSES[3]}',value='まだ誰もいません' if not res_b4 else ' '.join(res_b4),inline=False)
+        embed.add_field(name=f'{BOSSES[4]}',value='まだ誰もいません' if not res_b5 else ' '.join(res_b5),inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(name=BOSSES[0])
@@ -103,7 +103,7 @@ class Reserve(commands.Cog):
         res_b5.append(ctx.author.display_name + ':' + note or '')
 
     @commands.command(aliases=['凸完了','完了','クリア'])
-    async def kantotu(self, ctx):  #予約を削除
+    async def clear(self, ctx):  #予約を削除
         """
         実行したユーザーの凸希望を削除します。
         /凸完了 /完了 /クリア でも反応します。

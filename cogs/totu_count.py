@@ -114,7 +114,7 @@ class TotuCount(commands.Cog):
         return n
 
     @commands.command()
-    async def clear(self, ctx):
+    async def reset(self, ctx):
         """
         凸カウントをリセットするコマンドです。
         """
@@ -124,7 +124,7 @@ class TotuCount(commands.Cog):
         else:
             await ctx.send('このチャンネルでの操作は許可されていません')
 
-    @commands.command()
+    @commands.command(aliases=['zanntotu','残凸','残り'])
     async def totu(self, ctx):
         """
         残凸数を返すコマンドです。
