@@ -116,7 +116,7 @@ class TotuCount(commands.Cog):
     @commands.command()
     async def clear(self, ctx):
         """
-        凸カウントをリセットするコマンド
+        凸カウントをリセットするコマンドです。
         """
         if ctx.channel.id in self.work_channel_id:
             self.totu = 0
@@ -129,7 +129,7 @@ class TotuCount(commands.Cog):
         """
         残凸数を返すコマンドです。
         """
-        await ctx.send(f'現在 {self.totu} 凸して残り凸数は {90-self.totu} です')
+        await ctx.send(f'現在 {self.totu} 凸消化して残り凸数は {90-self.totu} です')
 
     @commands.command()
     async def add(self, ctx, arg1):

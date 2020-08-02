@@ -78,7 +78,7 @@ class Help(commands.HelpCommand):
         for command in command_list:
             content += f'`{self.context.prefix}{command.name}` : {command.help}\n'
         content += '\n'
-        if command_list is None:
+        if command_list[0] is None:
             content = '__表示できるコマンドがありません。__'
         embed = discord.Embed(title=f'{cog.qualified_name}',description=content,color=0x00ff00)
         embed.set_footer(text=f'コマンドのヘルプ {self.context.prefix}help コマンド名')
