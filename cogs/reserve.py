@@ -53,19 +53,25 @@ class Reserve(commands.Cog):
     async def yoyaku(self, ctx):  # 予約内容の確認
         """
         各ボスを希望するメンバー一覧を返します。
-        左から早い者順になっています。
+        早い者順になっています。
         /予約 /凸予約 /予定 でも反応します。
         """
-        boss1 = '|'.join(res_b1)
-        boss2 = '|'.join(res_b2)
-        boss3 = '|'.join(res_b3)
-        boss4 = '|'.join(res_b4)
-        boss5 = '|'.join(res_b5)
-        await ctx.send(f'現在の予約状況\n{BOSSES[0]} | {boss1} |\n{BOSSES[1]} | {boss2} |\n'
-        f'{BOSSES[2]} | {boss3} |\n{BOSSES[3]} | {boss4} |\n{BOSSES[4]} | {boss5}|')
+        content = ''
+        embed = discord.Embed(title='現在の凸希望者', description=content, color=0x0000ff)
+        content += f'`{BOSSES[0]}`\n```'
+        content += '\n'.join(res_b1) + '```\n'
+        content += f'`{BOSSES[1]}`\n```'
+        content += '\n'.join(res_b2) + '```\n'
+        content += f'`{BOSSES[2]}`\n```'
+        content += '\n'.join(res_b3) + '```\n'
+        content += f'`{BOSSES[3]}`\n```'
+        content += '\n'.join(res_b4) + '```\n'
+        content += f'`{BOSSES[4]}`\n```'
+        content += '\n'.join(res_b5) + '```'
+        await ctx.send(embed=embed)
 
     @commands.command(name=BOSSES[0])
-    async def res1(self, ctx):
+    async def res1(self, ctx, note):
         if self.overlap_check(ctx.author.name):
             await ctx.send('予約はひとり1つまでです。')
             return

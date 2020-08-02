@@ -11,22 +11,14 @@ class Ngb(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    def is_guild_nightgarden():
+        def predicate(ctx):
+            return ctx.guild is not None and ctx.guild.id == 541130672656482315
+        return commands.check(predicate)
+
     # コマンドの作成。コマンドはcommandデコレータで必ず修飾する。
-    @commands.group()
-    async def role(self, ctx):
-        # サブコマンドが指定されていない場合、メッセージを送信する。
-        if ctx.invoked_subcommand is None:
-            await ctx.send('サブコマンド(add or remove,member,role)が必要です。')
-
-    @role.command()
-    async def add(self, ctx, member: discord.Member, role: discord.Role):
-        await member.add_roles(role)
-
-    @role.command()
-    async def remove(self, ctx, member: discord.Member, role: discord.Role):
-        await member.remove_roles(role)
-
     @commands.command()
+    @is_guild_nightgarden()
     async def bot(self, ctx):
         """
         実行したユーザーに、各クランに対応したロールを付与します。
@@ -67,6 +59,7 @@ class Ngb(commands.Cog):
             await msg.channel.send(reply)
 
     @commands.Cog.listener()
+    @is_guild_nightgarden()
     async def on_member_join(self, member):
         dm = member.dm_channel
         if dm is None:
