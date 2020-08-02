@@ -56,7 +56,7 @@ class Help(commands.HelpCommand):
         return f'{command.qualified_name} にサブコマンドは登録されていません。'
     # 引数なしのhelpコマンドの場合
     async def send_bot_help(self,mapping):
-        content = 'コグ、コマンド一覧\n'
+        content = '機能、コマンド一覧\n'
         for cog in mapping:  # 各コグのコマンド一覧を content に追加していく
             command_list = await self.filter_commands(mapping[cog])
             if not command_list:  # 表示できるコマンドがないので、他のコグの処理に移る
@@ -68,18 +68,18 @@ class Help(commands.HelpCommand):
             for command in command_list:
                 content += f'`{self.context.prefix}{command.name}` : {command.short_doc}\n'
         embed = discord.Embed(title=f'NGBヘルプ', description=content,color=0x00ff00)
-        embed.set_footer(text=f'詳しいヘルプ {self.context.prefix}help コグ名またはコマンド名')
+        embed.set_footer(text=f'詳しいヘルプ {self.context.prefix}help 機能名またはコマンド名')
         await self.get_destination().send(embed=embed)
     # cogが指定された場合
     async def send_cog_help(self,cog):
         content = ''
         command_list = await self.filter_commands(cog.get_commands())
-        content += f'```\n{cog.qualified_name} : {cog.description}```\nコマンドリスト\n'
+        content += f'```\n{cog.qualified_name} : {cog.description}```\n'
         for command in command_list:
             content += f'`{self.context.prefix}{command.name}` : {command.help}\n'
         content += '\n'
-        if not content:
-            content = '表示できるコマンドがありません。'
+        if command_list is None:
+            content = '__表示できるコマンドがありません。__'
         embed = discord.Embed(title=f'{cog.qualified_name}',description=content,color=0x00ff00)
         embed.set_footer(text=f'コマンドのヘルプ {self.context.prefix}help コマンド名')
         await self.get_destination().send(embed=embed)

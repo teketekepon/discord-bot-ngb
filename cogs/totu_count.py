@@ -127,15 +127,15 @@ class TotuCount(commands.Cog):
     @commands.command()
     async def totu(self, ctx):
         """
-        残凸数を返すコマンド
+        残凸数を返すコマンドです。
         """
         await ctx.send(f'現在 {self.totu} 凸して残り凸数は {90-self.totu} です')
 
     @commands.command()
     async def add(self, ctx, arg1):
         """
-        凸カウントを増やすコマンド
-        例えば /add 1 とすると1凸増やします
+        凸カウントを増やすコマンドです。
+        例えば /add 1 とすると1凸増やします。
         """
         try:
             n = int(arg1)
@@ -148,8 +148,8 @@ class TotuCount(commands.Cog):
     @commands.command()
     async def sub(self, ctx, arg1):
         """
-        凸カウントを減らすコマンド
-        例えば /sub 1 とすると1凸減らします
+        凸カウントを減らすコマンドです。
+        例えば /sub 1 とすると1凸減らします。
         """
         try:
             n = int(arg1)
@@ -162,7 +162,7 @@ class TotuCount(commands.Cog):
     @commands.command()
     async def define(self, ctx):
         """
-        機能を有効にするチャンネルとして登録するコマンド
+        機能を有効にするチャンネルとして登録するコマンドです。
         """
         if ctx.channel.id in self.work_channel_id:
             await ctx.send(f'{ctx.channel.name} はすでに作業チャンネルです')
@@ -173,7 +173,7 @@ class TotuCount(commands.Cog):
     @commands.command()
     async def remove(self, ctx):
         """
-        機能を無効にするチャンネルとして登録するコマンド
+        機能を無効にするチャンネルとして登録するコマンドです。
         """
         if ctx.channel.id in self.work_channel_id:
             self.work_channel_id.remove(ctx.channel.id)
