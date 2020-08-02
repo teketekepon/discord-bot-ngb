@@ -61,18 +61,18 @@ class Reserve(commands.Cog):
         """
         embed = discord.Embed(title='**現在の凸希望者**',color=0x0000ff)
         embed.add_field(name=f'{BOSSES[0]}',
-        value='まだ誰もいません' if not res_b1 else ' '.join(res_b1),inline=False)
+        value='まだ誰もいません' if not res_b1 else ' | '.join(res_b1),inline=False)
         embed.add_field(name=f'{BOSSES[1]}',
-        value='まだ誰もいません' if not res_b2 else ' '.join(res_b2),inline=False)
+        value='まだ誰もいません' if not res_b2 else ' | '.join(res_b2),inline=False)
         embed.add_field(name=f'{BOSSES[2]}',
-        value='まだ誰もいません' if not res_b3 else ' '.join(res_b3),inline=False)
+        value='まだ誰もいません' if not res_b3 else ' | '.join(res_b3),inline=False)
         embed.add_field(name=f'{BOSSES[3]}',
-        value='まだ誰もいません' if not res_b4 else ' '.join(res_b4),inline=False)
+        value='まだ誰もいません' if not res_b4 else ' | '.join(res_b4),inline=False)
         embed.add_field(name=f'{BOSSES[4]}',
-        value='まだ誰もいません' if not res_b5 else ' '.join(res_b5),inline=False)
+        value='まだ誰もいません' if not res_b5 else ' | '.join(res_b5),inline=False)
         await ctx.send(embed=embed)
 
-    @commands.command(name=BOSSES[0])
+    @commands.command(name=BOSSES[0],aliases=[BOSSES[0],'b1','boss1'])
     async def res1(self, ctx, note=''):
         if self.overlap_check(ctx.author.display_name):
             await ctx.send('予約はひとり1つまでです。')
@@ -80,7 +80,7 @@ class Reserve(commands.Cog):
         res_b1.append(ctx.author.display_name
         if not note else ctx.author.display_name + f': {note}')
 
-    @commands.command(name=BOSSES[1])
+    @commands.command(name=BOSSES[1],aliases=[BOSSES[1],'b2','boss2'])
     async def res2(self, ctx, note=''):
         if self.overlap_check(ctx.author.display_name):
             await ctx.send('予約はひとり1つまでです。')
@@ -88,7 +88,7 @@ class Reserve(commands.Cog):
         res_b2.append(ctx.author.display_name
         if not note else ctx.author.display_name + f': {note}')
 
-    @commands.command(name=BOSSES[2])
+    @commands.command(name=BOSSES[2],aliases=[BOSSES[2],'b3','boss3'])
     async def res3(self, ctx, note=''):
         if self.overlap_check(ctx.author.display_name):
             await ctx.send('予約はひとり1つまでです。')
@@ -96,7 +96,7 @@ class Reserve(commands.Cog):
         res_b3.append(ctx.author.display_name
         if not note else ctx.author.display_name + f': {note}')
 
-    @commands.command(name=BOSSES[3])
+    @commands.command(name=BOSSES[3],aliases=[BOSSES[3],'b4','boss4'])
     async def res4(self, ctx, note=''):
         if self.overlap_check(ctx.author.display_name):
             await ctx.send('予約はひとり1つまでです。')
@@ -104,7 +104,7 @@ class Reserve(commands.Cog):
         res_b4.append(ctx.author.display_name
         if not note else ctx.author.display_name + f': {note}')
 
-    @commands.command(name=BOSSES[4])
+    @commands.command(name=BOSSES[4],aliases=[BOSSES[4],'b5','boss5'])
     async def res5(self, ctx, note=''):
         if self.overlap_check(ctx.author.display_name):
             await ctx.send('予約はひとり1つまでです。')
