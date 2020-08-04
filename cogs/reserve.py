@@ -23,7 +23,8 @@ class Reserve(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         if os.path.isfile(TEMP_PATH + 'res.pkl'):
-            self.res = pickle.load(open(TEMP_PATH + 'res.pkl','rb'))
+            with open(TEMP_PATH + 'res.pkl','rb') as f:
+                self.res = pickle.load(f)
             a, b, c, d, e = zip(*self.res)
             if (ax := sum(not None for i in a)) != 0:
                 for i, x in enumerate(range(ax)):
@@ -44,7 +45,8 @@ class Reserve(commands.Cog):
     def cog_unload(self):
         print('Reserveコグを閉じます')
         self.res = zip_longest(res_b1, res_b2, res_b3, res_b4, res_b5)
-        pickle.dump(self.res, open(TEMP_PATH + 'res.pkl','wb'))
+        with open(TEMP_PATH + 'res.pkl','wb') as f:
+            pickle.dump(self.res, f)
 
     def overlap_check(self, user):  # 重複防止
         list = res_b1+res_b2+res_b3+res_b4+res_b5

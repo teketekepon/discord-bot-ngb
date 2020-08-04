@@ -38,13 +38,17 @@ class TotuCount(commands.Cog):
             self.totu = 0
             self.work_channel_id = []  # 機能を有効にするチャンネルのID
         else:
-            self.totu = pickle.load(open(TEMP_PATH + 'totu.pkl','rb'))
-            self.work_channel_id = pickle.load(open(TEMP_PATH + 'work_channel_id.pkl','rb'))
+            with open(TEMP_PATH + 'totu.pkl','rb') as f:
+                self.totu = pickle.load(f)
+            with open(TEMP_PATH + 'work_channel_id.pkl','rb') as f:
+                self.work_channel_id = pickle.load(f)
 
     def cog_unload(self):
         print('TotuCountコグを閉じます')
-        pickle.dump(self.totu, open(TEMP_PATH + 'totu.pkl','wb'))
-        pickle.dump(self.work_channel_id, open(TEMP_PATH + 'work_channel_id.pkl','wb'))
+        with open(TEMP_PATH + 'totu.pkl','wb') as f:
+            pickle.dump(self.totu, f)
+        with open(TEMP_PATH + 'work_channel_id.pkl','wb') as f:
+            pickle.dump(self.work_channel_id, f)
 
     async def download_img(self, url, file_name):
         async with aiohttp.ClientSession() as session:
