@@ -1,4 +1,5 @@
 /downloads/*
 /log/*
+/tmp/*
 /cogs/__pycache__
 !.gitkeep
