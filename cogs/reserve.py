@@ -42,6 +42,7 @@ class Reserve(commands.Cog):
                     res_b5.append(e[x])
 
     def cog_unload(self):
+        print('Reserveコグを閉じます')
         self.res = zip_longest(res_b1, res_b2, res_b3, res_b4, res_b5)
         pickle.dump(self.res, open(TEMP_PATH + 'res.pkl','wb'))
 

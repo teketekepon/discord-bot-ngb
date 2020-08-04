@@ -42,6 +42,7 @@ class TotuCount(commands.Cog):
             self.work_channel_id = pickle.load(open(TEMP_PATH + 'work_channel_id.pkl','rb'))
 
     def cog_unload(self):
+        print('TotuCountコグを閉じます')
         pickle.dump(self.totu, open(TEMP_PATH + 'totu.pkl','wb'))
         pickle.dump(self.work_channel_id, open(TEMP_PATH + 'work_channel_id.pkl','wb'))
 
