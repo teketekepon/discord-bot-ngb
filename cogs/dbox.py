@@ -33,7 +33,7 @@ class TransferData():
         target = file_from.replace('/', '')
         if files is None:
             return False
-        if target in files:
-            with open(file_to, 'wb') as f:
-                metadata, res = self.dbx.files_download(path=file_from)
-                f.write(res.content)
+        with open(file_to, 'wb') as f:
+            metadata, res = self.dbx.files_download(path=file_from)
+            f.write(res.content)
+        return True
