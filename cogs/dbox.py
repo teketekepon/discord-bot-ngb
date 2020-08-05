@@ -30,6 +30,6 @@ class TransferData():
         for entry in i.entries:
             ins = type(entry)
             if ins is dropbox.files.FileMetadata:
-                res.append[]
+                res.append(entry)
                 #ファイル以外はスキップ
         return res
