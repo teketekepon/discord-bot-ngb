@@ -11,7 +11,7 @@ from PIL import Image
 from discord.ext import commands
 
 TEMP_PATH = r'./tmp/'
-IMAGE_PATH = r'./downloads/image0.png'
+IMAGE_PATH = r'./tmp/image0.png'
 
 RESOLUTIONS = [(1280, 720),  # 1
                         (1334, 750),   # 2
@@ -34,6 +34,8 @@ class TotuCount(commands.Cog):
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
+        TransferData().download_file('totu.pkl', TEMP_PATH + 'totu.pkl')
+        TransferData().download_file('work_channel_id.pkl', TEMP_PATH + 'work_channel_id.pkl')
         if not os.path.isfile(TEMP_PATH + 'totu.pkl'):
             self.totu = 0
             self.work_channel_id = []  # 機能を有効にするチャンネルのID
@@ -45,11 +47,12 @@ class TotuCount(commands.Cog):
             print(self.totu)
 
     def cog_unload(self):
-        print('TotuCountコグを閉じます')
         with open(TEMP_PATH + 'totu.pkl','wb') as f:
             pickle.dump(self.totu, f)
         with open(TEMP_PATH + 'work_channel_id.pkl','wb') as f:
             pickle.dump(self.work_channel_id, f)
+        TransferData().upload_file(TEMP_PATH + 'totu.pkl', 'totu.pkl')
+        TransferData().upload_file(TEMP_PATH + 'work_channel_id.pkl', 'work_channel_id.pkl')
 
     async def download_img(self, url, file_name):
         async with aiohttp.ClientSession() as session:

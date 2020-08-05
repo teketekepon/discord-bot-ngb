@@ -1,5 +1,6 @@
-/downloads/*
 /log/*
 /tmp/*
+/venv/*
 /cogs/__pycache__
+TODO.txt
 !.gitkeep
