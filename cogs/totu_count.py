@@ -122,7 +122,7 @@ class TotuCount(commands.Cog):
                 n += 1
         return n
     # 作業チャンネルかを判定するcheck関数
-    def is_channel():
+    def is_channel(self):
         def predicate(ctx):
             return ctx.channel.id in self.work_channel_id
         return commands.check(predicate)
