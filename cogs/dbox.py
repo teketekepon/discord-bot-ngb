@@ -1,12 +1,11 @@
 import os
 import dropbox
-TOKEN = os.environ["DROPBOX_TOKEN"]
 class TransferData():
     '''
     Dropboxからファイルをダウンロード、アップロードする。
     '''
-    def __init__(self, TOKEN):
-        self.access_token = TOKEN
+    def __init__(self):
+        self.access_token = os.environ["DROPBOX_TOKEN"]
 
     def upload_file(self, file_from, file_to):
         '''
