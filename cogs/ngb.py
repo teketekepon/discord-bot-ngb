@@ -12,7 +12,7 @@ class Ngb(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def is_guild_nightgarden(self):
+    def is_guild_nightgarden():
         def predicate(ctx):
             return ctx.guild.id == 541130672656482315
         return commands.check(predicate)

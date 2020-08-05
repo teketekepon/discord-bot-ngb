@@ -128,7 +128,7 @@ class TotuCount(commands.Cog):
         return commands.check(predicate)
 
     @commands.command()
-    @is_channel()
+    @is_channel(self)
     async def reset(self, ctx):
         """
         凸カウントをリセットするコマンドです。
@@ -138,7 +138,7 @@ class TotuCount(commands.Cog):
             await ctx.send('凸カウントをリセットしました')
 
     @commands.command(aliases=['zanntotu','残凸','残り'])
-    @is_channel()
+    @is_channel(self)
     async def totu(self, ctx):
         """
         残凸数を返すコマンドです。
@@ -146,7 +146,7 @@ class TotuCount(commands.Cog):
         await ctx.send(f'現在 {self.totu} 凸消化して残り凸数は {90-self.totu} です')
 
     @commands.command()
-    @is_channel()
+    @is_channel(self)
     async def add(self, ctx, arg1):
         """
         凸カウントを増やすコマンドです。
@@ -161,7 +161,7 @@ class TotuCount(commands.Cog):
         await ctx.send(f'凸数を{n}足して{self.totu}になりました')
 
     @commands.command()
-    @is_channel()
+    @is_channel(self)
     async def sub(self, ctx, arg1):
         """
         凸カウントを減らすコマンドです。
@@ -198,7 +198,7 @@ class TotuCount(commands.Cog):
             await ctx.send(f'{ctx.channel.name} は作業チャンネルではありません')
 
     @commands.Cog.listener()
-    @is_channel()
+    @is_channel(self)
     async def on_message(self, message):
         if message.author.bot:
             return
