@@ -2,7 +2,7 @@
 import os
 import pickle
 import discord
-from dbox import TransferData
+from .dbox import TransferData
 from discord.ext import commands
 from itertools import zip_longest
 

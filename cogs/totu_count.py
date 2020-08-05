@@ -8,7 +8,7 @@ import aiohttp
 import aiofiles
 import discord
 from PIL import Image
-from dbox import TransferData
+from .dbox import TransferData
 from discord.ext import commands
 
 TEMP_PATH = r'./tmp/'
