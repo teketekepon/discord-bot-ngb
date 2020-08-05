@@ -35,8 +35,8 @@ class TotuCount(commands.Cog):
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
-        TransferData().download_file('totu.pkl', TEMP_PATH + '/totu.pkl')
-        TransferData().download_file('work_channel_id.pkl', TEMP_PATH + '/work_channel_id.pkl')
+        TransferData().download_file('/totu.pkl', TEMP_PATH + 'totu.pkl')
+        TransferData().download_file('/work_channel_id.pkl', TEMP_PATH + 'work_channel_id.pkl')
         if not os.path.isfile(TEMP_PATH + 'totu.pkl'):
             self.totu = 0
             self.work_channel_id = []  # 機能を有効にするチャンネルのID

@@ -23,7 +23,7 @@ class Reserve(commands.Cog):
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
-        TransferData().download_file('res.pkl',TEMP_PATH + '/res.pkl')
+        TransferData().download_file('/res.pkl',TEMP_PATH + 'res.pkl')
         if os.path.isfile(TEMP_PATH + 'res.pkl'):
             with open(TEMP_PATH + 'res.pkl','rb') as f:
                 self.res = pickle.load(f)
