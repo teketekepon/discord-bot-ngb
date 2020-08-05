@@ -25,6 +25,11 @@ RESOLUTIONS = [(1280, 720),  # 1
                         (1792, 828),   # 9 19.5:9 iPhoneXR,11
                         (2436, 1125),  # 10 19.5:9 iPhoneX,XS,11Pro
                         (2688, 1242)]  # 11 19.5:9 iPhoneXS,11Pro max
+# 作業チャンネルかを判定するcheck関数
+def is_channel():
+    def predicate(ctx):
+        return ctx.channel.id in self.work_channel_id
+    return commands.check(predicate)
 
 class TotuCount(commands.Cog):
     """
@@ -121,14 +126,8 @@ class TotuCount(commands.Cog):
                 self.totu += 1
                 n += 1
         return n
-    # 作業チャンネルかを判定するcheck関数
-    def is_channel(self):
-        def predicate(ctx):
-            return ctx.channel.id in self.work_channel_id
-        return commands.check(predicate)
 
     @commands.command()
-    @is_channel(self)
     async def reset(self, ctx):
         """
         凸カウントをリセットするコマンドです。
@@ -138,7 +137,6 @@ class TotuCount(commands.Cog):
             await ctx.send('凸カウントをリセットしました')
 
     @commands.command(aliases=['zanntotu','残凸','残り'])
-    @is_channel(self)
     async def totu(self, ctx):
         """
         残凸数を返すコマンドです。
@@ -146,34 +144,34 @@ class TotuCount(commands.Cog):
         await ctx.send(f'現在 {self.totu} 凸消化して残り凸数は {90-self.totu} です')
 
     @commands.command()
-    @is_channel(self)
     async def add(self, ctx, arg1):
         """
         凸カウントを増やすコマンドです。
         例えば /add 1 とすると1凸増やします。
         """
-        try:
-            n = int(arg1)
-        except ValueError:
-            await ctx.send('引数が無効です')
-            return
-        self.totu += n
-        await ctx.send(f'凸数を{n}足して{self.totu}になりました')
+        if ctx.channel.id in self.work_channel_id:
+            try:
+                n = int(arg1)
+            except ValueError:
+                await ctx.send('引数が無効です')
+                return
+            self.totu += n
+            await ctx.send(f'凸数を{n}足して{self.totu}になりました')
 
     @commands.command()
-    @is_channel(self)
     async def sub(self, ctx, arg1):
         """
         凸カウントを減らすコマンドです。
         例えば /sub 1 とすると1凸減らします。
         """
-        try:
-            n = int(arg1)
-        except ValueError:
-            await ctx.send('引数が無効です')
-            return
-        self.totu -= n
-        await ctx.send(f'凸数を{n}引いて{self.totu}になりました')
+        if ctx.channel.id in self.work_channel_id:
+            try:
+                n = int(arg1)
+            except ValueError:
+                await ctx.send('引数が無効です')
+                return
+            self.totu -= n
+            await ctx.send(f'凸数を{n}引いて{self.totu}になりました')
 
     @commands.command()
     async def define(self, ctx):
@@ -198,23 +196,22 @@ class TotuCount(commands.Cog):
             await ctx.send(f'{ctx.channel.name} は作業チャンネルではありません')
 
     @commands.Cog.listener()
-    @is_channel(self)
     async def on_message(self, message):
         if message.author.bot:
             return
-
-        if len(message.attachments) > 0:
-            # messageに添付画像があり、指定のチャンネルの場合動作する
-            await self.download_img(message.attachments[0].url, IMAGE_PATH)
-            if self.image_binarize(IMAGE_PATH):
-                ocr_result = self.use_ocr(TEMP_PATH + 'temp.png')
-                if ocr_result is not None:
-                    print(ocr_result,
-                    end='\n--------------------OCR Result-------------------\n')
-                    self.count(ocr_result)
-                else:
-                    await message.channel.send('画像読み込みに失敗しました')
-            # await message.channel.send(f'現在 {self.totu} 凸消化して残り凸数は {90-self.totu} です')
+        if message.channel.id in self.work_channel_id:
+            if len(message.attachments) > 0:
+                # messageに添付画像があり、指定のチャンネルの場合動作する
+                await self.download_img(message.attachments[0].url, IMAGE_PATH)
+                if self.image_binarize(IMAGE_PATH):
+                    ocr_result = self.use_ocr(TEMP_PATH + 'temp.png')
+                    if ocr_result is not None:
+                        print(ocr_result,
+                        end='\n--------------------OCR Result-------------------\n')
+                        self.count(ocr_result)
+                    else:
+                        await message.channel.send('画像読み込みに失敗しました')
+                # await message.channel.send(f'現在 {self.totu} 凸消化して残り凸数は {90-self.totu} です')
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(TotuCount(bot)) # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。
