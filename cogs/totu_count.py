@@ -45,7 +45,6 @@ class TotuCount(commands.Cog):
                 self.totu = pickle.load(f)
             with open(TEMP_PATH + 'work_channel_id.pkl','rb') as f:
                 self.work_channel_id = pickle.load(f)
-            print(self.totu)
 
     def cog_unload(self):
         with open(TEMP_PATH + 'totu.pkl','wb') as f:
@@ -109,7 +108,6 @@ class TotuCount(commands.Cog):
         text = ''
         for d in res:
             text = text + d.content
-        print(text, end='\n--------------------OCR Result-------------------\n')
         return text
 
     def count(self, text):
@@ -123,8 +121,14 @@ class TotuCount(commands.Cog):
                 self.totu += 1
                 n += 1
         return n
+    # 作業チャンネルかを判定するcheck関数
+    def is_channel():
+        def predicate(ctx):
+            return ctx.channel.id in self.work_channel_id
+        return commands.check(predicate)
 
     @commands.command()
+    @is_channel()
     async def reset(self, ctx):
         """
         凸カウントをリセットするコマンドです。
@@ -132,10 +136,9 @@ class TotuCount(commands.Cog):
         if ctx.channel.id in self.work_channel_id:
             self.totu = 0
             await ctx.send('凸カウントをリセットしました')
-        else:
-            await ctx.send('このチャンネルでの操作は許可されていません')
 
     @commands.command(aliases=['zanntotu','残凸','残り'])
+    @is_channel()
     async def totu(self, ctx):
         """
         残凸数を返すコマンドです。
@@ -143,6 +146,7 @@ class TotuCount(commands.Cog):
         await ctx.send(f'現在 {self.totu} 凸消化して残り凸数は {90-self.totu} です')
 
     @commands.command()
+    @is_channel()
     async def add(self, ctx, arg1):
         """
         凸カウントを増やすコマンドです。
@@ -157,6 +161,7 @@ class TotuCount(commands.Cog):
         await ctx.send(f'凸数を{n}足して{self.totu}になりました')
 
     @commands.command()
+    @is_channel()
     async def sub(self, ctx, arg1):
         """
         凸カウントを減らすコマンドです。
@@ -193,21 +198,23 @@ class TotuCount(commands.Cog):
             await ctx.send(f'{ctx.channel.name} は作業チャンネルではありません')
 
     @commands.Cog.listener()
+    @is_channel()
     async def on_message(self, message):
         if message.author.bot:
             return
 
-        if message.channel.id in self.work_channel_id:
-            if len(message.attachments) > 0:
-                # messageに添付画像があり、指定のチャンネルの場合動作する
-                await self.download_img(message.attachments[0].url, IMAGE_PATH)
-                if self.image_binarize(IMAGE_PATH):
-                    ocr_result = self.use_ocr(TEMP_PATH + 'temp.png')
-                    if ocr_result is not None:
-                        x = self.count(ocr_result)
-                        await message.channel.send(f'{x}凸カウント')
-                    else:
-                        await message.channel.send('画像読み込みに失敗しました')
+        if len(message.attachments) > 0:
+            # messageに添付画像があり、指定のチャンネルの場合動作する
+            await self.download_img(message.attachments[0].url, IMAGE_PATH)
+            if self.image_binarize(IMAGE_PATH):
+                ocr_result = self.use_ocr(TEMP_PATH + 'temp.png')
+                if ocr_result is not None:
+                    print(ocr_result,
+                    end='\n--------------------OCR Result-------------------\n')
+                    self.count(ocr_result)
+                else:
+                    await message.channel.send('画像読み込みに失敗しました')
+            # await message.channel.send(f'現在 {self.totu} 凸消化して残り凸数は {90-self.totu} です')
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(TotuCount(bot)) # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。
