@@ -23,7 +23,7 @@ class Reserve(commands.Cog):
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
-        TransferData().download_file('res.pkl',TEMP_PATH + 'res.pkl')
+        TransferData().download_file('res.pkl',TEMP_PATH + '/res.pkl')
         if os.path.isfile(TEMP_PATH + 'res.pkl'):
             with open(TEMP_PATH + 'res.pkl','rb') as f:
                 self.res = pickle.load(f)
@@ -48,7 +48,7 @@ class Reserve(commands.Cog):
         self.res = zip_longest(res_b1, res_b2, res_b3, res_b4, res_b5)
         with open(TEMP_PATH + 'res.pkl','wb') as f:
             pickle.dump(self.res, f)
-        TransferData().upload_file(TEMP_PATH + 'res.pkl','res.pkl')
+        TransferData().upload_file(TEMP_PATH + 'res.pkl','/res.pkl')
 
     def overlap_check(self, user):  # 重複防止
         list = res_b1+res_b2+res_b3+res_b4+res_b5
