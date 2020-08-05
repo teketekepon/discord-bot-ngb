@@ -35,8 +35,8 @@ class TotuCount(commands.Cog):
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
-        TransferData().download_file('/totu.pkl', TEMP_PATH + 'totu.pkl')
-        TransferData().download_file('/work_channel_id.pkl', TEMP_PATH + 'work_channel_id.pkl')
+        TransferData().download_file(r'/totu.pkl', TEMP_PATH + 'totu.pkl')
+        TransferData().download_file(r'/work_channel_id.pkl', TEMP_PATH + 'work_channel_id.pkl')
         if not os.path.isfile(TEMP_PATH + 'totu.pkl'):
             self.totu = 0
             self.work_channel_id = []  # 機能を有効にするチャンネルのID
@@ -52,8 +52,8 @@ class TotuCount(commands.Cog):
             pickle.dump(self.totu, f)
         with open(TEMP_PATH + 'work_channel_id.pkl','wb') as f:
             pickle.dump(self.work_channel_id, f)
-        TransferData().upload_file(TEMP_PATH + 'totu.pkl', '/totu.pkl')
-        TransferData().upload_file(TEMP_PATH + 'work_channel_id.pkl', '/work_channel_id.pkl')
+        TransferData().upload_file(TEMP_PATH + 'totu.pkl', r'/totu.pkl')
+        TransferData().upload_file(TEMP_PATH + 'work_channel_id.pkl', r'/work_channel_id.pkl')
 
     async def download_img(self, url, file_name):
         async with aiohttp.ClientSession() as session:

@@ -29,7 +29,11 @@ class TransferData():
         '''
         download_file(Dropbox上のファイル,保存先)
         '''
-        if file_from in self.get_files():
+        files = self.get_files()
+        target = files_from.replace('/', '')
+        if files is None:
+            return False
+        if target in files:
             with open(file_to, 'wb') as f:
                 metadata, res = self.dbx.files_download(path=file_from)
                 f.write(res.content)
