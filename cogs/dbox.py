@@ -30,7 +30,7 @@ class TransferData():
         download_file(Dropbox上のファイル,保存先)
         '''
         files = self.get_files()
-        target = files_from.replace('/', '')
+        target = file_from.replace('/', '')
         if files is None:
             return False
         if target in files:
