@@ -123,7 +123,6 @@ class TotuCount(commands.Cog):
             del data[0]  # 1枚4件までのため
         for i in data:
             if not 'で' in i:
-                self.totu += 1
                 n += 1
         return n
 
@@ -208,7 +207,7 @@ class TotuCount(commands.Cog):
                     if ocr_result is not None:
                         print(ocr_result,
                         end='\n--------------------OCR Result-------------------\n')
-                        self.count(ocr_result)
+                        self.totu += self.count(ocr_result)
                     else:
                         await message.channel.send('画像読み込みに失敗しました')
                 # await message.channel.send(f'現在 {self.totu} 凸消化して残り凸数は {90-self.totu} です')
