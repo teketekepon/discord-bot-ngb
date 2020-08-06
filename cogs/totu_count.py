@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
 import re
 import pickle
 import pyocr
@@ -40,16 +39,16 @@ class TotuCount(commands.Cog):
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
-        TransferData().download_file(r'/totu.pkl', TEMP_PATH + 'totu.pkl')
-        TransferData().download_file(r'/work_channel_id.pkl', TEMP_PATH + 'work_channel_id.pkl')
-        if not os.path.isfile(TEMP_PATH + 'totu.pkl'):
-            self.totu = 0
-            self.work_channel_id = []  # 機能を有効にするチャンネルのID
-        else:
+        if TransferData().download_file(r'/totu.pkl', TEMP_PATH + 'totu.pkl'):
             with open(TEMP_PATH + 'totu.pkl','rb') as f:
                 self.totu = pickle.load(f)
+        else:
+            self.totu = 0
+        if TransferData().download_file(r'/work_channel_id.pkl', TEMP_PATH + 'work_channel_id.pkl'):
             with open(TEMP_PATH + 'work_channel_id.pkl','rb') as f:
                 self.work_channel_id = pickle.load(f)
+        else:
+            self.work_channel_id = []  # 機能を有効にするチャンネルのID
 
     def cog_unload(self):
         with open(TEMP_PATH + 'totu.pkl','wb') as f:
@@ -67,9 +66,8 @@ class TotuCount(commands.Cog):
                     await f.write(await resp.read())
                     await f.close()
 
-    # スクショからバトルログを抽出し2値化する関数
-    def image_binarize(self, image):
-        # RESOLUTIONSにある解像度なら読み取れる
+    def image_ocr(self, image):
+        # バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
             if im.height - 10 < i[1] < im.height + 10 and im.width - 10 < i[0] < im.width + 10:
@@ -89,30 +87,18 @@ class TotuCount(commands.Cog):
                 break
         else:
             print('非対応の解像度です')
-            return False
+            return None
         # Pillowで2値化
         im_gray = im_crop.convert('L')
         im_bin = im_gray.point(lambda x: 255 if x > 193 else 0, mode='L')
-        im_bin.save(TEMP_PATH + 'temp.png')
-        return True
-
-    def use_ocr(self, image):
-        # ローカル環境の場合tesseractのpathを通す heroku環境の場合buildpackを使用するため不要
-        # if path_tesseract not in os.environ["PATH"].split(os.pathsep):
-        #     os.environ["PATH"] += os.pathsep + r'./vendor/tesseract-ocr'
-        #     os.environ["TESSDATA_PREFIX"] = r'./vendor/tesseract-ocr/share/tessdata'
+        # 日本語と英数字をOCR
         tools = pyocr.get_available_tools()
         if len(tools) == 0:
-            print('No OCR tool found')
-            return
+            print('OCRtoolが読み込めません')
+            return None
         tool = tools[0]
-        # 日本語と英数字をOCR
-        res = tool.image_to_string(Image.open(image),
-                                   lang='jpn',  # 'jpn+eng'
-                                   builder=pyocr.builders.WordBoxBuilder(tesseract_layout=6))
-        text = ''
-        for d in res:
-            text = text + d.content
+        text = tool.image_to_string(im_bin, lang='jpn',
+        builder=pyocr.builders.WordBoxBuilder(tesseract_layout=6))
         return text
 
     def count(self, text):
@@ -202,14 +188,12 @@ class TotuCount(commands.Cog):
             if len(message.attachments) > 0:
                 # messageに添付画像があり、指定のチャンネルの場合動作する
                 await self.download_img(message.attachments[0].url, IMAGE_PATH)
-                if self.image_binarize(IMAGE_PATH):
-                    ocr_result = self.use_ocr(TEMP_PATH + 'temp.png')
-                    if ocr_result is not None:
-                        print(ocr_result,
-                        end='\n--------------------OCR Result-------------------\n')
-                        self.totu += self.count(ocr_result)
-                    else:
-                        await message.channel.send('画像読み込みに失敗しました')
+                if (res := self.image_ocr(IMAGE_PATH)) is not None:
+                    print(res,
+                    end='\n--------------------OCR Result-------------------\n')
+                    self.totu += self.count(res)
+                else:
+                    print('画像読み込みに失敗しました')
                 # await message.channel.send(f'現在 {self.totu} 凸消化して残り凸数は {90-self.totu} です')
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
