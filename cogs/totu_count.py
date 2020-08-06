@@ -96,8 +96,11 @@ class TotuCount(commands.Cog):
             print('OCRtoolが読み込めません')
             return None
         tool = tools[0]
-        text = tool.image_to_string(im_bin, lang='jpn',
+        res = tool.image_to_string(im_bin, lang='jpn',
         builder=pyocr.builders.WordBoxBuilder(tesseract_layout=6))
+        text = ''
+        for d in res:
+            text = text + d.content
         return text
 
     def count(self, text):
