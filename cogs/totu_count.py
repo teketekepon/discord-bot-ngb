@@ -12,23 +12,17 @@ from discord.ext import commands
 
 TEMP_PATH = r'./tmp/'
 IMAGE_PATH = r'./tmp/image0.png'
-
 RESOLUTIONS = [(1280, 720),  # 1
-                        (1334, 750),   # 2
-                        (1920, 1080),  # 3 ここまで16:9
-                        (2048, 1536),  # 4 4:3
-                        (2224, 1668),  # 5 4:3 iPad
-                        (2732, 2048),  # 6 4:3
-                        (2880, 1440),  # 7 2_1 android
-                        (3040, 1440),  # 8 2_1 Galaxy系(左160黒い)
-                        (1792, 828),   # 9 19.5:9 iPhoneXR,11
-                        (2436, 1125),  # 10 19.5:9 iPhoneX,XS,11Pro
-                        (2688, 1242)]  # 11 19.5:9 iPhoneXS,11Pro max
-# 作業チャンネルかを判定するcheck関数
-def is_channel():
-    def predicate(ctx):
-        return ctx.channel.id in self.work_channel_id
-    return commands.check(predicate)
+                (1334, 750),   # 2
+                (1920, 1080),  # 3 ここまで16:9
+                (2048, 1536),  # 4 4:3
+                (2224, 1668),  # 5 4:3 iPad
+                (2732, 2048),  # 6 4:3
+                (2880, 1440),  # 7 2_1 android
+                (3040, 1440),  # 8 2_1 Galaxy系(左160黒い)
+                (1792, 828),   # 9 19.5:9 iPhoneXR,11
+                (2436, 1125),  # 10 19.5:9 iPhoneX,XS,11Pro
+                (2688, 1242)]  # 11 19.5:9 iPhoneXS,11Pro max
 
 class TotuCount(commands.Cog):
     """
@@ -38,24 +32,17 @@ class TotuCount(commands.Cog):
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
+        # key = channel.id value = count
+        self.totu = {}
         if TransferData().download_file(r'/totu.pkl', TEMP_PATH + 'totu.pkl'):
             with open(TEMP_PATH + 'totu.pkl','rb') as f:
                 self.totu = pickle.load(f)
-        else:
-            self.totu = 0
-        if TransferData().download_file(r'/work_channel_id.pkl', TEMP_PATH + 'work_channel_id.pkl'):
-            with open(TEMP_PATH + 'work_channel_id.pkl','rb') as f:
-                self.work_channel_id = pickle.load(f)
-        else:
-            self.work_channel_id = []  # 機能を有効にするチャンネルのID
 
     def cog_unload(self):
+
         with open(TEMP_PATH + 'totu.pkl','wb') as f:
             pickle.dump(self.totu, f)
-        with open(TEMP_PATH + 'work_channel_id.pkl','wb') as f:
-            pickle.dump(self.work_channel_id, f)
         TransferData().upload_file(TEMP_PATH + 'totu.pkl', r'/totu.pkl')
-        TransferData().upload_file(TEMP_PATH + 'work_channel_id.pkl', r'/work_channel_id.pkl')
 
     async def download_img(self, url, file_name):
         async with aiohttp.ClientSession() as session:
@@ -105,7 +92,8 @@ class TotuCount(commands.Cog):
 
     def count(self, text):
         n = 0
-        data = re.findall(r'ダメージで|ダメージ', text)  # OCRtextから凸判定材料のみ抽出
+        data = re.findall(r'ダメージで|ダメージ', text)
+        # OCRtextから凸判定材料のみ抽出
         # 'で'で始まるユーザーがいる場合そのひとつ前の凸がカウントされない場合がある
         if len(data) >= 5:
             del data[0]  # 1枚4件までのため
@@ -119,8 +107,8 @@ class TotuCount(commands.Cog):
         """
         凸カウントをリセットするコマンドです。
         """
-        if ctx.channel.id in self.work_channel_id:
-            self.totu = 0
+        if ctx.channel.id in self.totu.values():
+            self.totu[ctx.channel.id] = 0
             await ctx.send('凸カウントをリセットしました')
 
     @commands.command(aliases=['zanntotu','残凸','残り'])
@@ -128,7 +116,9 @@ class TotuCount(commands.Cog):
         """
         残凸数を返すコマンドです。
         """
-        await ctx.send(f'現在 {self.totu} 凸消化して残り凸数は {90-self.totu} です')
+        if ctx.channel.id in self.totu.values():
+            await ctx.send(f'現在 {self.totu[ctx.channel.id]} 凸消化して残り凸数は'
+                f' {90-self.totu[ctx.channel.id]} です')
 
     @commands.command()
     async def add(self, ctx, arg1):
@@ -136,14 +126,14 @@ class TotuCount(commands.Cog):
         凸カウントを増やすコマンドです。
         例えば /add 1 とすると1凸増やします。
         """
-        if ctx.channel.id in self.work_channel_id:
+        if ctx.channel.id in self.totu.values():
             try:
                 n = int(arg1)
             except ValueError:
                 await ctx.send('引数が無効です')
                 return
-            self.totu += n
-            await ctx.send(f'凸数を{n}足して{self.totu}になりました')
+            self.totu[ctx.channel.id] = self.totu[ctx.channel.id] + n
+            await ctx.send(f'凸数を{n}足して{self.totu[ctx.channel.id]}になりました')
 
     @commands.command()
     async def sub(self, ctx, arg1):
@@ -151,24 +141,24 @@ class TotuCount(commands.Cog):
         凸カウントを減らすコマンドです。
         例えば /sub 1 とすると1凸減らします。
         """
-        if ctx.channel.id in self.work_channel_id:
+        if ctx.channel.id in self.totu.values():
             try:
                 n = int(arg1)
             except ValueError:
                 await ctx.send('引数が無効です')
                 return
-            self.totu -= n
-            await ctx.send(f'凸数を{n}引いて{self.totu}になりました')
+            self.totu[ctx.channel.id] = self.totu[ctx.channel.id] - n
+            await ctx.send(f'凸数を{n}引いて{self.totu[ctx.channel.id]}になりました')
 
     @commands.command()
     async def define(self, ctx):
         """
         機能を有効にするチャンネルとして登録するコマンドです。
         """
-        if ctx.channel.id in self.work_channel_id:
+        if ctx.channel.id in self.totu.values():
             await ctx.send(f'{ctx.channel.name} はすでに作業チャンネルです')
         else:
-            self.work_channel_id.append(ctx.channel.id)
+            self.totu.update(ctx.channel.id=0)
             await ctx.send(f'{ctx.channel.name} を作業チャンネルに追加しました')
 
     @commands.command()
@@ -176,8 +166,8 @@ class TotuCount(commands.Cog):
         """
         機能を無効にするチャンネルとして登録するコマンドです。
         """
-        if ctx.channel.id in self.work_channel_id:
-            self.work_channel_id.remove(ctx.channel.id)
+        if ctx.channel.id in self.totu.values():
+            self.totu[ctx.channel.id]
             await ctx.send(f'{ctx.channel.name} を作業チャンネルから除外しました')
         else:
             await ctx.send(f'{ctx.channel.name} は作業チャンネルではありません')
@@ -186,14 +176,14 @@ class TotuCount(commands.Cog):
     async def on_message(self, message):
         if message.author.bot:
             return
-        if message.channel.id in self.work_channel_id:
+        if message.channel.id in self.totu.values():
             if len(message.attachments) > 0:
                 # messageに添付画像があり、指定のチャンネルの場合動作する
                 await self.download_img(message.attachments[0].url, IMAGE_PATH)
                 if (res := self.image_ocr(IMAGE_PATH)) is not None:
                     print(res,
                     end='\n--------------------OCR Result-------------------\n')
-                    self.totu += self.count(res)
+                    self.totu[message.channel.id] = self.totu[message.channel.id] + self.count(res)
                 else:
                     print('画像読み込みに失敗しました')
                 # await message.channel.send(f'現在 {self.totu} 凸消化して残り凸数は {90-self.totu} です')
