@@ -5,22 +5,22 @@ class TransferData():
     '''
     Dropboxからファイルをダウンロード、アップロードする。
     '''
+    ACCESS_TOKEN = os.environ["DROPBOX_TOKEN"]
     def __init__(self):
-        self.access_token = os.environ["DROPBOX_TOKEN"]
-        self.dbx = dropbox.Dropbox(self.access_token)
+        self.dbx = dropbox.Dropbox(self.ACCESS_TOKEN)
 
     def get_files(self):
         '''
         rootディレクトリのファイル一覧を取得する
         '''
         res = []
-        i = self.dbx.files_list_folder('/', recursive=True)
+        i = self.dbx.files_list_folder('', recursive=True)
         for entry in i.entries:
             ins = type(entry)
             if ins is dropbox.files.FileMetadata:
                 #ファイル以外はスキップ
                 res.append(entry)
-                return res
+        return res
 
     def upload_file(self, file_from, file_to):
         '''
