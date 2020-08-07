@@ -41,10 +41,11 @@ class Reserve(commands.Cog):
             print('Faild to load res.pkl')
 
     def cog_unload(self):
-        self.items = zip_longest(self.res_1.items(), self.res_2.items(),
+        print('unload')
+        items = zip_longest(self.res_1.items(), self.res_2.items(),
             self.res_3.items(), self.res_4.items(), self.res_5.items())
         with open(TEMP_PATH + 'res.pkl','wb') as f:
-            pickle.dump(self.items, f)
+            pickle.dump(items, f)
         TransferData().upload_file(TEMP_PATH + 'res.pkl', r'/res.pkl')
         print('Saved to res.pkl')
 
