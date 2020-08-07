@@ -77,7 +77,7 @@ class Reserve(commands.Cog):
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
-        self.res_b1[ctx.author.id] = ctx.author.display_name
+        self.res_b1[ctx.author.id] = ctx.author.display_name\
         if not note else ctx.author.display_name + f': {note}'
 
     @commands.command(name=BOSSES[1],aliases=['b2','boss2'])
@@ -85,7 +85,7 @@ class Reserve(commands.Cog):
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
-        self.res_b2[ctx.author.id] = ctx.author.display_name
+        self.res_b2[ctx.author.id] = ctx.author.display_name\
         if not note else ctx.author.display_name + f': {note}'
 
     @commands.command(name=BOSSES[2],aliases=['b3','boss3'])
@@ -93,7 +93,7 @@ class Reserve(commands.Cog):
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
-        self.res_b3[ctx.author.id] = ctx.author.display_name
+        self.res_b3[ctx.author.id] = ctx.author.display_name\
         if not note else ctx.author.display_name + f': {note}'
 
     @commands.command(name=BOSSES[3],aliases=['b4','boss4'])
@@ -101,7 +101,7 @@ class Reserve(commands.Cog):
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
-        self.res_b4[ctx.author.id] = ctx.author.display_name
+        self.res_b4[ctx.author.id] = ctx.author.display_name\
         if not note else ctx.author.display_name + f': {note}'
 
     @commands.command(name=BOSSES[4],aliases=['b5','boss5'])
@@ -109,7 +109,7 @@ class Reserve(commands.Cog):
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
-        self.res_b5[ctx.author.id] = ctx.author.display_name
+        self.res_b5[ctx.author.id] = ctx.author.display_name\
         if not note else ctx.author.display_name + f': {note}'
 
     @commands.command(aliases=['凸完了','完了','クリア'])

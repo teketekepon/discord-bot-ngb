@@ -158,7 +158,7 @@ class TotuCount(commands.Cog):
         if ctx.channel.id in self.totu.values():
             await ctx.send(f'{ctx.channel.name} はすでに作業チャンネルです')
         else:
-            self.totu.update(ctx.channel.id=0)
+            self.totu[ctx.channel.id] = 0
             await ctx.send(f'{ctx.channel.name} を作業チャンネルに追加しました')
 
     @commands.command()
