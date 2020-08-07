@@ -16,12 +16,12 @@ class TransferData():
         '''
         mode = dropbox.files.WriteMode.overwrite
         with open(file_from, 'rb') as f:
-            data = f.read()
-        try:
-            res = self.dbx.files_upload(data, file_to, mode, mute=True)
-        except dropbox.exceptions.ApiError as err:
-            print(f'error {err}')
-            return None
+            try:
+                res = self.dbx.files_upload(f.read(), file_to,
+                    mode=mode, mute=True)
+            except dropbox.exceptions.ApiError as err:
+                print(f'error {err}')
+                return None
         return res
 
     def download_file(self, file_from, file_to):
