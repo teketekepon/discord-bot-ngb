@@ -26,7 +26,8 @@ RESOLUTIONS = [(1280, 720),  # 1
 
 class TotuCount(commands.Cog):
     """
-    事前に登録したチャンネルにクラバトログのスクショを張ることで、凸の消化回数をカウントします。
+    登録したチャンネルにクラバトログのスクショを張ることで、凸の消化回数をカウントします。
+    チャンネルごとに個別にカウントされることに注意してください。
     トリミングされている等の理由で規定の解像度から外れるとエラーになります。
     """
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
@@ -38,6 +39,8 @@ class TotuCount(commands.Cog):
             with open(TEMP_PATH + 'totu.pkl','rb') as f:
                 data = pickle.load(f)
             self.totu.update(data)
+        else:
+            print('Faild to load totu.pkl')
 
     def cog_unload(self):
         with open(TEMP_PATH + 'totu.pkl','wb') as f:
@@ -151,9 +154,11 @@ class TotuCount(commands.Cog):
             await ctx.send(f'凸数を{n}引いて{self.totu[ctx.channel.id]}になりました')
 
     @commands.command()
+    @commands.has_permissions(manage_channels=True)
     async def define(self, ctx):
         """
         機能を有効にするチャンネルとして登録するコマンドです。
+        このコマンドは、manage_channels(チャンネルを編集)できるユーザーのみが使えます。
         """
         if ctx.channel.id in self.totu.keys():
             await ctx.send(f'{ctx.channel.name} はすでに作業チャンネルです')
@@ -162,9 +167,11 @@ class TotuCount(commands.Cog):
             await ctx.send(f'{ctx.channel.name} を作業チャンネルに追加しました')
 
     @commands.command()
+    @commands.has_permissions(manage_channels=True)
     async def remove(self, ctx):
         """
         機能を無効にするチャンネルとして登録するコマンドです。
+        このコマンドは、manage_channels(チャンネルを編集)できるユーザーのみが使えます。
         """
         if ctx.channel.id in self.totu.keys():
             del self.totu[ctx.channel.id]

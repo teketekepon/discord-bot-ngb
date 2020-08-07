@@ -11,8 +11,8 @@ BOSSES = ['ワイバーン','ランドスロース','ムシュフシュ','ティ
 
 class Reserve(commands.Cog):
     """
-    ボスの凸希望をディスコード上で管理します。
-    各メンバー1つずつ凸を希望するボスを/(ボス名) (備考)コマンドで登録します。
+    ボスの凸希望を管理します。
+    各メンバー1つまで凸を希望するボスを/(ボス名) (備考)コマンドで登録します。
     例: /ワイバーン 物理ワンパン
     """
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
@@ -36,6 +36,8 @@ class Reserve(commands.Cog):
             self.res_b3.update(list(filter(None,c)))
             self.res_b4.update(list(filter(None,d)))
             self.res_b5.update(list(filter(None,e)))
+        else:
+            print('Faild to load res.pkl')
 
     def cog_unload(self):
         items = zip_longest(self.res_1.items(), self.res_2.items(),
