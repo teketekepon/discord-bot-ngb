@@ -20,9 +20,8 @@ class TransferData():
         try:
             res = self.dbx.files_upload(data, file_to, mode, mute=True)
         except dropbox.exceptions.ApiError as err:
-            print(f'{err} HTTP error')
+            print(f'error {err}')
             return None
-            print('uploaded as', res.name.encode('utf8'))
         return res
 
     def download_file(self, file_from, file_to):
@@ -35,7 +34,7 @@ class TransferData():
             try:
                 md, res = self.dbx.files_download(file_from)
                 f.write(res.content)
-            except dropbox.exceptions.HttpError as err:
-                print(f'{err} HTTP error')
+            except dropbox.exceptions.ApiError as err:
+                print(f'error {err}')
                 return False
         return True

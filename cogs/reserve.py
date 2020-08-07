@@ -27,9 +27,9 @@ class Reserve(commands.Cog):
 
         if TransferData().download_file(r'/res.pkl',TEMP_PATH + 'res.pkl'):
             with open(TEMP_PATH + 'res.pkl','rb') as f:
-                items = pickle.load(f)
+                self.items = pickle.load(f)
             # zipをアンパック (tuple)
-            a, b, c, d, e = zip(*items)
+            a, b, c, d, e = zip(*self.items)
             # Noneを除外しリストに
             self.res_b1.update(list(filter(None, a)))
             self.res_b2.update(list(filter(None, b)))
@@ -41,10 +41,10 @@ class Reserve(commands.Cog):
             print('Faild to load res.pkl')
 
     def cog_unload(self):
-        items = zip_longest(self.res_1.items(), self.res_2.items(),
+        self.items = zip_longest(self.res_1.items(), self.res_2.items(),
             self.res_3.items(), self.res_4.items(), self.res_5.items())
         with open(TEMP_PATH + 'res.pkl','wb') as f:
-            pickle.dump(items, f)
+            pickle.dump(self.items, f)
         TransferData().upload_file(TEMP_PATH + 'res.pkl', r'/res.pkl')
         print('Saved to res.pkl')
 

@@ -37,8 +37,7 @@ class TotuCount(commands.Cog):
         self.totu = {}
         if TransferData().download_file(r'/totu.pkl', TEMP_PATH + 'totu.pkl'):
             with open(TEMP_PATH + 'totu.pkl','rb') as f:
-                data = pickle.load(f)
-            self.totu.update(data)
+                self.totu = pickle.load(f)
             print(f'Loaded {self.totu}')
         else:
             print('Faild to load totu.pkl')
