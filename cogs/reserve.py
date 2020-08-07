@@ -13,12 +13,11 @@ class Reserve(commands.Cog):
     """
     ボスの凸希望を管理します。
     各メンバー1つまで凸を希望するボスを/(ボス名) (備考)コマンドで登録します。
-    例: /ワイバーン 物理ワンパン
+    例: `/ワイバーン 物理ワンパン`
     """
-    # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
-    # ボスごとの予約者 {key = user.id(int) value = name + note(str)}
     def __init__(self, bot):
         self.bot = bot
+        # ボスごとの予約者 {key = user.id(int) value = name + note(str)}
         self.res_b1 = {}
         self.res_b2 = {}
         self.res_b3 = {}
@@ -28,17 +27,14 @@ class Reserve(commands.Cog):
         if TransferData().download_file(r'/res.pkl',TEMP_PATH + 'res.pkl'):
             with open(TEMP_PATH + 'res.pkl','rb') as f:
                 self.items = pickle.load(f)
-            # zipをアンパック (tuple)
+            # zipをアンパック ((keys,values),...)
             a, b, c, d, e = zip(*self.items)
-            # Noneを除外しリストに
+            # Noneを除外し辞書に追加
             self.res_b1.update(list(filter(None, a)))
             self.res_b2.update(list(filter(None, b)))
             self.res_b3.update(list(filter(None, c)))
             self.res_b4.update(list(filter(None, d)))
             self.res_b5.update(list(filter(None, e)))
-            print(f'Loaded {self.res_b1}...')
-        else:
-            print('Faild to load res.pkl')
 
     def cog_unload(self):
         items = zip_longest(self.res_b1.items(), self.res_b2.items(),
@@ -60,19 +56,24 @@ class Reserve(commands.Cog):
     async def yoyaku(self, ctx):  # 予約内容の確認
         """
         各ボスを希望するメンバー一覧を返します。
-        /予約 /凸予約 /予定 でも反応します。
+        `/予約` `/凸予約` `/予定` でも反応します。
         """
         embed = discord.Embed(title='**現在の凸希望者**',color=0x0000ff)
         embed.add_field(name=f'{BOSSES[0]}',
-        value='まだ誰もいません' if not self.res_b1 else '\n'.join(self.res_b1.values()),inline=False)
+        value='まだ誰もいません' if not self.res_b1 else\
+            '\n'.join(self.res_b1.values()),inline=False)
         embed.add_field(name=f'{BOSSES[1]}',
-        value='まだ誰もいません' if not self.res_b2 else '\n'.join(self.res_b2.values()),inline=False)
+        value='まだ誰もいません' if not self.res_b2 else\
+            '\n'.join(self.res_b2.values()),inline=False)
         embed.add_field(name=f'{BOSSES[2]}',
-        value='まだ誰もいません' if not self.res_b3 else '\n'.join(self.res_b3.values()),inline=False)
+        value='まだ誰もいません' if not self.res_b3 else\
+            '\n'.join(self.res_b3.values()),inline=False)
         embed.add_field(name=f'{BOSSES[3]}',
-        value='まだ誰もいません' if not self.res_b4 else '\n'.join(self.res_b4.values()),inline=False)
+        value='まだ誰もいません' if not self.res_b4 else\
+            '\n'.join(self.res_b4.values()),inline=False)
         embed.add_field(name=f'{BOSSES[4]}',
-        value='まだ誰もいません' if not self.res_b5 else '\n'.join(self.res_b5.values()),inline=False)
+        value='まだ誰もいません' if not self.res_b5 else\
+            '\n'.join(self.res_b5.values()),inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(name=BOSSES[0],aliases=['b1','boss1'])
@@ -119,7 +120,7 @@ class Reserve(commands.Cog):
     async def clear(self, ctx):  #予約を削除
         """
         実行したユーザーの凸希望を削除します。
-        /凸完了 /完了 /クリア でも反応します。
+        `/凸完了` `/完了` `/クリア` でも反応します。
         """
         if ctx.author.id in self.res_b1.keys():
             del self.res_b1[ctx.author.id]

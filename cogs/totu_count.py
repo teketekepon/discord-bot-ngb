@@ -46,7 +46,6 @@ class TotuCount(commands.Cog):
         with open(TEMP_PATH + 'totu.pkl','wb') as f:
             pickle.dump(self.totu, f)
         TransferData().upload_file(TEMP_PATH + 'totu.pkl', r'/totu.pkl')
-        print('Saved to totu.pkl')
 
     async def download_img(self, url, file_name):
         async with aiohttp.ClientSession() as session:
@@ -128,7 +127,7 @@ class TotuCount(commands.Cog):
     async def add(self, ctx, arg1):
         """
         凸カウントを増やすコマンドです。
-        例えば /add 1 とすると1凸増やします。
+        例えば `/add 1` とすると1凸増やします。
         """
         if ctx.channel.id in self.totu.keys():
             try:
@@ -143,7 +142,7 @@ class TotuCount(commands.Cog):
     async def sub(self, ctx, arg1):
         """
         凸カウントを減らすコマンドです。
-        例えば /sub 1 とすると1凸減らします。
+        例えば `/sub 1` とすると1凸減らします。
         """
         if ctx.channel.id in self.totu.keys():
             try:
@@ -191,10 +190,12 @@ class TotuCount(commands.Cog):
                 if (res := self.image_ocr(IMAGE_PATH)) is not None:
                     # print(res,
                     # end='\n--------------------OCR Result-------------------\n')
-                    self.totu[message.channel.id] = self.totu[message.channel.id] + self.count(res)
+                    self.totu[message.channel.id] = self.totu[message.channel.id]\
+                                                    + self.count(res)
+                    print(f'{message.channel.name}count: {self.totu[message.channel.id]}')
                 else:
                     print('画像読み込みに失敗しました')
-                # await message.channel.send(f'現在 {self.totu} 凸消化して残り凸数は {90-self.totu} です')
+
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(TotuCount(bot)) # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。
