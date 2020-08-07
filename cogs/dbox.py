@@ -27,9 +27,16 @@ class TransferData():
         upload_file(ローカルファイル,Dropbox上の保存先)
         WriteMode=overwrite を使用してファイルは毎度更新されるようにする
         '''
+        mode = dropbox.files.WriteMode.overwrite
         with open(file_from, 'rb') as f:
-            self.dbx.files_upload(f.read(), file_to,
-                mode=dropbox.files.WriteMode.overwrite, mute=True)
+            data = f.read()
+        try:
+            res = dbx.files_upload(data, file_to, mode, mute=True)
+        except dropbox.exceptions.ApiError as err:
+            print(f'{err} HTTP error')
+            return None
+            print('uploaded as', res.name.encode('utf8'))
+        return res
 
     def download_file(self, file_from, file_to):
         '''
@@ -37,12 +44,11 @@ class TransferData():
         files_fromがdropboxに無い場合Falseが返る
         files_download_to_file(file_to, file_from) でもいい
         '''
-        files = self.get_files()
-        target = file_from.replace('/', '')
-        if target not in files:
-            return False
-        else:
-            with open(file_to, 'wb') as f:
-                metadata, res = self.dbx.files_download(path=file_from)
+        with open(file_to, 'wb') as f:
+            try:
+                md, res = dbx.files_download(file_from)
                 f.write(res.content)
-            return True
+            except dropbox.exceptions.HttpError as err:
+                print(f'{err} HTTP error')
+                return False
+        return True
