@@ -107,7 +107,7 @@ class TotuCount(commands.Cog):
         """
         凸カウントをリセットするコマンドです。
         """
-        if ctx.channel.id in self.totu.values():
+        if ctx.channel.id in self.totu.keys():
             self.totu[ctx.channel.id] = 0
             await ctx.send('凸カウントをリセットしました')
 
@@ -116,7 +116,7 @@ class TotuCount(commands.Cog):
         """
         残凸数を返すコマンドです。
         """
-        if ctx.channel.id in self.totu.values():
+        if ctx.channel.id in self.totu.keys():
             await ctx.send(f'現在 {self.totu[ctx.channel.id]} 凸消化して残り凸数は'
                 f' {90-self.totu[ctx.channel.id]} です')
 
@@ -126,7 +126,7 @@ class TotuCount(commands.Cog):
         凸カウントを増やすコマンドです。
         例えば /add 1 とすると1凸増やします。
         """
-        if ctx.channel.id in self.totu.values():
+        if ctx.channel.id in self.totu.keys():
             try:
                 n = int(arg1)
             except ValueError:
@@ -141,7 +141,7 @@ class TotuCount(commands.Cog):
         凸カウントを減らすコマンドです。
         例えば /sub 1 とすると1凸減らします。
         """
-        if ctx.channel.id in self.totu.values():
+        if ctx.channel.id in self.totu.keys():
             try:
                 n = int(arg1)
             except ValueError:
@@ -155,7 +155,7 @@ class TotuCount(commands.Cog):
         """
         機能を有効にするチャンネルとして登録するコマンドです。
         """
-        if ctx.channel.id in self.totu.values():
+        if ctx.channel.id in self.totu.keys():
             await ctx.send(f'{ctx.channel.name} はすでに作業チャンネルです')
         else:
             self.totu[ctx.channel.id] = 0
@@ -166,8 +166,8 @@ class TotuCount(commands.Cog):
         """
         機能を無効にするチャンネルとして登録するコマンドです。
         """
-        if ctx.channel.id in self.totu.values():
-            self.totu[ctx.channel.id]
+        if ctx.channel.id in self.totu.keys():
+            del self.totu[ctx.channel.id]
             await ctx.send(f'{ctx.channel.name} を作業チャンネルから除外しました')
         else:
             await ctx.send(f'{ctx.channel.name} は作業チャンネルではありません')
@@ -176,7 +176,7 @@ class TotuCount(commands.Cog):
     async def on_message(self, message):
         if message.author.bot:
             return
-        if message.channel.id in self.totu.values():
+        if message.channel.id in self.totu.keys():
             if len(message.attachments) > 0:
                 # messageに添付画像があり、指定のチャンネルの場合動作する
                 await self.download_img(message.attachments[0].url, IMAGE_PATH)
