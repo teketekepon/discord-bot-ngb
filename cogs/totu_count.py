@@ -39,6 +39,7 @@ class TotuCount(commands.Cog):
             with open(TEMP_PATH + 'totu.pkl','rb') as f:
                 data = pickle.load(f)
             self.totu.update(data)
+            print(f'Loaded {self.totu}')
         else:
             print('Faild to load totu.pkl')
 
@@ -46,6 +47,7 @@ class TotuCount(commands.Cog):
         with open(TEMP_PATH + 'totu.pkl','wb') as f:
             pickle.dump(self.totu, f)
         TransferData().upload_file(TEMP_PATH + 'totu.pkl', r'/totu.pkl')
+        print('Saved to totu.pkl')
 
     async def download_img(self, url, file_name):
         async with aiohttp.ClientSession() as session:

@@ -36,6 +36,7 @@ class Reserve(commands.Cog):
             self.res_b3.update(list(filter(None,c)))
             self.res_b4.update(list(filter(None,d)))
             self.res_b5.update(list(filter(None,e)))
+            print(f'Loaded {self.res_b1}...')
         else:
             print('Faild to load res.pkl')
 
@@ -45,6 +46,7 @@ class Reserve(commands.Cog):
         with open(TEMP_PATH + 'res.pkl','wb') as f:
             pickle.dump(items, f)
         TransferData().upload_file(TEMP_PATH + 'res.pkl',r'/res.pkl')
+        print('Saved to res.pkl')
 
     def overlap_check(self, user_id):  # 重複防止
         union_key = self.res_b1.keys() | self.res_b2.keys() | self.res_b3.keys() |\
