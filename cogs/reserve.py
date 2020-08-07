@@ -31,11 +31,11 @@ class Reserve(commands.Cog):
             # zipをアンパック (tuple)
             a, b, c, d, e = zip(*items)
             # Noneを除外しリストに
-            self.res_b1.update(list(filter(None,a)))
-            self.res_b2.update(list(filter(None,b)))
-            self.res_b3.update(list(filter(None,c)))
-            self.res_b4.update(list(filter(None,d)))
-            self.res_b5.update(list(filter(None,e)))
+            self.res_b1.update(list(filter(None, a)))
+            self.res_b2.update(list(filter(None, b)))
+            self.res_b3.update(list(filter(None, c)))
+            self.res_b4.update(list(filter(None, d)))
+            self.res_b5.update(list(filter(None, e)))
             print(f'Loaded {self.res_b1}...')
         else:
             print('Faild to load res.pkl')
@@ -45,7 +45,7 @@ class Reserve(commands.Cog):
             self.res_3.items(), self.res_4.items(), self.res_5.items())
         with open(TEMP_PATH + 'res.pkl','wb') as f:
             pickle.dump(items, f)
-        TransferData().upload_file(TEMP_PATH + 'res.pkl',r'/res.pkl')
+        TransferData().upload_file(TEMP_PATH + 'res.pkl', r'/res.pkl')
         print('Saved to res.pkl')
 
     def overlap_check(self, user_id):  # 重複防止
@@ -60,7 +60,6 @@ class Reserve(commands.Cog):
     async def yoyaku(self, ctx):  # 予約内容の確認
         """
         各ボスを希望するメンバー一覧を返します。
-        早い者順になっています。
         /予約 /凸予約 /予定 でも反応します。
         """
         embed = discord.Embed(title='**現在の凸希望者**',color=0x0000ff)

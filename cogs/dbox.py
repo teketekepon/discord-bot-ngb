@@ -1,6 +1,6 @@
 import os
 import dropbox
-from dropbox.files import WriteMode
+
 class TransferData():
     '''
     Dropboxからファイルをダウンロード、アップロードする。
@@ -29,17 +29,17 @@ class TransferData():
         '''
         with open(file_from, 'rb') as f:
             self.dbx.files_upload(f.read(), file_to,
-                mode=WriteMode('overwrite'), mute=True)
+                mode=dropbox.files.WriteMode.overwrite, mute=True)
 
     def download_file(self, file_from, file_to):
         '''
         download_file(Dropbox上のファイル,保存先)
         files_fromがdropboxに無い場合Falseが返る
-        files_download_to_file(file_to, file_from) でもアリ
+        files_download_to_file(file_to, file_from) でもいい
         '''
         files = self.get_files()
         target = file_from.replace('/', '')
-        if file_from not in files:
+        if target not in files:
             return False
         else:
             with open(file_to, 'wb') as f:
