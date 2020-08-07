@@ -38,9 +38,10 @@ class TransferData():
         '''
         files = self.get_files()
         target = file_from.replace('/', '')
-        if files is None:
+        if target not in files:
             return False
-        with open(file_to, 'wb') as f:
-            metadata, res = self.dbx.files_download(path=file_from)
-            f.write(res.content)
-        return True
+        else:
+            with open(file_to, 'wb') as f:
+                metadata, res = self.dbx.files_download(path=file_from)
+                f.write(res.content)
+            return True
