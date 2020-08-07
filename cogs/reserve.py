@@ -26,9 +26,9 @@ class Reserve(commands.Cog):
 
         if TransferData().download_file(r'/res.pkl',TEMP_PATH + 'res.pkl'):
             with open(TEMP_PATH + 'res.pkl','rb') as f:
-                self.items = pickle.load(f)
+                items = pickle.load(f)
             # zipをアンパック ((keys,values),...)
-            a, b, c, d, e = zip(*self.items)
+            a, b, c, d, e = zip(*items)
             # Noneを除外し辞書に追加
             self.res_b1.update(list(filter(None, a)))
             self.res_b2.update(list(filter(None, b)))
