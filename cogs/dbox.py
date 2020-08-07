@@ -39,7 +39,7 @@ class TransferData():
         '''
         files = self.get_files()
         target = file_from.replace('/', '')
-        if target not in files:
+        if files_from not in files:
             return False
         else:
             with open(file_to, 'wb') as f:
