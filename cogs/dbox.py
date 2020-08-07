@@ -34,6 +34,7 @@ class TransferData():
     def download_file(self, file_from, file_to):
         '''
         download_file(Dropbox上のファイル,保存先)
+        files_fromがdropboxに無い場合Falseが返る
         files_download_to_file(file_to, file_from) でもアリ
         '''
         files = self.get_files()

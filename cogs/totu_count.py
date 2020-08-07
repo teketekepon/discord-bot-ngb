@@ -32,14 +32,14 @@ class TotuCount(commands.Cog):
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
-        # key = channel.id value = count
+        # {key = channel.id value = count}
         self.totu = {}
         if TransferData().download_file(r'/totu.pkl', TEMP_PATH + 'totu.pkl'):
             with open(TEMP_PATH + 'totu.pkl','rb') as f:
-                self.totu = pickle.load(f)
+                data = pickle.load(f)
+            self.totu.update(data)
 
     def cog_unload(self):
-
         with open(TEMP_PATH + 'totu.pkl','wb') as f:
             pickle.dump(self.totu, f)
         TransferData().upload_file(TEMP_PATH + 'totu.pkl', r'/totu.pkl')
@@ -181,8 +181,8 @@ class TotuCount(commands.Cog):
                 # messageに添付画像があり、指定のチャンネルの場合動作する
                 await self.download_img(message.attachments[0].url, IMAGE_PATH)
                 if (res := self.image_ocr(IMAGE_PATH)) is not None:
-                    print(res,
-                    end='\n--------------------OCR Result-------------------\n')
+                    # print(res,
+                    # end='\n--------------------OCR Result-------------------\n')
                     self.totu[message.channel.id] = self.totu[message.channel.id] + self.count(res)
                 else:
                     print('画像読み込みに失敗しました')
