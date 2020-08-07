@@ -14,12 +14,12 @@ class TransferData():
         rootディレクトリのファイル一覧を取得する
         '''
         res = []
-        i = self.dbx.files_list_folder('', recursive=True)
+        i = self.dbx.files_list_folder('/', recursive=True)
         for entry in i.entries:
             ins = type(entry)
             if ins is dropbox.files.FileMetadata:
-                res.append(entry)
                 #ファイル以外はスキップ
+                res.append(entry)
                 return res
 
     def upload_file(self, file_from, file_to):
