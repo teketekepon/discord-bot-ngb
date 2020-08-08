@@ -27,14 +27,15 @@ class Reserve(commands.Cog):
         if TransferData().download_file(r'/res.pkl',TEMP_PATH + 'res.pkl'):
             with open(TEMP_PATH + 'res.pkl','rb') as f:
                 items = pickle.load(f)
-            # zipをアンパック ((keys,values),...)
-            a, b, c, d, e = zip(*items)
-            # Noneを除外し辞書に追加
-            self.res_b1.update(list(filter(None, a)))
-            self.res_b2.update(list(filter(None, b)))
-            self.res_b3.update(list(filter(None, c)))
-            self.res_b4.update(list(filter(None, d)))
-            self.res_b5.update(list(filter(None, e)))
+            if items is not None:
+                # zipをアンパック ((keys,values),...)
+                a, b, c, d, e = zip(*items)
+                # Noneを除外し辞書に追加
+                self.res_b1.update(list(filter(None, a)))
+                self.res_b2.update(list(filter(None, b)))
+                self.res_b3.update(list(filter(None, c)))
+                self.res_b4.update(list(filter(None, d)))
+                self.res_b5.update(list(filter(None, e)))
 
     def cog_unload(self):
         items = zip_longest(self.res_b1.items(), self.res_b2.items(),
