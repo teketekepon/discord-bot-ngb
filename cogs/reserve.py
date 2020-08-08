@@ -27,7 +27,7 @@ class Reserve(commands.Cog):
         if TransferData().download_file(r'/res.pkl',TEMP_PATH + 'res.pkl'):
             with open(TEMP_PATH + 'res.pkl','rb') as f:
                 items = pickle.load(f)
-            if items is not None:
+            if any(True for _ in items):
                 # zipをアンパック ((keys,values),...)
                 a, b, c, d, e = zip(*items)
                 # Noneを除外し辞書に追加
