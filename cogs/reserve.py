@@ -13,7 +13,7 @@ class Reserve(commands.Cog):
     """
     ボスの凸希望を管理します。
     各メンバー1つまで凸を希望するボスを/(ボス名) (備考)コマンドで登録します。
-    例: `/ワイバーン 物理ワンパン`
+    例: /ワイバーン 物理ワンパン
     """
     def __init__(self, bot):
         self.bot = bot
@@ -57,7 +57,7 @@ class Reserve(commands.Cog):
     async def yoyaku(self, ctx):  # 予約内容の確認
         """
         各ボスを希望するメンバー一覧を返します。
-        `/予約` `/凸予約` `/予定` でも反応します。
+        /予約 /凸予約 /予定 でも反応します。
         """
         embed = discord.Embed(title='**現在の凸希望者**',color=0x0000ff)
         embed.add_field(name=f'{BOSSES[0]}',
@@ -121,7 +121,7 @@ class Reserve(commands.Cog):
     async def clear(self, ctx):  #予約を削除
         """
         実行したユーザーの凸希望を削除します。
-        `/凸完了` `/完了` `/クリア` でも反応します。
+        /凸完了 /完了 /クリア でも反応します。
         """
         if ctx.author.id in self.res_b1.keys():
             del self.res_b1[ctx.author.id]
