@@ -127,7 +127,7 @@ class TotuCount(commands.Cog):
     async def add(self, ctx, arg1):
         """
         凸カウントを増やすコマンドです。
-        例えば `/add 1` とすると1凸増やします。
+        例えば /add 1 とすると1凸増やします。
         """
         if ctx.channel.id in self.totu.keys():
             try:
@@ -142,7 +142,7 @@ class TotuCount(commands.Cog):
     async def sub(self, ctx, arg1):
         """
         凸カウントを減らすコマンドです。
-        例えば `/sub 1` とすると1凸減らします。
+        例えば /sub 1 とすると1凸減らします。
         """
         if ctx.channel.id in self.totu.keys():
             try:
