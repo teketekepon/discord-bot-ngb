@@ -12,7 +12,8 @@ from discord.ext import commands
 
 TEMP_PATH = r'./tmp/'
 IMAGE_PATH = r'./tmp/image0.png'
-RESOLUTIONS = [(1280, 720),  # 1
+RESOLUTIONS = [(1280, 760),   # 0 DMM windows枠あり
+                (1280, 720),  # 1
                 (1334, 750),   # 2
                 (1920, 1080),  # 3 ここまで16:9
                 (2048, 1536),  # 4 4:3
@@ -59,16 +60,20 @@ class TotuCount(commands.Cog):
         # バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
+            # 解像度ごとに切り取り(+-10ピクセルは許容)
             if im.height - 10 < i[1] < im.height + 10 and im.width - 10 < i[0] < im.width + 10:
-                if num <= 2:  # 16:9
+                if num == 0:
+                    im_hd = im.resize((1920, 1080), Image.LANCZOS)
+                    im_crop = im_hd.crop((1400, 245, 1720, 880))
+                elif num <= 3:  # 16:9
                     im_hd = im.resize((1920, 1080), Image.LANCZOS)
                     im_crop = im_hd.crop((1400, 205, 1720, 920))
-                elif num <= 5:  # 4:3 iPad
+                elif num <= 6:  # 4:3 iPad
                     im_hd = im.resize((2224, 1668), Image.LANCZOS)
                     im_crop = im.crop((1625, 645, 1980, 1480))
-                elif num == 6:  # 2_1 android
+                elif num == 7:  # 2_1 android
                     im_crop = im.crop((2200, 280, 2620, 1220))
-                elif num == 7:  # 2_1 Galaxy
+                elif num == 8:  # 2_1 Galaxy
                     im_crop = im.crop((2360, 280, 2780, 1220))
                 else:  # 19.5:9 iPhone
                     im_hd = im.resize((2668, 1242), Image.LANCZOS)
