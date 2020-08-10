@@ -120,6 +120,7 @@ class TotuCount(commands.Cog):
     async def totu(self, ctx):
         """
         残凸数を返すコマンドです。
+        /zanntotu /残凸 /残り でも反応します。
         """
         if ctx.channel.id in self.totu.keys():
             await ctx.send(f'現在 {self.totu[ctx.channel.id]} 凸消化して残り凸数は'
