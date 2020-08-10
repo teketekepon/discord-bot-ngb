@@ -43,7 +43,6 @@ class Reserve(commands.Cog):
         with open(TEMP_PATH + 'res.pkl','wb') as f:
             pickle.dump(items, f)
         TransferData().upload_file(TEMP_PATH + 'res.pkl', r'/res.pkl')
-        print('Saved to res.pkl')
 
     def overlap_check(self, user_id):  # 重複防止
         union_key = self.res_b1.keys() | self.res_b2.keys() | self.res_b3.keys() |\
