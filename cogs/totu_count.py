@@ -158,7 +158,7 @@ class TotuCount(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)
-    async def define(self, ctx):
+    async def register(self, ctx):
         """
         機能を有効にするチャンネルとして登録するコマンドです。
         このコマンドは、manage_channels(チャンネルを編集)できるユーザーのみが使えます。
@@ -171,7 +171,7 @@ class TotuCount(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)
-    async def remove(self, ctx):
+    async def unregister(self, ctx):
         """
         機能を無効にするチャンネルとして登録するコマンドです。
         このコマンドは、manage_channels(チャンネルを編集)できるユーザーのみが使えます。
