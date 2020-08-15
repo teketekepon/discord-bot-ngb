@@ -39,9 +39,7 @@ class MyBot(commands.Bot):
         print('--------------')
 
 class Help(commands.HelpCommand):
-    '''
-    Helpコマンドの定義
-    '''
+    """Helpコマンドの定義"""
     def __init__(self):
         super().__init__()
         self.no_category = 'カテゴリ未設定'
