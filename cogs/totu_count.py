@@ -32,7 +32,7 @@ class TotuCount(commands.Cog):
     チャンネルごとに個別にカウントされることに注意してください。
     トリミングされている等の理由で規定の解像度から外れるとエラーになります。
     """
-    
+
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
@@ -109,7 +109,6 @@ class TotuCount(commands.Cog):
         n = 0
         data = re.findall(r'ダメージで|ダメージ', text)
         # OCRtextから凸判定材料のみ抽出
-        # 'で'で始まるユーザーがいる場合そのひとつ前の凸がカウントされない場合がある
         if len(data) >= 5:
             del data[0]  # 1枚4件までのため
         for i in data:
