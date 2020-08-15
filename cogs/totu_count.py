@@ -6,12 +6,13 @@ import pyocr.builders
 import aiohttp
 import aiofiles
 import discord
+from io import BytesIO
 from PIL import Image
 from .dbox import TransferData
 from discord.ext import commands
 
 TEMP_PATH = r'./tmp/'
-IMAGE_PATH = r'./tmp/image0.png'
+IMAGE_PATH = r'./tmp/image.png'
 RESOLUTIONS = [(1280, 760),   # 0 DMM windows枠あり
                 (1280, 720),  # 1
                 (1334, 750),   # 2
@@ -52,6 +53,14 @@ class TotuCount(commands.Cog):
                     f = await aiofiles.open(file_name, mode = 'wb')
                     await f.write(await resp.read())
                     await f.close()
+
+    async def download_img_io(self, url):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout = 20) as resp:
+                if resp.status == 200:
+                    return BytesIO(await resp.read())
+                else:
+                    return None
 
     def image_ocr(self, image):
         # バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)
@@ -189,15 +198,14 @@ class TotuCount(commands.Cog):
         if message.channel.id in self.totu.keys():
             if len(message.attachments) > 0:
                 # messageに添付画像があり、指定のチャンネルの場合動作する
-                await self.download_img(message.attachments[0].url, IMAGE_PATH)
-                if (res := self.image_ocr(IMAGE_PATH)) is not None:
+                image = await self.download_img_io(message.attachments[0].url)
+                if (res := self.image_ocr(image)) is not None:
                     # print(res,
                     # end='\n--------------------OCR Result-------------------\n')
-                    self.totu[message.channel.id] = self.totu[message.channel.id]\
-                                                    + self.count(res)
+                    self.totu[message.channel.id] = self.totu[message.channel.id] + self.count(res)
                     print(f'{message.channel.name}count: {self.totu[message.channel.id]}')
                 else:
-                    print('画像読み込みに失敗しました')
+                    print('画像読み取りに失敗しました')
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
