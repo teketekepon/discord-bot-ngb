@@ -1,8 +1,8 @@
 # ナイトガーデン用ディスコードBOT
 
-このソフトウェアは、ゲーム「プリンセスコネクト!Re:Dive」のクラン「ナイトガーデン」専用Discordサーバーで運用するBotの為に作られました。
-このドキュメントでは、各スクリプトの動作説明をします。
+このプロジェクトは、ゲーム「プリンセスコネクト!Re:Dive」のクラン「ナイトガーデン」専用Discordサーバーで運用するBotの為に作られました。
 
+# 動作説明
 ## Ngbについて
 ナイトガーデンでは現在、王宮、宮殿、城下町の3つのクランに分かれており、それぞれ専用のチャットルームが用意されています。
 そのチャットルームへアクセスするための権限を、ユーザーがいつでも自由に取得できるように作られました。
@@ -74,7 +74,7 @@ botからレスポンスがあるので、その後 1 2 3 いずれかの半角�
 | 760  | 1280 | DMM版 windows枠あり   |
 | 720  | 1280 | DMM版 windows枠なし   |
 | 750  | 1334 | iPhone 6,7,8         |
-| 1080 | 1920 | Full HD              |
+| 1080 | 1920 | iPhone 6,7,8 Plus    |
 | 1536 | 2048 | iPad Mini            |
 | 1668 | 2224 | iPad Pro 10.5inch    |
 | 2048 | 2732 | iPad Pro 12.9inch    |
@@ -85,5 +85,5 @@ botからレスポンスがあるので、その後 1 2 3 いずれかの半角�
 | 1242 | 2688 | iPhone XSmax,11Promax|
 
 ***
-LICENSE
+### LICENSE
 This software includes the work that is distributed in the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0 "Apache License Version 2.0").
