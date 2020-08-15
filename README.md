@@ -86,4 +86,4 @@ botからレスポンスがあるので、その後 1 2 3 いずれかの半角�
 
 ***
 LICENSE
-This software includes the work that is distributed in the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0, "Apache License Version 2.0").
+This software includes the work that is distributed in the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0 "Apache License Version 2.0").
