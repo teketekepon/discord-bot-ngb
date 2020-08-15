@@ -60,9 +60,9 @@ botからレスポンスがあるので、その後 1 2 3 いずれかの半角�
 例えば `/sub 1` とすると1凸減らします。
 #### 使い方
 あらかじめスクショを貼るチャンネルを作り、そのチャンネルで`/register`コマンドをチャットします。
-_以下の操作はチャンネルごとに動作することに注意してください。_
+以下の操作はチャンネルごとに動作することに注意してください。
 もしも間違えてしまった場合`/unregister`コマンドをチャットして、登録を解除できます。
-クラバトログのスクショを貼ります。
+クラバトログのスクリーンショットをアップロードします。
 `/totu`コマンドをチャットし、残りの凸数を確認します。
 午前5時を過ぎたら`/reset`コマンドをチャットしてカウントをクリアします。
 
@@ -70,21 +70,20 @@ _以下の操作はチャンネルごとに動作することに注意してく�
 ![TotuCountの使い方](src/totu-1.png)
 ##### 対応している解像度
 | 解像度(縦) | 解像度(横) | 機種例 |
-|:-----|:-----|:--------------------:|
+|-----:|-----:|:--------------------|
 | 760  | 1280 | DMM版 windows枠あり   |
 | 720  | 1280 | DMM版 windows枠なし   |
-| 750  | 1334 | iPhone 6,7           |
+| 750  | 1334 | iPhone 6,7,8         |
 | 1080 | 1920 | Full HD              |
 | 1536 | 2048 | iPad Mini            |
 | 1668 | 2224 | iPad Pro 10.5inch    |
 | 2048 | 2732 | iPad Pro 12.9inch    |
 | 1440 | 2880 | Android              |
-| 1440 | 3040 | Galaxy系 (左黒帯)     |
+| 1440 | 3040 | Galaxy系 (左黒帯あり)     |
 | 828  | 1792 | iPhone XR,11         |
 | 1125 | 2436 | iPhone X,XS,11pro    |
 | 1242 | 2688 | iPhone XSmax,11Promax|
 
 ***
 LICENSE
-This software includes the work that is distributed in the Apache License 2.0.
-http://www.apache.org/licenses/LICENSE-2.0
+This software includes the work that is distributed in the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0, "Apache License Version 2.0").
