@@ -8,6 +8,7 @@ class Ngb(commands.Cog):
     プリコネクラン「ナイトガーデン」グループのdiscord用botです。
     他のサーバーでは動作しません。
     """
+    
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot

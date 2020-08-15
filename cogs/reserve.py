@@ -15,6 +15,7 @@ class Reserve(commands.Cog):
     各メンバー1つまで凸を希望するボスを/(ボス名) (備考)コマンドで登録します。
     例: /ワイバーン 物理ワンパン
     """
+    
     def __init__(self, bot):
         self.bot = bot
         # ボスごとの予約者 {key = user.id(int) value = name + note(str)}
