@@ -9,9 +9,8 @@ class Ngb(commands.Cog):
     プリコネクラン「ナイトガーデン」グループのdiscord用botです。
     他のサーバーでは動作しません。
     """
-
+    # nightgarden_idはHeroku環境変数にしまっておく
     nightgarden_id = os.environ["NIGHTGARDEN_ID"]
-    # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
 
@@ -63,8 +62,9 @@ class Ngb(commands.Cog):
             await msg.channel.send(reply)
 
     @commands.Cog.listener()
-    @is_guild_nightgarden()
     async def on_member_join(self, member):
+        if member.guild.id != nightgarden_id:
+            return
         dm = member.dm_channel
         if dm is None:
             dm = await member.create_dm()

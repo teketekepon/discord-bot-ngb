@@ -6,14 +6,15 @@ class TransferData():
     '''
     Dropboxからファイルをダウンロード、アップロードする。
     '''
+    # DROPBOX_TOKENはHeroku環境変数にしまっておく。
     ACCESS_TOKEN = os.environ["DROPBOX_TOKEN"]
     def __init__(self):
         self.dbx = dropbox.Dropbox(self.ACCESS_TOKEN)
 
     def upload_file(self, file_from, file_to):
         '''
-        upload_file(ローカルファイル,Dropbox上の保存先)
-        WriteMode=overwrite を使用してファイルは毎度更新されるようにする
+        upload_file(アップロードするファイル,Dropbox上の保存先)
+        WriteMode.overwrite を使用してファイルは毎度更新されるようにする
         '''
         mode = dropbox.files.WriteMode.overwrite
         with open(file_from, 'rb') as f:
