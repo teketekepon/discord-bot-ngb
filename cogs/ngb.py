@@ -16,7 +16,7 @@ class Ngb(commands.Cog):
 
     def is_guild_nightgarden():
         def predicate(ctx):
-            return ctx.guild.id == nightgarden_id
+            return ctx.guild.id == self.nightgarden_id
         return commands.check(predicate)
 
     # コマンドの作成。コマンドはcommandデコレータで必ず修飾する。
@@ -63,7 +63,7 @@ class Ngb(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        if member.guild.id != nightgarden_id:
+        if member.guild.id != self.nightgarden_id:
             return
         dm = member.dm_channel
         if dm is None:
