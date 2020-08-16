@@ -17,7 +17,6 @@ class Ngb(commands.Cog):
         self.bot = bot
 
     def is_guild_nightgarden():
-        global nightgarden_id
         def predicate(ctx):
             return ctx.guild.id == nightgarden_id
         return commands.check(predicate)
@@ -66,7 +65,7 @@ class Ngb(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        if member.guild.id != self.nightgarden_id:
+        if member.guild.id != nightgarden_id:
             return
         dm = member.dm_channel
         if dm is None:
