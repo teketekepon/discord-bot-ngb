@@ -128,7 +128,7 @@ class TotuCount(commands.Cog):
     @commands.command(aliases=['zanntotu','残凸','残り'])
     async def totu(self, ctx):
         """
-        残凸数を返すコマンドです。
+        残凸数をチャットするコマンドです。
         /zanntotu /残凸 /残り でも反応します。
         """
         if ctx.channel.id in self.totu.keys():
@@ -173,10 +173,10 @@ class TotuCount(commands.Cog):
         このコマンドは、manage_channels(チャンネルを編集)できるユーザーのみが使えます。
         """
         if ctx.channel.id in self.totu.keys():
-            await ctx.send(f'{ctx.channel.name} はすでに作業チャンネルです')
+            await ctx.send(f'{ctx.channel.name} はすでに凸カウントチャンネルです')
         else:
             self.totu[ctx.channel.id] = 0
-            await ctx.send(f'{ctx.channel.name} を作業チャンネルに追加しました')
+            await ctx.send(f'{ctx.channel.name} を凸カウントチャンネルに追加しました')
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)
@@ -187,9 +187,9 @@ class TotuCount(commands.Cog):
         """
         if ctx.channel.id in self.totu.keys():
             del self.totu[ctx.channel.id]
-            await ctx.send(f'{ctx.channel.name} を作業チャンネルから除外しました')
+            await ctx.send(f'{ctx.channel.name} を凸カウントチャンネルから除外しました')
         else:
-            await ctx.send(f'{ctx.channel.name} は作業チャンネルではありません')
+            await ctx.send(f'{ctx.channel.name} は凸カウントチャンネルではありません')
 
     @commands.Cog.listener()
     async def on_message(self, message):

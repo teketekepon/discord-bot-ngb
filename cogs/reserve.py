@@ -15,7 +15,7 @@ class Reserve(commands.Cog):
     各メンバー1つまで凸を希望するボスを/(ボス名) (備考)コマンドで登録します。
     例: /ワイバーン 物理ワンパン
     """
-    
+
     def __init__(self, bot):
         self.bot = bot
         # ボスごとの予約者 {key = user.id(int) value = name + note(str)}
@@ -39,7 +39,7 @@ class Reserve(commands.Cog):
                 self.res_b5.update(list(filter(None, e)))
 
     def cog_unload(self):
-        items = zip_longest(self.res_b1.items(), self.res_b2.items(),
+        items = zip_longest(self.res_b1.items(), self.res_b2.items(),\
             self.res_b3.items(), self.res_b4.items(), self.res_b5.items())
         with open(TEMP_PATH + 'res.pkl','wb') as f:
             pickle.dump(items, f)
@@ -56,7 +56,7 @@ class Reserve(commands.Cog):
     @commands.command(aliases=['予約','凸予約','予定'])
     async def yoyaku(self, ctx):  # 予約内容の確認
         """
-        各ボスを希望するメンバー一覧を返します。
+        各ボスを希望するメンバー一覧をチャットします。
         /予約 /凸予約 /予定 でも反応します。
         """
         embed = discord.Embed(title='**現在の凸希望者**',color=0x0000ff)

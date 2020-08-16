@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import asyncio
 import discord
 from discord.ext import commands
@@ -8,14 +9,15 @@ class Ngb(commands.Cog):
     プリコネクラン「ナイトガーデン」グループのdiscord用botです。
     他のサーバーでは動作しません。
     """
-    
+
+    nightgarden_id = os.environ["NIGHTGARDEN_ID"]
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
 
     def is_guild_nightgarden():
         def predicate(ctx):
-            return ctx.guild.id == 541130672656482315
+            return ctx.guild.id == nightgarden_id
         return commands.check(predicate)
 
     # コマンドの作成。コマンドはcommandデコレータで必ず修飾する。
