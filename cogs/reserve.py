@@ -45,7 +45,7 @@ class Reserve(commands.Cog):
             pickle.dump(items, f)
         TransferData().upload_file(TEMP_PATH + 'res.pkl', r'/res.pkl')
 
-    def overlap_check(self, user_id):  # 重複防止
+    def overlap_check(self, user_id):  # すでに予約しているユーザーをはじく
         union_key = self.res_b1.keys() | self.res_b2.keys() | self.res_b3.keys() |\
             self.res_b4.keys() | self.res_b5.keys()
         for i in union_key:

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import re
 import pickle
 import pyocr
@@ -110,7 +111,7 @@ class TotuCount(commands.Cog):
         data = re.findall(r'ダメージで|ダメージ', text)
         # OCRtextから凸判定材料のみ抽出
         if len(data) >= 5:
-            del data[0]  # 1枚4件までのため
+            del data[0]  # スクショ1枚につき4件までのため
         for i in data:
             if not 'で' in i:
                 n += 1
@@ -200,6 +201,7 @@ class TotuCount(commands.Cog):
                 # messageに添付画像があり、指定のチャンネルの場合動作する
                 image = await self.download_img_io(message.attachments[0].url)
                 if (res := self.image_ocr(image)) is not None:
+                    ## ocr結果確認用
                     # print(res,
                     # end='\n--------------------OCR Result-------------------\n')
                     self.totu[message.channel.id] = self.totu[message.channel.id] + self.count(res)

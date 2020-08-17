@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import os
 import discord
 from discord.ext import commands
@@ -18,7 +19,7 @@ INITIAL_EXTENSIONS = [
     'cogs.reserve',
     'cogs.totu_count',
 ]
-# クラスの定義。ClientのサブクラスであるBotクラスを継承。
+
 class MyBot(commands.Bot):
     def __init__(self, command_prefix, help_command):
         # スーパークラスのコンストラクタに値を渡して実行。
@@ -40,23 +41,21 @@ class MyBot(commands.Bot):
 
 class Help(commands.HelpCommand):
     """Helpコマンドの定義"""
-    
+
     def __init__(self):
         super().__init__()
         self.no_category = 'カテゴリ未設定'
         self.command_attrs['description'] = 'コマンドリストを表示します。'
-    # ここでメソッドのオーバーライドを行います。
-    # コマンドが見つからない場合
-    def command_not_found(self,string):
+
+    def command_not_found(self,string):  # コマンドが見つからない場合
         return f'{string} というコマンドは存在しません。'
-    # サブコマンドが見つからない場合
-    def subcommand_not_found(self,command,string):
+
+    def subcommand_not_found(self,command,string):  # サブコマンドが見つからない場合
         if isinstance(command, commands.Group) and len(command.all_commands) > 0:
-            # もし、そのコマンドにサブコマンドが存在しているなら
             return f'{command.qualified_name} に {string} というサブコマンドは登録されていません。'
         return f'{command.qualified_name} にサブコマンドは登録されていません。'
-    # 引数なしのhelpコマンドの場合
-    async def send_bot_help(self,mapping):
+
+    async def send_bot_help(self,mapping):  # 引数なしのhelpコマンドの場合
         content = '機能、コマンド一覧\n'
         for cog in mapping:  # 各コグのコマンド一覧を content に追加していく
             command_list = await self.filter_commands(mapping[cog])
@@ -71,8 +70,8 @@ class Help(commands.HelpCommand):
         embed = discord.Embed(title=f'NGBヘルプ', description=content,color=0x00ff00)
         embed.set_footer(text=f'詳しいヘルプ {self.context.prefix}help 機能名またはコマンド名')
         await self.get_destination().send(embed=embed)
-    # cogが指定された場合
-    async def send_cog_help(self,cog):
+
+    async def send_cog_help(self,cog):  # cogが指定された場合
         content = ''
         command_list = await self.filter_commands(cog.get_commands())
         content += f'```\n{cog.qualified_name} : {cog.description}```\n'
@@ -85,7 +84,7 @@ class Help(commands.HelpCommand):
         embed.set_footer(text=f'コマンドのヘルプ {self.context.prefix}help コマンド名')
         await self.get_destination().send(embed=embed)
 
-    async def send_command_help(self,command):
+    async def send_command_help(self,command):  # commandが指定された場合
         embed = discord.Embed(title=self.get_command_signature(command),description=command.short_doc,color=0x00ff00)
         if command.help:
             embed.add_field(name="ヘルプテキスト：",value=command.help,inline=False)
@@ -96,7 +95,8 @@ class Help(commands.HelpCommand):
         embed = discord.Embed(title='ヘルプ表示のエラー',description=error,
             color=0xff0000)
         await self.get_destination().send(embed=embed)
-# MyBotのインスタンス化及び起動処理。
+
 if __name__ == '__main__':
+    # MyBotのインスタンス化及び起動処理。
     bot = MyBot(command_prefix='/', help_command=Help()) # command_prefixはコマンドの最初の文字として使うもの。
     bot.run(TOKEN) # Botを動かす
