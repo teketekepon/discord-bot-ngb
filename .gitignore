@@ -2,7 +2,5 @@
 /tmp/*
 /venv/*
 /cogs/__pycache__
-/cogs/totu_manage.py
-READMEen.md
 TODO.txt
 !.gitkeep
