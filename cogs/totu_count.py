@@ -205,10 +205,10 @@ message.attachments[0].url)
                     ## ocr結果確認用
                     # print(res,
                     # end='\n--------------------OCR Result-------------------\n')
-                    self.totu[message.channel.id] = self.totu[\
-message.channel.id] + self.count(res)
-                    print(f'{message.channel.name} count: {self.totu[\
-message.channel.id]}')
+                    self.totu[message.channel.id] = \
+self.totu[message.channel.id] + self.count(res)
+                    print(f'{message.channel.name} count: '\
+f'{self.totu[message.channel.id]}')
                 else:
                     print('画像読み取りに失敗しました')
 
