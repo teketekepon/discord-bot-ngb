@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 
-import re
+from io import BytesIO
 import pickle
-import pyocr
-import pyocr.builders
+import re
+
 import aiohttp
 import aiofiles
 import discord
-from io import BytesIO
-from PIL import Image
-from .dbox import TransferData
 from discord.ext import commands
+from PIL import Image
+import pyocr
+import pyocr.builders
+
+from .dbox import TransferData
 
 TEMP_PATH = r'./tmp/'
-IMAGE_PATH = r'./tmp/image.png'
 RESOLUTIONS = [(1280, 760),   # 0 DMM windows枠あり
                 (1280, 720),  # 1
                 (1334, 750),   # 2
@@ -39,37 +40,35 @@ class TotuCount(commands.Cog):
         self.bot = bot
         # {key = channel.id value = count}
         self.totu = {}
-        if TransferData().download_file(r'/totu.pkl', TEMP_PATH + 'totu.pkl'):
+        if TransferData().download_file(r'/totu.pkl', TEMP_PATH +
+'totu.pkl'):
             with open(TEMP_PATH + 'totu.pkl','rb') as f:
                 self.totu = pickle.load(f)
 
     def cog_unload(self):
         with open(TEMP_PATH + 'totu.pkl','wb') as f:
             pickle.dump(self.totu, f)
-        TransferData().upload_file(TEMP_PATH + 'totu.pkl', r'/totu.pkl')
+        TransferData().upload_file(TEMP_PATH + 'totu.pkl',
+r'/totu.pkl')
 
-    async def download_img(self, url, file_name):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as resp:
-                if resp.status == 200:
-                    f = await aiofiles.open(file_name, mode = 'wb')
-                    await f.write(await resp.read())
-                    await f.close()
-
-    async def download_img_io(self, url):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, timeout = 20) as resp:
-                if resp.status == 200:
+    async def download_img(self, url):
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, timeout = 20) as resp:
+                    if resp.status != 200:
+                        print(f'DL error status: {resp.status}')
+                        return
                     return BytesIO(await resp.read())
-                else:
-                    return None
+        except Exception as e:
+            print(f'DL error {e}')
 
     def image_ocr(self, image):
         # バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
             # 解像度ごとに切り取り(+-10ピクセルは許容)
-            if im.height - 10 < i[1] < im.height + 10 and im.width - 10 < i[0] < im.width + 10:
+            if im.height - 10 < i[1] < im.height + 10 and im.width -\
+10 < i[0] < im.width + 10:
                 if num == 0:
                     im_hd = im.resize((1920, 1080), Image.LANCZOS)
                     im_crop = im_hd.crop((1400, 245, 1720, 880))
@@ -92,7 +91,8 @@ class TotuCount(commands.Cog):
             return None
         # Pillowで2値化
         im_gray = im_crop.convert('L')
-        im_bin = im_gray.point(lambda x: 255 if x > 193 else 0, mode='L')
+        im_bin = im_gray.point(lambda x: 255 if x > 193 else 0,
+mode='L')
         # 日本語と英数字をOCR
         tools = pyocr.get_available_tools()
         if len(tools) == 0:
@@ -133,8 +133,8 @@ class TotuCount(commands.Cog):
         /zanntotu /残凸 /残り でも反応します。
         """
         if ctx.channel.id in self.totu.keys():
-            await ctx.send(f'現在 {self.totu[ctx.channel.id]} 凸消化して残り凸数は'
-                f' {90-self.totu[ctx.channel.id]} です')
+            await ctx.send(f'現在 {self.totu[ctx.channel.id]} 凸消化して'
+                f'残り凸数は {90-self.totu[ctx.channel.id]} です')
 
     @commands.command()
     async def add(self, ctx, arg1):
@@ -199,13 +199,16 @@ class TotuCount(commands.Cog):
         if message.channel.id in self.totu.keys():
             if len(message.attachments) > 0:
                 # messageに添付画像があり、指定のチャンネルの場合動作する
-                image = await self.download_img_io(message.attachments[0].url)
+                image = await self.download_img(
+message.attachments[0].url)
                 if (res := self.image_ocr(image)) is not None:
                     ## ocr結果確認用
                     # print(res,
                     # end='\n--------------------OCR Result-------------------\n')
-                    self.totu[message.channel.id] = self.totu[message.channel.id] + self.count(res)
-                    print(f'{message.channel.name}count: {self.totu[message.channel.id]}')
+                    self.totu[message.channel.id] = self.totu[\
+message.channel.id] + self.count(res)
+                    print(f'{message.channel.name} count: {self.totu[\
+message.channel.id]}')
                 else:
                     print('画像読み取りに失敗しました')
 
