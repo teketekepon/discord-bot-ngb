@@ -15,18 +15,6 @@ import pyocr.builders
 from .dbox import TransferData
 
 TEMP_PATH = r'./tmp/'
-RESOLUTIONS = [(1280, 760),   # 0 DMM windows枠あり
-                (1280, 720),  # 1
-                (1334, 750),   # 2
-                (1920, 1080),  # 3 ここまで16:9
-                (2048, 1536),  # 4 4:3
-                (2224, 1668),  # 5 4:3 iPad
-                (2732, 2048),  # 6 4:3
-                (2880, 1440),  # 7 2_1 android
-                (3040, 1440),  # 8 2_1 Galaxy系(左160黒い)
-                (1792, 828),   # 9 19.5:9 iPhoneXR,11
-                (2436, 1125),  # 10 19.5:9 iPhoneX,XS,11Pro
-                (2688, 1242)]  # 11 19.5:9 iPhoneXS,11Pro max
 
 class TotuCount(commands.Cog):
     """
@@ -64,6 +52,22 @@ r'/totu.pkl')
 
     def image_ocr(self, image):
         # バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)
+        RESOLUTIONS = [
+        (1280, 760),   # 0 DMM windows枠あり
+        (1123, 628),   # 1
+        (1280, 720),   # 2 DMM windows枠なし
+        (1334, 750),   # 3 iPhone 7,8
+        (1920, 1080),  # 4 ここまで16:9
+        (2048, 1536),  # 5 4:3 iPad 9.7 mini
+        (2224, 1668),  # 6 iPad Pro 10.5inch
+        (2732, 2048),  # 8 iPad Pro 12.9inch
+        (2388, 1668),  # 7 iPad Pro 11inch
+        (2880, 1440),  # 9 2:1 android
+        (3040, 1440),  # 10 2:1 Galaxy系(左160黒い)
+        (1792, 828),   # 11 19.5:9 iPhoneXR,11
+        (2436, 1125),  # 12 19.5:9 iPhoneX,XS,11Pro
+        (2688, 1242)   # 13 19.5:9 iPhoneXS,11Pro max
+        ]
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
             # 解像度ごとに切り取り(+-10ピクセルは許容)
@@ -71,16 +75,18 @@ r'/totu.pkl')
 10 < i[0] < im.width + 10:
                 if num == 0:
                     im_hd = im.resize((1920, 1080), Image.LANCZOS)
-                    im_crop = im_hd.crop((1400, 245, 1720, 880))
-                elif num <= 3:  # 16:9
+                    im_crop = im_hd.crop((1400, 245, 1720, 900))
+                elif num <= 4:  # 16:9
                     im_hd = im.resize((1920, 1080), Image.LANCZOS)
                     im_crop = im_hd.crop((1400, 205, 1720, 920))
-                elif num <= 6:  # 4:3 iPad
+                elif num <= 7:  # 4:3 iPad1
                     im_hd = im.resize((2224, 1668), Image.LANCZOS)
                     im_crop = im.crop((1625, 645, 1980, 1480))
-                elif num == 7:  # 2_1 android
+                elif num == 8:  # iPad2
+                    im_crop = im.crop((1730, 545, 2090, 1430))
+                elif num == 9:  # 2_1 android
                     im_crop = im.crop((2200, 280, 2620, 1220))
-                elif num == 8:  # 2_1 Galaxy
+                elif num == 10:  # 2_1 Galaxy
                     im_crop = im.crop((2360, 280, 2780, 1220))
                 else:  # 19.5:9 iPhone
                     im_hd = im.resize((2668, 1242), Image.LANCZOS)
