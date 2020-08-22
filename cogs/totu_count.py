@@ -83,7 +83,7 @@ r'/totu.pkl')
                     im_hd = im.resize((2224, 1668), Image.LANCZOS)
                     im_crop = im.crop((1625, 645, 1980, 1480))
                 elif num == 8:  # iPad2
-                    im_crop = im.crop((1730, 545, 2090, 1430))
+                    im_crop = im.crop((1730, 545, 2140, 1430))
                 elif num == 9:  # 2_1 android
                     im_crop = im.crop((2200, 280, 2620, 1220))
                 elif num == 10:  # 2_1 Galaxy
@@ -105,8 +105,8 @@ mode='L')
             print('OCRtoolが読み込めません')
             return None
         tool = tools[0]
-        res = tool.image_to_string(im_bin, lang='jpn',
-        builder=pyocr.builders.WordBoxBuilder(tesseract_layout=6))
+        builder = pyocr.builders.WordBoxBuilder(tesseract_layout=6)
+        res = tool.image_to_string(im_bin, lang='jpn', builder=builder)
         text = ''
         for d in res:
             text = text + d.content
