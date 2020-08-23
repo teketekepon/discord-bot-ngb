@@ -27,7 +27,7 @@ BOSSES = ['ワイバーン', 'ランドスロース', 'ムシュフシュ', 'テ
 STUMPS = ['△', '◆', '□', '◎', '☆', '〇', '?']
 
 class SaveResult(commands.Cog):
-    
+
     def __init__(self, bot):
         self.bot = bot
         # dict channels {key=channel.id value=[channel.name,rej,[col]]}
@@ -327,7 +327,7 @@ mode='L')
             self.channels[ctx.channel.id] = [ctx.channel.name, 9, [3] * 30]
             wb = load_workbook(EXCEL_PATH)
             sheet = wb.copy_worksheet(wb['Template'])
-            sheet.title =  ctx.channel.name
+            sheet.title = ctx.channel.name
             wb.save(EXCEL_PATH)
             wb.close()
             await ctx.send(f'{ctx.channel.name} を作業チャンネルに追加しました')
