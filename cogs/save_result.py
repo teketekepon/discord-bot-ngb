@@ -27,7 +27,7 @@ BOSSES = ['ワイバーン', 'ランドスロース', 'ムシュフシュ', 'テ
 STUMPS = ['△', '◆', '□', '◎', '☆', '〇', '?']
 
 class SaveResult(commands.Cog):
-    # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
+    
     def __init__(self, bot):
         self.bot = bot
         # dict channels {key=channel.id value=[channel.name,rej,[col]]}
@@ -176,6 +176,11 @@ mode='L')
         member = sum([[cell.value for cell in tmp] for tmp in sheet['A2:A31']], [])
         # 名前とボスとダメージのリスト抽出
         data = re.findall(r'(.+?)が(.+?)に(.[\doO]+)(ダメージで|ダメージ)', text)
+        ## ocr結果確認用
+        # print(text,
+        # end='\n--------------------OCR Result-------------------\n')
+        # print(data,
+        # end='\n--------------------Result Data-------------------\n')
         for n, m in enumerate(reversed(data)):  # nは添え字,mはタプル
             isMatch = False
             for i, j in enumerate(member):  # iは添え字,jはリスト
@@ -275,8 +280,8 @@ mode='L')
             await ctx.send('このチャンネルでの操作は許可されていません\n'
                                       '/append コマンドで作業チャンネルに登録してください')
 
-    @commands.command()  # セルの内容を消去(Noneに上書き)するコマンド
-    async def clear(self, ctx, a: typing.Optional[str] = None):
+    @commands.command(name=del)  # セルの内容を消去(Noneに上書き)するコマンド
+    async def _del(self, ctx, a: typing.Optional[str] = None):
         if ctx.channel.id in self.channels.keys():
             var = self.channel[ctx.channels.id]
             if a is not None:
@@ -308,10 +313,10 @@ mode='L')
         if ctx.channel.id in self.channels.keys():
             await ctx.send(file=discord.File(EXCEL_PATH))
 
-    @commands.command()
-    async def totu(self, ctx):
-        # await ctx.send(f'残り凸数は {90-self.channels} です')
-        pass
+    # @commands.command()
+    # async def totu(self, ctx):
+    #     # await ctx.send(f'残り凸数は {90-self.channels} です')
+    #     pass
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)

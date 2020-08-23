@@ -23,7 +23,6 @@ class TotuCount(commands.Cog):
     トリミングされている等の理由で規定の解像度から外れるとエラーになります。
     """
 
-    # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
         # {key = channel.id value = count}
@@ -208,9 +207,6 @@ mode='L')
                 image = await self.download_img(
 message.attachments[0].url)
                 if (res := self.image_ocr(image)) is not None:
-                    ## ocr結果確認用
-                    # print(res,
-                    # end='\n--------------------OCR Result-------------------\n')
                     self.totu[message.channel.id] = \
 self.totu[message.channel.id] + self.count(res)
                     print(f'{message.channel.name} count: '\
