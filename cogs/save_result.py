@@ -2,11 +2,11 @@
 #
 # バトルログのスクショを読み込みエクセルに結果を書き込む
 #
+from io import BytesIO
 import os
 import re
 import pickle
 import typing
-from io import BytesIO
 
 import aiohttp
 import aiofiles
@@ -30,37 +30,29 @@ class SaveResult(commands.Cog):
     # クラスのコンストラクタ。Botを受取り、インスタンス変数として保持。
     def __init__(self, bot):
         self.bot = bot
-        self.totu = {}
-        self.col = [3] * 30
-        self.rej = 9
-        if TransferData().download_file(r'/totu.pkl', TEMP_PATH + 'totu.pkl'):
-            with open(TEMP_PATH + 'totu.pkl','rb') as f:
-                self.totu = pickle.load(f)
-        if TransferData().download_file(r'/col.pkl', TEMP_PATH + 'col.pkl'):
-            with open(TEMP_PATH + 'col.pkl','rb') as f:
-                self.col = pickle.load(f)
-        if TransferData().download_file(r'/rej.pkl', TEMP_PATH + 'rej.pkl'):
-            with open(TEMP_PATH + 'rej.pkl','rb') as f:
-                self.rej = pickle.load(f)
+        # dict channels {key=channel.id value=[channel.name,rej,[col]]}
+        # col: excel 列数値 rej: excel 書き込み禁止列数値(日にち判定に使用)
+        self.channels = {}
+        if TransferData().download_file(r'/channels.pkl', TEMP_PATH + 'channels.pkl'):
+            with open(TEMP_PATH + 'channels.pkl','rb') as f:
+                self.channels = pickle.load(f)
 
     def cog_unload(self):
-        with open(TEMP_PATH + 'totu.pkl','wb') as f:
-            pickle.dump(self.totu, f)
-        TransferData().upload_file(TEMP_PATH + 'totu.pkl', r'/totu.pkl')
-        with open(TEMP_PATH + 'col.pkl','wb') as f:
-            pickle.dump(self.col, f)
-        TransferData().upload_file(TEMP_PATH + 'col.pkl', r'/col.pkl')
-        with open(TEMP_PATH + 'rej.pkl','wb') as f:
-            pickle.dump(self.rej, f)
-        TransferData().upload_file(TEMP_PATH + 'rej.pkl', r'/rej.pkl')
+        with open(TEMP_PATH + 'channels.pkl','wb') as f:
+            pickle.dump(self.channels, f)
+        TransferData().upload_file(TEMP_PATH + 'channels.pkl', r'/channels.pkl')
 
     async def download_img(self, url):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, timeout = 20) as resp:
-                if resp.status == 200:
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, timeout = 20) as resp:
+                    if resp.status != 200:
+                        print(f'DL error status: {resp.status}')
+                        return
                     return BytesIO(await resp.read())
-                else:
-                    return None
+        except Exception as e:
+            print(f'DL error {e}')
+            return
 
     def image_ocr(self, image):
         # バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)
@@ -124,9 +116,9 @@ mode='L')
             text = text + d.content
         return text
 
-    def member_edit(self, op=None, *member):
+    def member_edit(self, sheet_name, op=None, *member):
         wb = load_workbook(EXCEL_PATH)
-        sheet = wb['Battle_log']
+        sheet = wb[sheet_name]
         mlist = sum([[cell.value for cell in tmp] for tmp in sheet['A2:A31']], [])
         temp = []
         if op is None:
@@ -174,14 +166,12 @@ mode='L')
             del data[0]  # 1枚4件までのため
         for i in data:
             if not 'で' in i:
-                self.totu += 1
                 n += 1
-        print(f'{n}凸カウント')
-        return
+        return n
 
-    def save_excel(self, text):
-        wb = load_workbook(EXCEL_PATH)
-        sheet = wb['Battle_log']
+    def save_excel(self, sheet_name, rej, col,  text):
+        workbook = load_workbook(EXCEL_PATH)
+        sheet = wb[sheet_name]
         # excelからメンバーリストを取得
         member = sum([[cell.value for cell in tmp] for tmp in sheet['A2:A31']], [])
         # 名前とボスとダメージのリスト抽出
@@ -197,7 +187,7 @@ mode='L')
                 else:
                     isMatch = True
                 row = i + 2  # cell[A2]から始まるため+2する
-                if self.col[i] == self.rej:
+                if col[i] == rej:
                     print(f'{m} 1日6個以上のスタンプは押せません')
                     return
                 if 'で' in m[3]:
@@ -209,10 +199,10 @@ mode='L')
                 else:
                     stu = 5  # 凸なので〇スタンプをセット
                 if  isMatch:
-                    cell = sheet.cell(row=row, column=self.col[i], value=STUMPS[stu])
-                    self.col[i] += 1
+                    cell = sheet.cell(row=row, column=col[i], value=STUMPS[stu])
+                    col[i] += 1
                     if stu == 5:
-                        self.totu += 1
+                        channels += 1
                 continue
             if isMatch:
                 print(f'{m} は\'{cell.coordinate}\'に\'{STUMPS[stu]}\'と書き込みました')
@@ -221,9 +211,9 @@ mode='L')
         # Excelファイルをセーブして閉じる
         wb.save(EXCEL_PATH)
         wb.close()
-        
+
     # clearコマンドで利用する関数
-    def clear_excel(self, kwd):
+    def clear_excel(self, sheet_name, kwd):
         # 任意のセルを始点に2次元配列を書き込む関数
         def write_list_2d(sheet, l_2d, start_row, start_col):
             for y, row in enumerate(l_2d):
@@ -232,7 +222,7 @@ mode='L')
         # 6*30の空の2次元配列を作る
         blank_list = [['' for row in range(6)] for col in range(30)]
         wb = load_workbook(EXCEL_PATH)
-        sheet = wb['Battle_log']
+        sheet = wb[sheet_name]
         if kwd == 'day1':  # 内容をクリア
             write_list_2d(sheet, blank_list, 2, 3)
         elif kwd == 'day2':
@@ -258,27 +248,27 @@ mode='L')
 
     @commands.command()  # 記録する位置を変更するコマンド 全員の列位置が変更される
     async def day(self, ctx, a :typing.Optional[int] = None):
-        if ctx.channel.id in self.work_channel_id:
+        if ctx.channel.id in self.channels.keys():
+            var = self.channel[ctx.channels.id]
             if a is not None:
                 if 0 < a < 6:
-                    self.col = [3+7*(a-1)] * 30
-                    self.rej = 9+7*(a-1)
-                    self.totu = 0
+                    var[2] = [3+7*(a-1)] * 30
+                    var[1] = 9+7*(a-1)
                     await ctx.send(f'記録位置を{a}日目にセットしました')
                 else:
                     await ctx.send('引数は半角数字の1～6で入力してください')
             else:
-                if self.rej == 9:
+                if var[1] == 9:
                     mes = '現在1日目です'
-                elif self.rej == 16:
+                elif var[1] == 16:
                     mes = '現在2日目です'
-                elif self.rej == 23:
+                elif var[1] == 23:
                     mes = '現在3日目です'
-                elif self.rej == 30:
+                elif var[1] == 30:
                     mes = '現在4日目です'
-                elif self.rej == 37:
+                elif var[1] == 37:
                     mes = '現在5日目です'
-                elif self.rej == 44:
+                elif var[1] == 44:
                     mes = '現在6日目です'
                 await ctx.send(f'{mes} 引数で何日目か教えてください 1～6')
         else:
@@ -287,54 +277,65 @@ mode='L')
 
     @commands.command()  # セルの内容を消去(Noneに上書き)するコマンド
     async def clear(self, ctx, a: typing.Optional[str] = None):
-        if ctx.channel.id in self.work_channel_id:
+        if ctx.channel.id in self.channels.keys():
+            var = self.channel[ctx.channels.id]
             if a is not None:
                 if len(a) < 2:
-                    b = self.clear_excel('day' + a)
+                    b = self.clear_excel(var[0], 'day' + a)
                 else:
-                    b = self.clear_excel(a)
+                    b = self.clear_excel(var[0], a)
                 if b:
-                    self.col = [self.rej - 6] * 30
-                    self.totu = 0
+                    var[2] = [var[1] - 6] * 30
                     await ctx.send(f'「{a}」日目の内容を消去しました\nそれに伴い記録位置もリセットされました')
                 else:
                     await ctx.send('引数が無効です')
             else:
                 await ctx.send('何日目の記録を消去するか指定してください(1～6 または all)')
         else:
-            await ctx.send('このチャンネルでの操作は許可されていません\n'
-                                      '/append コマンドで作業チャンネルに登録してください')
+            await ctx.send('このチャンネルでの操作は許可されていません')
 
     @commands.command()
     async def member(self, ctx, op=None, *member):
-        if ctx.channel.id in self.work_channel_id:
-            res = self.member_edit(op, *member)
+        if ctx.channel.id in self.channels.keys():
+            var = self.channel[ctx.channels.id]
+            res = self.member_edit(var[0], op, *member)
             await ctx.send(f'現在のメンバー一覧です\n{res}')
         else:
-            await ctx.send('このチャンネルでの操作は許可されていません\n'
-                                      '/append コマンドで作業チャンネルに登録してください')
+            await ctx.send('このチャンネルでの操作は許可されていません'')
 
     @commands.command()
     async def pull(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
+        if ctx.channel.id in self.channels.keys():
             await ctx.send(file=discord.File(EXCEL_PATH))
 
     @commands.command()
     async def totu(self, ctx):
-        await ctx.send(f'残り凸数は {90-self.totu} です')
+        # await ctx.send(f'残り凸数は {90-self.channels} です')
+        pass
 
     @commands.command()
+    @commands.has_permissions(manage_channels=True)
     async def register(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
+        if ctx.channel.id in self.channels.keys():
             await ctx.send(f'{ctx.channel.name} はすでに作業チャンネルです')
         else:
-            self.work_channel_id.append(ctx.channel.id)
+            self.channels[ctx.channel.id] = [ctx.channel.name, 9, [3] * 30]
+            wb = load_workbook(EXCEL_PATH)
+            sheet = wb.copy_worksheet(wb['Template'])
+            sheet.title =  ctx.channel.name
+            wb.save(EXCEL_PATH)
+            wb.close()
             await ctx.send(f'{ctx.channel.name} を作業チャンネルに追加しました')
 
     @commands.command()
+    @commands.has_permissions(manage_channels=True)
     async def unregister(self, ctx):
-        if ctx.channel.id in self.work_channel_id:
-            self.work_channel_id.remove(ctx.channel.id)
+        if ctx.channel.id in self.channels.keys():
+            wb = load_workbook(EXCEL_PATH)
+            wb.remove_sheet(wb[self.channels[ctx.channel.id]])
+            wb.save(EXCEL_PATH)
+            wb.close()
+            del self.channels[ctx.channel.id]
             await ctx.send(f'{ctx.channel.name} を作業チャンネルから除外しました')
         else:
             await ctx.send(f'{ctx.channel.name} は作業チャンネルではありません')
@@ -344,13 +345,14 @@ mode='L')
         if message.author.bot:
             return
 
-        if message.channel.id in self.totu.keys():
+        if message.channel.id in self.channels.keys():
             if len(message.attachments) > 0:
                 # messageに添付画像があり、指定のチャンネルの場合動作する
-                image = await self.download_img(message.attachments[0].url)
-                if (res := self.image_ocr(image)) is not None:
-                    self.totu_count(res)
-                    self.save_excel(res)
+                if (image := await self.download_img(message.attachments[0].url)) is not None:
+                    if (res := self.image_ocr(image)) is not None:
+                        # var = self.channel[ctx.channels.id]
+                        # self.save_excel(var[0], var[1], var[2], res)
+                        pass
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
-    bot.add_cog(SaveResult(bot)) # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。
+    bot.add_cog(SaveResult(bot))
