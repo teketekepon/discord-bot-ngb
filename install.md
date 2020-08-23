@@ -12,7 +12,7 @@ heroku login
 heroku create アプリ名
 heroku config:set ACCESS_TOKEN=["Botのアクセストークン"]
 heroku config:set DROPBOX_TOKEN=["Dropbox APIアクセストークン"]
-heroku buildpacks:set https://github.com/pathwaysmedical/heroku-buildpack-tesseract
+heroku buildpacks:set https://github.com/teketekepon/heroku-buildpack-tesseract
 git clone https://github.com/teketekepon/discord-bot-ngb/tree/master
 git push heroku master
 ```
