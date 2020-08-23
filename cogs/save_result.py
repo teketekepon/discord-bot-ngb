@@ -22,7 +22,13 @@ from .dbox import TransferData
 TEMP_PATH = r'./tmp/'
 EXCEL_PATH = r'./BattleLog.xlsx'
 # 7月のボス
-BOSSES = ['ワイバーン', 'ランドスロース', 'ムシュフシュ', 'ティタノタートル', 'オルレオン']
+BOSSES = [
+'ワイバーン',
+'ランドスロース',
+'ムシュフシュ',
+'ティタノタートル',
+'オルレオン'
+]
 # 左から[1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA,凸,不明]
 STUMPS = ['△', '◆', '□', '◎', '☆', '〇', '?']
 
