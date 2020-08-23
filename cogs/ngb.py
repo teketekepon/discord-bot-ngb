@@ -12,7 +12,7 @@ class Ngb(commands.Cog):
     プリコネクラン「ナイトガーデン」グループのdiscord用botです。
     他のサーバーでは動作しません。
     """
-    global nightgarden_id
+
     def __init__(self, bot):
         self.bot = bot
 
