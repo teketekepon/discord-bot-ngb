@@ -92,7 +92,7 @@ class TotuCount(commands.Cog):
                     im_crop = im_hd.crop((1965, 225, 2290, 1000))
                 break
         else:
-            print('非対応の解像度です')
+            print(f'{im.width}x{im.height}: 非対応の解像度です')
             return None
         # Pillowで2値化
         im_gray = im_crop.convert('L')
