@@ -23,11 +23,11 @@ TEMP_PATH = r'./tmp/'
 EXCEL_PATH = r'./BattleLog.xlsx'
 # 7月のボス
 BOSSES = [
-'ワイバーン',
-'ランドスロース',
-'ムシュフシュ',
-'ティタノタートル',
-'オルレオン'
+    'ワイバーン',
+    'ランドスロース',
+    'ムシュフシュ',
+    'ティタノタートル',
+    'オルレオン'
 ]
 # 左から[1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA,凸,不明]
 STUMPS = ['△', '◆', '□', '◎', '☆', '〇', '?']
@@ -63,26 +63,26 @@ class SaveResult(commands.Cog):
     def image_ocr(self, image):
         # バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)
         RESOLUTIONS = [
-        (1280, 760),   # 0 DMM windows枠あり
-        (1123, 628),   # 1
-        (1280, 720),   # 2 DMM windows枠なし
-        (1334, 750),   # 3 iPhone 7,8
-        (1920, 1080),  # 4 ここまで16:9
-        (2048, 1536),  # 5 4:3 iPad 9.7 mini
-        (2224, 1668),  # 6 iPad Pro 10.5inch
-        (2732, 2048),  # 7 iPad Pro 12.9inch
-        (2388, 1668),  # 8 iPad Pro 11inch
-        (2880, 1440),  # 9 2:1 android
-        (3040, 1440),  # 10 2:1 Galaxy系(左160黒い)
-        (1792, 828),   # 11 19.5:9 iPhoneXR,11
-        (2436, 1125),  # 12 19.5:9 iPhoneX,XS,11Pro
-        (2688, 1242)   # 13 19.5:9 iPhoneXS,11Pro max
+            (1280, 760),   # 0 DMM windows枠あり
+            (1123, 628),   # 1
+            (1280, 720),   # 2 DMM windows枠なし
+            (1334, 750),   # 3 iPhone 7,8
+            (1920, 1080),  # 4 ここまで16:9
+            (2048, 1536),  # 5 4:3 iPad 9.7 mini
+            (2224, 1668),  # 6 iPad Pro 10.5inch
+            (2732, 2048),  # 7 iPad Pro 12.9inch
+            (2388, 1668),  # 8 iPad Pro 11inch
+            (2880, 1440),  # 9 2:1 android
+            (3040, 1440),  # 10 2:1 Galaxy系(左160黒い)
+            (1792, 828),   # 11 19.5:9 iPhoneXR,11
+            (2436, 1125),  # 12 19.5:9 iPhoneX,XS,11Pro
+            (2688, 1242)   # 13 19.5:9 iPhoneXS,11Pro max
         ]
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
             # 解像度ごとに切り取り(+-10ピクセルは許容)
-            if im.height - 10 < i[1] < im.height + 10 and im.width -\
-10 < i[0] < im.width + 10:
+            if (im.height - 10 < i[1] < im.height + 10 and im.width\
+                    - 10 < i[0] < im.width + 10):
                 if num == 0:
                     im_hd = im.resize((1920, 1080), Image.LANCZOS)
                     im_crop = im_hd.crop((1400, 245, 1720, 900))
@@ -107,8 +107,7 @@ class SaveResult(commands.Cog):
             return None
         # Pillowで2値化
         im_gray = im_crop.convert('L')
-        im_bin = im_gray.point(lambda x: 255 if x > 193 else 0,
-mode='L')
+        im_bin = im_gray.point(lambda x: 255 if x > 193 else 0, mode='L')
         # 日本語と英数字をOCR
         tools = pyocr.get_available_tools()
         if len(tools) == 0:
@@ -167,7 +166,8 @@ mode='L')
 
     def totu_count(self, text):
         n = 0
-        data = re.findall(r'ダメージで|ダメージ', text)  # OCRtextから凸部分のみ抽出
+        # OCRtextから凸部分のみ抽出
+        data = re.findall(r'ダメージで|ダメージ', text)
         if len(data) >= 5:
             del data[0]  # 1枚4件までのため
         for i in data:
@@ -283,8 +283,7 @@ mode='L')
                     mes = '現在6日目です'
                 await ctx.send(f'{mes} 引数で何日目か教えてください 1～6')
         else:
-            await ctx.send('このチャンネルでの操作は許可されていません\n'
-                                      '/append コマンドで作業チャンネルに登録してください')
+            await ctx.send('このチャンネルでの操作は許可されていません')
 
     @commands.command(name=del)  # セルの内容を消去(Noneに上書き)するコマンド
     async def _del(self, ctx, a: typing.Optional[str] = None):

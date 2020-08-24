@@ -10,12 +10,12 @@ from .dbox import TransferData
 TEMP_PATH = r'./tmp/'
 # 7月のボス
 BOSSES = [
-'ワイバーン',
-'ランドスロース',
-'ムシュフシュ',
-'ティタノタートル',
-'オルレオン'
-]
+        'ワイバーン',
+        'ランドスロース',
+        'ムシュフシュ',
+        'ティタノタートル',
+        'オルレオン'
+    ]
 
 class Reserve(commands.Cog):
     """
@@ -33,8 +33,8 @@ class Reserve(commands.Cog):
         self.res_b4 = {}
         self.res_b5 = {}
 
-        if TransferData().download_file(r'/res.pkl',TEMP_PATH +\
-'res.pkl'):
+        if TransferData().download_file(r'/res.pkl',
+                                        TEMP_PATH + 'res.pkl'):
             with open(TEMP_PATH + 'res.pkl','rb') as f:
                 items = pickle.load(f)
             if any(True for _ in items):
@@ -48,15 +48,15 @@ class Reserve(commands.Cog):
                 self.res_b5.update(list(filter(None, e)))
 
     def cog_unload(self):
-        items = zip_longest(self.res_b1.items(), self.res_b2.items()\
-, self.res_b3.items(), self.res_b4.items(), self.res_b5.items())
+        items = zip_longest(self.res_b1.items(), self.res_b2.items(),\
+        self.res_b3.items(), self.res_b4.items(), self.res_b5.items())
         with open(TEMP_PATH + 'res.pkl','wb') as f:
             pickle.dump(items, f)
         TransferData().upload_file(TEMP_PATH + 'res.pkl',r'/res.pkl')
 
     def overlap_check(self, user_id):  # すでに予約しているユーザーをはじく
         union_key = self.res_b1.keys() | self.res_b2.keys() | \
-self.res_b3.keys() | self.res_b4.keys() | self.res_b5.keys()
+        self.res_b3.keys() | self.res_b4.keys() | self.res_b5.keys()
         for i in union_key:
             if user_id == i:
                 return True
@@ -70,20 +70,20 @@ self.res_b3.keys() | self.res_b4.keys() | self.res_b5.keys()
         """
         embed = discord.Embed(title='**現在の凸希望者**',color=0x0000ff)
         embed.add_field(name=f'{BOSSES[0]}',
-        value='まだ誰もいません' if not self.res_b1 else\
-'\n'.join(self.res_b1.values()),inline=False)
+                        value='まだ誰もいません' if not self.res_b1 else\
+                            '\n'.join(self.res_b1.values()),inline=False)
         embed.add_field(name=f'{BOSSES[1]}',
-        value='まだ誰もいません' if not self.res_b2 else\
-'\n'.join(self.res_b2.values()),inline=False)
+                        value='まだ誰もいません' if not self.res_b2 else\
+                            '\n'.join(self.res_b2.values()),inline=False)
         embed.add_field(name=f'{BOSSES[2]}',
-        value='まだ誰もいません' if not self.res_b3 else\
-'\n'.join(self.res_b3.values()),inline=False)
+                        value='まだ誰もいません' if not self.res_b3 else\
+                            '\n'.join(self.res_b3.values()),inline=False)
         embed.add_field(name=f'{BOSSES[3]}',
-        value='まだ誰もいません' if not self.res_b4 else\
-'\n'.join(self.res_b4.values()),inline=False)
+                        value='まだ誰もいません' if not self.res_b4 else\
+                            '\n'.join(self.res_b4.values()),inline=False)
         embed.add_field(name=f'{BOSSES[4]}',
-        value='まだ誰もいません' if not self.res_b5 else\
-'\n'.join(self.res_b5.values()),inline=False)
+                        value='まだ誰もいません' if not self.res_b5 else\
+                            '\n'.join(self.res_b5.values()),inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(name=BOSSES[0],aliases=['b1','boss1'])
@@ -91,40 +91,40 @@ self.res_b3.keys() | self.res_b4.keys() | self.res_b5.keys()
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
-        self.res_b1[ctx.author.id] = ctx.author.display_name\
-if not note else ctx.author.display_name + f': {note}'
+        self.res_b1[ctx.author.id] = ctx.author.display_name if not note\
+            else ctx.author.display_name + f': {note}'
 
     @commands.command(name=BOSSES[1],aliases=['b2','boss2'])
     async def res2(self, ctx, note=''):
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
-        self.res_b2[ctx.author.id] = ctx.author.display_name\
-if not note else ctx.author.display_name + f': {note}'
+        self.res_b2[ctx.author.id] = ctx.author.display_name if not note\
+            else ctx.author.display_name + f': {note}'
 
     @commands.command(name=BOSSES[2],aliases=['b3','boss3'])
     async def res3(self, ctx, note=''):
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
-        self.res_b3[ctx.author.id] = ctx.author.display_name\
-if not note else ctx.author.display_name + f': {note}'
+        self.res_b3[ctx.author.id] = ctx.author.display_name if not note\
+            else ctx.author.display_name + f': {note}'
 
     @commands.command(name=BOSSES[3],aliases=['b4','boss4'])
     async def res4(self, ctx, note=''):
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
-        self.res_b4[ctx.author.id] = ctx.author.display_name\
-if not note else ctx.author.display_name + f': {note}'
+        self.res_b4[ctx.author.id] = ctx.author.display_name if not note\
+            else ctx.author.display_name + f': {note}'
 
     @commands.command(name=BOSSES[4],aliases=['b5','boss5'])
     async def res5(self, ctx, note=''):
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
-        self.res_b5[ctx.author.id] = ctx.author.display_name\
-if not note else ctx.author.display_name + f': {note}'
+        self.res_b5[ctx.author.id] = ctx.author.display_name if not note\
+            else ctx.author.display_name + f': {note}'
 
     @commands.command(aliases=['凸完了','完了','クリア'])
     async def clear(self, ctx):  #予約を削除

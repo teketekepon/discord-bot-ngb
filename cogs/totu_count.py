@@ -27,8 +27,8 @@ class TotuCount(commands.Cog):
         self.bot = bot
         # {key = channel.id value = count}
         self.totu = {}
-        if TransferData().download_file(r'/totu.pkl', TEMP_PATH +
-'totu.pkl'):
+        if TransferData().download_file(r'/totu.pkl',
+        TEMP_PATH + 'totu.pkl'):
             with open(TEMP_PATH + 'totu.pkl','rb') as f:
                 self.totu = pickle.load(f)
 
@@ -36,7 +36,7 @@ class TotuCount(commands.Cog):
         with open(TEMP_PATH + 'totu.pkl','wb') as f:
             pickle.dump(self.totu, f)
         TransferData().upload_file(TEMP_PATH + 'totu.pkl',
-r'/totu.pkl')
+        r'/totu.pkl')
 
     async def download_img(self, url):
         try:
@@ -52,26 +52,26 @@ r'/totu.pkl')
     def image_ocr(self, image):
         # バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)
         RESOLUTIONS = [
-        (1280, 760),   # 0 DMM windows枠あり
-        (1123, 628),   # 1
-        (1280, 720),   # 2 DMM windows枠なし
-        (1334, 750),   # 3 iPhone 7,8
-        (1920, 1080),  # 4 ここまで16:9
-        (2048, 1536),  # 5 4:3 iPad 9.7 mini
-        (2224, 1668),  # 6 iPad Pro 10.5inch
-        (2732, 2048),  # 7 iPad Pro 12.9inch
-        (2388, 1668),  # 8 iPad Pro 11inch
-        (2880, 1440),  # 9 2:1 android
-        (3040, 1440),  # 10 2:1 Galaxy系(左160黒い)
-        (1792, 828),   # 11 19.5:9 iPhoneXR,11
-        (2436, 1125),  # 12 19.5:9 iPhoneX,XS,11Pro
-        (2688, 1242)   # 13 19.5:9 iPhoneXS,11Pro max
+            (1280, 760),   # 0 DMM windows枠あり
+            (1123, 628),   # 1
+            (1280, 720),   # 2 DMM windows枠なし
+            (1334, 750),   # 3 iPhone 7,8
+            (1920, 1080),  # 4 ここまで16:9
+            (2048, 1536),  # 5 4:3 iPad 9.7 mini
+            (2224, 1668),  # 6 iPad Pro 10.5inch
+            (2732, 2048),  # 7 iPad Pro 12.9inch
+            (2388, 1668),  # 8 iPad Pro 11inch
+            (2880, 1440),  # 9 2:1 android
+            (3040, 1440),  # 10 2:1 Galaxy系(左160黒い)
+            (1792, 828),   # 11 19.5:9 iPhoneXR,11
+            (2436, 1125),  # 12 19.5:9 iPhoneX,XS,11Pro
+            (2688, 1242)   # 13 19.5:9 iPhoneXS,11Pro max
         ]
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
             # 解像度ごとに切り取り(+-10ピクセルは許容)
-            if im.height - 10 < i[1] < im.height + 10 and im.width -\
-10 < i[0] < im.width + 10:
+            if (im.height - 10 < i[1] < im.height + 10 and im.width
+                    - 10 < i[0] < im.width + 10):
                 if num == 0:
                     im_hd = im.resize((1920, 1080), Image.LANCZOS)
                     im_crop = im_hd.crop((1400, 245, 1720, 900))
@@ -96,8 +96,7 @@ r'/totu.pkl')
             return None
         # Pillowで2値化
         im_gray = im_crop.convert('L')
-        im_bin = im_gray.point(lambda x: 255 if x > 193 else 0,
-mode='L')
+        im_bin = im_gray.point(lambda x: 255 if x > 193 else 0, mode='L')
         # 日本語と英数字をOCR
         tools = pyocr.get_available_tools()
         if len(tools) == 0:
@@ -204,13 +203,12 @@ mode='L')
         if message.channel.id in self.totu.keys():
             if len(message.attachments) > 0:
                 # messageに添付画像があり、指定のチャンネルの場合動作する
-                image = await self.download_img(
-message.attachments[0].url)
+                image = await self.download_img(message.attachments[0].url)
                 if (res := self.image_ocr(image)) is not None:
-                    self.totu[message.channel.id] = \
-self.totu[message.channel.id] + self.count(res)
+                    self.totu[message.channel.id] \
+                        = self.totu[message.channel.id] + self.count(res)
                     print(f'{message.channel.name} count: '\
-f'{self.totu[message.channel.id]}')
+                          f'{self.totu[message.channel.id]}')
                 else:
                     print('画像読み取りに失敗しました')
 
