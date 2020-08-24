@@ -10,12 +10,12 @@ from .dbox import TransferData
 TEMP_PATH = r'./tmp/'
 # 7月のボス
 BOSSES = [
-        'ワイバーン',
-        'ランドスロース',
-        'ムシュフシュ',
-        'ティタノタートル',
-        'オルレオン'
-    ]
+    'ワイバーン',
+    'グリフォン',
+    'マダムプリズム',
+    'ムーバ',
+    'メデューサ'
+]
 
 class Reserve(commands.Cog):
     """
