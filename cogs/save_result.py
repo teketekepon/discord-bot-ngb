@@ -12,6 +12,7 @@ import aiohttp
 import aiofiles
 import discord
 from discord.ext import commands
+import jancov
 from openpyxl import load_workbook
 from PIL import Image
 import pyocr
@@ -59,6 +60,25 @@ class SaveResult(commands.Cog):
         except Exception as e:
             print(f'DL error {e}')
             return
+
+    def unvoiced(c):
+        """清音にする"""
+        def isHiragana(c):
+            """cがひらがなのユニコードポイント範囲内か判定"""
+            hiragana = range(0x3041, 0x3096 + 1)
+            return ord(c) in hiragana
+        def isKatakana(c):
+            """cがカタカナのユニコードポイント範囲内か判定"""
+            katakana = range(0x30A0, 0x30FA + 1)
+            return ord(c) in katakana
+        if isHiragana(c):              # ひらがなの場合
+            hk = jaconv.hira2hkata(c)      # 半角ｶﾀｶﾅに変換
+            zk = jaconv.h2z(hk[0])         # 一文字目だけを全角カタカナに戻す
+            c = jaconv.kata2hira(zk)       # ひらがなに戻す
+        elif isKatakana(c):            # カタカナの場合
+            hk = jaconv.z2h(c)             # 半角ｶﾀｶﾅに変換
+            c = jaconv.h2z(hk[0])          # 一文字目だけを全角カタカナに戻す
+        return c
 
     def image_ocr(self, image):
         # バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)
