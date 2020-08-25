@@ -106,7 +106,7 @@ class SaveResult(commands.Cog):
                     im_crop = im.crop((2360, 280, 2780, 1220))
                 else:  # 19.5:9 iPhone
                     im_hd = im.resize((2668, 1242), Image.LANCZOS)
-                    im_crop = im_hd.crop((1965, 225, 2290, 1000))
+                    im_crop = im_hd.crop((1965, 225, 2320, 1000))
                 break
         else:
             print('非対応の解像度です')
