@@ -4,8 +4,6 @@ from io import BytesIO
 import pickle
 import re
 
-import aiohttp
-import aiofiles
 import discord
 from discord.ext import commands
 from PIL import Image
@@ -37,17 +35,6 @@ class TotuCount(commands.Cog):
             pickle.dump(self.totu, f)
         TransferData().upload_file(TEMP_PATH + 'totu.pkl',
         r'/totu.pkl')
-
-    async def download_img(self, url):
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, timeout = 20) as resp:
-                    if resp.status != 200:
-                        print(f'DL error status: {resp.status}')
-                        return
-                    return BytesIO(await resp.read())
-        except Exception as e:
-            print(f'DL error {e}')
 
     def image_ocr(self, image):
         # バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)
@@ -207,7 +194,6 @@ class TotuCount(commands.Cog):
         if message.channel.id in self.totu.keys():
             # messageに添付画像があり、指定のチャンネルの場合動作する
             image = BytesIO(await message.attachments[0].read())
-            # image = await self.download_img(message.attachments[0].url)
             if (res := self.image_ocr(image)) is not None:
                 self.totu[message.channel.id] \
                     = self.totu[message.channel.id] + self.count(res)
