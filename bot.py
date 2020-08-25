@@ -5,12 +5,12 @@ import discord
 from discord.ext import commands
 import traceback
 import logging
-# ロギングを定義
-logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(filename='./log/discord.log', encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
+# # ロギングを定義
+# logger = logging.getLogger('discord')
+# logger.setLevel(logging.DEBUG)
+# handler = logging.FileHandler(filename='./log/discord.log', encoding='utf-8', mode='w')
+# handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+# logger.addHandler(handler)
 # Botアカウントへのアクセストークン(herokuの環境変数にしまってある)
 TOKEN = os.environ["ACCESS_TOKEN"]
 # 読み込むコグの名前を格納しておく。
