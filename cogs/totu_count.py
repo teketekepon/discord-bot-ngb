@@ -200,17 +200,21 @@ class TotuCount(commands.Cog):
     async def on_message(self, message):
         if message.author.bot:
             return
+
+        if not message.attachments:
+            return
+
         if message.channel.id in self.totu.keys():
-            if len(message.attachments) > 0:
-                # messageに添付画像があり、指定のチャンネルの場合動作する
-                image = await self.download_img(message.attachments[0].url)
-                if (res := self.image_ocr(image)) is not None:
-                    self.totu[message.channel.id] \
-                        = self.totu[message.channel.id] + self.count(res)
-                    print(f'{message.channel.name} count: '\
-                          f'{self.totu[message.channel.id]}')
-                else:
-                    print('画像読み取りに失敗しました')
+            # messageに添付画像があり、指定のチャンネルの場合動作する
+            image = BytesIO(await message.attachments[0].read())
+            # image = await self.download_img(message.attachments[0].url)
+            if (res := self.image_ocr(image)) is not None:
+                self.totu[message.channel.id] \
+                    = self.totu[message.channel.id] + self.count(res)
+                print(f'{message.channel.name} count: '\
+                      f'{self.totu[message.channel.id]}')
+            else:
+                print('画像読み取りに失敗しました')
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
