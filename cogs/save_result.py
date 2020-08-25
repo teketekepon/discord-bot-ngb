@@ -8,8 +8,6 @@ import re
 import pickle
 import typing
 
-import aiohttp
-import aiofiles
 import discord
 from discord.ext import commands
 import jancov
@@ -48,18 +46,6 @@ class SaveResult(commands.Cog):
         with open(TEMP_PATH + 'channels.pkl','wb') as f:
             pickle.dump(self.channels, f)
         TransferData().upload_file(TEMP_PATH + 'channels.pkl', r'/channels.pkl')
-
-    async def download_img(self, url):
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, timeout = 20) as resp:
-                    if resp.status != 200:
-                        print(f'DL error status: {resp.status}')
-                        return
-                    return BytesIO(await resp.read())
-        except Exception as e:
-            print(f'DL error {e}')
-            return
 
     def unvoiced(c):
         """清音にする"""
@@ -375,14 +361,16 @@ class SaveResult(commands.Cog):
         if message.author.bot:
             return
 
+        if not message.attachments:
+            return
+
         if message.channel.id in self.channels.keys():
-            if len(message.attachments) > 0:
-                # messageに添付画像があり、指定のチャンネルの場合動作する
-                if (image := await self.download_img(message.attachments[0].url)) is not None:
-                    if (res := self.image_ocr(image)) is not None:
-                        # var = self.channel[ctx.channels.id]
-                        # self.save_excel(var[0], var[1], var[2], res)
-                        pass
+            # messageに添付画像があり、指定のチャンネルの場合動作する
+            image = BytesIO(await message.attachments[0].read())
+            if (res := self.image_ocr(image)) is not None:
+                # var = self.channel[ctx.channels.id]
+                # self.save_excel(var[0], var[1], var[2], res)
+                pass
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(SaveResult(bot))
