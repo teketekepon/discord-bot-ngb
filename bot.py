@@ -7,7 +7,7 @@ import traceback
 import logging
 # ロギングを定義
 logger = logging.getLogger('discord')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler()
 handler.setLevel(logging.INFO)
 handler.setFormatter(
@@ -35,11 +35,7 @@ class MyBot(commands.Bot):
                 traceback.print_exc()
     # Botの準備完了時に呼び出されるイベント
     async def on_ready(self):
-        print('--------------')
-        print('Logged in as')
-        print(self.user.name)
-        print(self.user.id)
-        print('--------------')
+        logger.info('Logged in as name: %s id: %d', self.user.name, self.user.id)
 
 class Help(commands.HelpCommand):
     """Helpコマンドの定義"""

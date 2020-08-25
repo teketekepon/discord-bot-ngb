@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import logging
 from io import BytesIO
 import pickle
 import re
@@ -23,6 +24,7 @@ class TotuCount(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.logger = logging.getLogger('discord.TotuCount')
         # {key = channel.id value = count}
         self.totu = {}
         if TransferData().download_file(r'/totu.pkl',
