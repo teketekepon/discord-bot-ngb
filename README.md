@@ -79,7 +79,7 @@ botからレスポンスがあるので、その後 1 2 3 いずれかの半角�
 | 1080 | 1920 | iPhone 6,7,8 Plus    |
 | 1536 | 2048 | iPad Mini            |
 | 1668 | 2224 | iPad Pro 10.5inch    |
-| 2338 | 1668 | iPad Pro 11inch      |
+| 1668 | 2338 | iPad Pro 11inch      |
 | 2048 | 2732 | iPad Pro 12.9inch    |
 | 1440 | 2880 | Android              |
 | 1440 | 3040 | Galaxy系 (左黒帯あり) |
