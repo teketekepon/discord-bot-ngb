@@ -81,7 +81,7 @@ class TotuCount(commands.Cog):
                     im_crop = im_hd.crop((1965, 225, 2320, 1000))
                 break
         else:
-            print(f'{im.width}x{im.height}: 非対応の解像度です')
+            self.logger.info('%d x %d: 非対応の解像度です', im.width, im.height)
             return None
         # Pillowで2値化
         im_gray = im_crop.convert('L')
@@ -89,7 +89,7 @@ class TotuCount(commands.Cog):
         # 日本語と英数字をOCR
         tools = pyocr.get_available_tools()
         if len(tools) == 0:
-            print('OCRtoolが読み込めません')
+            self.logger.error('OCRtoolが読み込めません')
             return None
         tool = tools[0]
         builder = pyocr.builders.WordBoxBuilder(tesseract_layout=6)
@@ -199,10 +199,10 @@ class TotuCount(commands.Cog):
             if (res := self.image_ocr(image)) is not None:
                 self.totu[message.channel.id] \
                     = self.totu[message.channel.id] + self.count(res)
-                print(f'{message.channel.name} count: '\
-                      f'{self.totu[message.channel.id]}')
+                self.logger.info('%s count: %d', message.channel.name,
+                                 self.totu[message.channel.id])
             else:
-                print('画像読み取りに失敗しました')
+                self.logger.error('画像読み取りに失敗しました')
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
