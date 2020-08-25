@@ -8,7 +8,7 @@ from discord.ext import commands
 from .dbox import TransferData
 
 TEMP_PATH = r'./tmp/'
-# 7月のボス
+# 8月のボス
 BOSSES = [
     'ワイバーン',
     'グリフォン',

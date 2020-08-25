@@ -22,7 +22,7 @@ from .dbox import TransferData
 
 TEMP_PATH = r'./tmp/'
 EXCEL_PATH = r'./BattleLog.xlsx'
-# 7月のボス
+# 8月のボス
 BOSSES = [
     'ワイバーン',
     'グリフォン',
