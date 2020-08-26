@@ -200,10 +200,10 @@ class TotuCount(commands.Cog):
             for i in message.attachments:
                 image = BytesIO(await i.read())
                 if (res := self.image_ocr(image)) is not None:
-                    self.totu[message.channel.id] \
-                        = self.totu[message.channel.id] + self.count(res)
-                    self.logger.info('%s count: %d', message.channel.name,
-                                     self.totu[message.channel.id])
+                    a = self.count(res)
+                    self.totu[message.channel.id] += a
+                    # await message.channel.send(f'{a}凸カウント')
+                    self.logger.info('%s count: %d', message.channel.name, a)
                 else:
                     self.logger.error('画像読み取りに失敗しました')
 
