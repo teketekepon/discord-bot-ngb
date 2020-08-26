@@ -46,17 +46,18 @@ class TotuCount(commands.Cog):
             (1123, 628),   # 2
             (1280, 720),   # 3 DMM windows枠なし
             (1334, 750),   # 4 iPhone 7,8
-            (1920, 1080),  # 5 ここまで16:9
-            (2048, 1536),  # 6 4:3 iPad 9.7 mini
-            (2224, 1668),  # 7 iPad Pro 10.5inch
-            (2732, 2048),  # 8 iPad Pro 12.9inch
-            (2388, 1668),  # 9 iPad Pro 11inch
-            (2880, 1440),  # 10 2:1 android
-            (2160, 1023),  # 11 2:1 Galaxy系
-            (3040, 1440),  # 12 2:1 Galaxy系(左160黒い)
-            (1792, 828),   # 13 19.5:9 iPhoneXR,11
-            (2436, 1125),  # 14 19.5:9 iPhoneX,XS,11Pro
-            (2688, 1242)   # 15 19.5:9 iPhoneXS,11Pro max
+            (1920, 1080),  # 5
+            (2560, 1440),  # 6 ここまで16:9
+            (2048, 1536),  # 7 4:3 iPad 9.7 mini
+            (2224, 1668),  # 8 iPad Pro 10.5inch
+            (2732, 2048),  # 9 iPad Pro 12.9inch
+            (2388, 1668),  # 10 iPad Pro 11inch
+            (2880, 1440),  # 11 2:1 android
+            (2160, 1023),  # 12 2:1 Galaxy系
+            (3040, 1440),  # 13 2:1 Galaxy系(左160黒い)
+            (1792, 828),   # 14 19.5:9 iPhoneXR,11
+            (2436, 1125),  # 15 19.5:9 iPhoneX,XS,11Pro
+            (2688, 1242)   # 16 19.5:9 iPhoneXS,11Pro max
         ]
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
@@ -64,7 +65,7 @@ class TotuCount(commands.Cog):
             if im.height - 10 < i[1] < im.height + 10 and im.width - 10 < i[0] < im.width + 10:
                 if num == 0:
                     im_crop = im.crop((930, 210, 1155, 640))
-                elif num <= 5:  # 16:9
+                elif num <= 6:  # 16:9
                     im_crop = im.crop((int(im.width*0.73), int(im.height*0.239),
                                        int(im.width*0.895), int(im.height*0.847)))
                 elif num <= 8:  # 4:3 iPad1
