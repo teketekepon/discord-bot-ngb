@@ -51,37 +51,38 @@ class TotuCount(commands.Cog):
             (2732, 2048),  # 7 iPad Pro 12.9inch
             (2388, 1668),  # 8 iPad Pro 11inch
             (2880, 1440),  # 9 2:1 android
-            (3040, 1440),  # 10 2:1 Galaxy系(左160黒い)
-            (1792, 828),   # 11 19.5:9 iPhoneXR,11
-            (2436, 1125),  # 12 19.5:9 iPhoneX,XS,11Pro
-            (2688, 1242)   # 13 19.5:9 iPhoneXS,11Pro max
+            (2160, 1023),  # 10 2:1 Galaxy系
+            (3040, 1440),  # 11 2:1 Galaxy系(左160黒い)
+            (1792, 828),   # 12 19.5:9 iPhoneXR,11
+            (2436, 1125),  # 13 19.5:9 iPhoneX,XS,11Pro
+            (2688, 1242)   # 14 19.5:9 iPhoneXS,11Pro max
         ]
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
             # 解像度ごとに切り取り(+-10ピクセルは許容)
-            if (im.height - 10 < i[1] < im.height + 10 and im.width
-                    - 10 < i[0] < im.width + 10):
+            if im.height - 10 < i[1] < im.height + 10 and im.width - 10 < i[0] < im.width + 10:
                 if num == 0:
-                    im_hd = im.resize((1920, 1080), Image.LANCZOS)
-                    im_crop = im_hd.crop((1400, 245, 1720, 900))
+                    im_crop = im.crop((930, 210, 1155, 640))
                 elif num <= 4:  # 16:9
-                    im_hd = im.resize((1920, 1080), Image.LANCZOS)
-                    im_crop = im_hd.crop((1400, 205, 1720, 920))
+                    im_crop = im.crop((int(im.width*0.73), int(im.height*0.239),
+                                       int(im.width*0.895), int(im.height*0.847)))
                 elif num <= 7:  # 4:3 iPad1
-                    im_hd = im.resize((2224, 1668), Image.LANCZOS)
-                    im_crop = im.crop((1625, 645, 1980, 1480))
+                    im_crop = im.crop((int(im.width*0.73), int(im.height*0.43),
+                                       int(im.width*0.9), int(im.height*0.885)))
                 elif num == 8:  # iPad2
-                    im_crop = im.crop((1730, 545, 2140, 1430))
+                    im_crop = im.crop((1760, 630, 2160, 1425))
                 elif num == 9:  # 2_1 android
-                    im_crop = im.crop((2200, 280, 2620, 1220))
-                elif num == 10:  # 2_1 Galaxy
-                    im_crop = im.crop((2360, 280, 2780, 1220))
+                    im_crop = im.crop((int(im.width*0.76), int(im.height*0.243),
+                                       int(im.width*0.91), int(im.height*0.842)))
+                elif num <= 11:  # 2_1 Galaxy
+                    im_crop = im.crop((int(im.width*0.773), int(im.height*0.241),
+                                       int(im.width*0.917), int(im.height*0.838)))
                 else:  # 19.5:9 iPhone
-                    im_hd = im.resize((2668, 1242), Image.LANCZOS)
-                    im_crop = im_hd.crop((1965, 225, 2320, 1000))
+                    im_crop = im.crop((int(im.width*0.733), int(im.height*0.227),
+                                       int(im.width*0.866), int(im.height*0.79)))
                 break
         else:
-            self.logger.info('%d x %d: 非対応の解像度です', im.width, im.height)
+            self.logger.error('%d x %d: 非対応の解像度です', im.width, im.height)
             return None
         # Pillowで2値化
         im_gray = im_crop.convert('L')
