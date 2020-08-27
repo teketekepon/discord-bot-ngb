@@ -68,15 +68,15 @@ class TotuCount(commands.Cog):
                 elif num <= 6:  # 16:9
                     im_crop = im.crop((int(im.width*0.73), int(im.height*0.239),
                                        int(im.width*0.895), int(im.height*0.847)))
-                elif num <= 8:  # 4:3 iPad1
+                elif num <= 9:  # 4:3 iPad1
                     im_crop = im.crop((int(im.width*0.73), int(im.height*0.43),
                                        int(im.width*0.9), int(im.height*0.885)))
-                elif num == 9:  # iPad2
+                elif num == 10:  # iPad2
                     im_crop = im.crop((1760, 630, 2160, 1425))
-                elif num == 10:  # 2_1 android
+                elif num == 11:  # 2_1 android
                     im_crop = im.crop((int(im.width*0.76), int(im.height*0.243),
                                        int(im.width*0.91), int(im.height*0.842)))
-                elif num <= 12:  # 2_1 Galaxy
+                elif num <= 13:  # 2_1 Galaxy
                     im_crop = im.crop((int(im.width*0.773), int(im.height*0.241),
                                        int(im.width*0.917), int(im.height*0.838)))
                 else:  # 19.5:9 iPhone
