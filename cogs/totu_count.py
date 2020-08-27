@@ -30,12 +30,13 @@ class TotuCount(commands.Cog):
         if TransferData().download_file(r'/totu.pkl', TEMP_PATH+'totu.pkl'):
             with open(TEMP_PATH + 'totu.pkl','rb') as f:
                 self.totu = pickle.load(f)
+                self.logger.info('Pickle loaded')
 
     def cog_unload(self):
         with open(TEMP_PATH + 'totu.pkl','wb') as f:
             pickle.dump(self.totu, f)
-        TransferData().upload_file(TEMP_PATH + 'totu.pkl',
-        r'/totu.pkl')
+        TransferData().upload_file(TEMP_PATH + 'totu.pkl', r'/totu.pkl')
+        self.logger.info('Pickle saved')
 
     def image_ocr(self, image):
         # バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)
