@@ -62,7 +62,7 @@ class TotuCount(commands.Cog):
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
             # 解像度ごとに切り取り(+-10ピクセルは許容)
-            if im.height - 10 < i[1] < im.height + 10 and im.width - 10 < i[0] < im.width + 10:
+            if im.height - 13 < i[1] < im.height + 13 and im.width - 10 < i[0] < im.width + 10:
                 if num == 0:
                     im_crop = im.crop((930, 210, 1155, 640))
                 elif num <= 6:  # 16:9
@@ -201,10 +201,9 @@ class TotuCount(commands.Cog):
             for i in message.attachments:
                 image = BytesIO(await i.read())
                 if (res := self.image_ocr(image)) is not None:
-                    a = self.count(res)
-                    self.totu[message.channel.id] += a
+                    self.totu[message.channel.id] += res
                     # await message.channel.send(f'{a}凸カウント')
-                    self.logger.info('%s count: %d', message.channel.name, a)
+                    self.logger.info('%s count: %d', message.channel.name, res)
                 else:
                     self.logger.error('画像読み取りに失敗しました')
 
