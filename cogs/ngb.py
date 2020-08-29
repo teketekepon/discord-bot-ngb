@@ -23,7 +23,6 @@ class Ngb(commands.Cog):
 
     # コマンドの作成。コマンドはcommandデコレータで必ず修飾する。
     @commands.command()
-    @is_guild_nightgarden()
     async def bot(self, ctx):
         """
         実行したユーザーに、各クランに対応したロールを付与します。
