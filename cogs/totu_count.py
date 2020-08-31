@@ -133,18 +133,13 @@ class TotuCount(commands.Cog):
                 f'残り凸数は {90-self.totu[ctx.channel.id]} です')
 
     @commands.command()
-    async def add(self, ctx, arg1):
+    async def add(self, ctx, arg: int):
         """
         凸カウントを増やすコマンドです。
         例えば `/add 1` とすると1凸増やします。
         """
         if ctx.channel.id in self.totu.keys():
-            try:
-                n = int(arg1)
-            except ValueError:
-                await ctx.send('引数が無効です')
-                return
-            self.totu[ctx.channel.id] = self.totu[ctx.channel.id] + n
+            self.totu[ctx.channel.id] = self.totu[ctx.channel.id] + arg
             await ctx.send(f'凸数を{n}足して{self.totu[ctx.channel.id]}になりました')
 
     @commands.command()
@@ -154,7 +149,7 @@ class TotuCount(commands.Cog):
         例えば `/sub 1` とすると1凸減らします。
         """
         if ctx.channel.id in self.totu.keys():
-            self.totu[ctx.channel.id] = self.totu[ctx.channel.id] - arg1
+            self.totu[ctx.channel.id] = self.totu[ctx.channel.id] - arg
             await ctx.send(f'凸数を{n}引いて{self.totu[ctx.channel.id]}になりました')
 
     @commands.command()
