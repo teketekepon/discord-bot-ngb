@@ -4,13 +4,12 @@ import asyncio
 import discord
 from discord.ext import commands
 
-# nightgarden_idはHeroku環境変数にしまっておく
-nightgarden_id = os.environ["NIGHTGARDEN_ID"]
+# NIGHTGARDEN_IDはHeroku環境変数にしまっておく
+NIGHTGARDEN_ID = os.environ["NIGHTGARDEN_ID"]
 
 class Ngb(commands.Cog):
     """
     プリコネクラン「ナイトガーデン」グループのdiscord用botです。
-    他のサーバーでは動作しません。
     """
 
     def __init__(self, bot):
@@ -18,7 +17,7 @@ class Ngb(commands.Cog):
 
     def is_guild_nightgarden():
         def predicate(ctx):
-            return ctx.guild.id == nightgarden_id
+            return ctx.guild.id == NIGHTGARDEN_ID
         return commands.check(predicate)
 
     # コマンドの作成。コマンドはcommandデコレータで必ず修飾する。
@@ -64,7 +63,7 @@ class Ngb(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        if member.guild.id != nightgarden_id:
+        if member.guild.id != NIGHTGARDEN_ID:
             return
         dm = member.dm_channel
         if dm is None:
