@@ -9,7 +9,6 @@ import discord
 from discord.ext import commands
 from PIL import Image
 import pyocr
-import pyocr.builders
 
 from .dbox import TransferData
 
@@ -96,7 +95,7 @@ class TotuCount(commands.Cog):
             self.logger.error('OCRtoolが読み込めません')
             return None
         tool = tools[0]
-        builder = builders.WordBoxBuilder(tesseract_layout=6)
+        builder = pyocr.builders.WordBoxBuilder(tesseract_layout=6)
         res = tool.image_to_string(im_bin, lang='jpn', builder=builder)
         text = ''
         for d in res:
