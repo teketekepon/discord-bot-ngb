@@ -96,7 +96,7 @@ class TotuCount(commands.Cog):
             self.logger.error('OCRtoolが読み込めません')
             return None
         tool = tools[0]
-        builder = pyocr.builders.WordBoxBuilder(tesseract_layout=6)
+        builder = builders.WordBoxBuilder(tesseract_layout=6)
         res = tool.image_to_string(im_bin, lang='jpn', builder=builder)
         text = ''
         for d in res:
@@ -141,7 +141,7 @@ class TotuCount(commands.Cog):
         """
         if ctx.channel.id in self.totu.keys():
             self.totu[ctx.channel.id] = self.totu[ctx.channel.id] + arg
-            await ctx.send(f'凸数を{n}足して{self.totu[ctx.channel.id]}になりました')
+            await ctx.send(f'凸数を{arg}足して{self.totu[ctx.channel.id]}になりました')
 
     @commands.command()
     async def sub(self, ctx, arg: int):
@@ -151,7 +151,7 @@ class TotuCount(commands.Cog):
         """
         if ctx.channel.id in self.totu.keys():
             self.totu[ctx.channel.id] = self.totu[ctx.channel.id] - arg
-            await ctx.send(f'凸数を{n}引いて{self.totu[ctx.channel.id]}になりました')
+            await ctx.send(f'凸数を{arg}引いて{self.totu[ctx.channel.id]}になりました')
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)
