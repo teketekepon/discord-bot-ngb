@@ -41,14 +41,16 @@ class SaveResult(commands.Cog):
         # dict channels {key=channel.id value=[channel.name,rej,[col]]}
         # col: excel 列数値 rej: excel 書き込み禁止列数値(日にち判定に使用)
         self.channels = {}
-        if TransferData().download_file(r'/channels.pkl', TEMP_PATH + 'channels.pkl'):
+        if TransferData().download_file(r'/channels.pkl',
+                TEMP_PATH + 'channels.pkl'):
             with open(TEMP_PATH + 'channels.pkl','rb') as f:
                 self.channels = pickle.load(f)
 
     def cog_unload(self):
         with open(TEMP_PATH + 'channels.pkl','wb') as f:
             pickle.dump(self.channels, f)
-        TransferData().upload_file(TEMP_PATH + 'channels.pkl', r'/channels.pkl')
+        TransferData().upload_file(TEMP_PATH + 'channels.pkl',
+                                   r'/channels.pkl')
 
     def unvoiced(c):
         """清音にする"""

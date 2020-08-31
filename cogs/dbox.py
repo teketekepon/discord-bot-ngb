@@ -22,7 +22,6 @@ class TransferData():
                 res = self.dbx.files_upload(f.read(), file_to,
                     mode=mode, mute=True)
             except dropbox.exceptions.ApiError as err:
-                print(f'error {err}')
                 return None
         return res
 
@@ -37,6 +36,5 @@ class TransferData():
                 md, res = self.dbx.files_download(file_from)
                 f.write(res.content)
             except dropbox.exceptions.ApiError as err:
-                print(f'error {err}')
                 return False
         return True

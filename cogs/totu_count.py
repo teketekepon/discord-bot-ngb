@@ -9,6 +9,7 @@ import discord
 from discord.ext import commands
 from PIL import Image
 import pyocr
+import pyocr.builders
 
 from .dbox import TransferData
 
