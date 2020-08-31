@@ -27,7 +27,7 @@ class TotuCount(commands.Cog):
         self.logger = logging.getLogger('discord.TotuCount')
         # {key = channel.id value = count}
         self.totu = {}
-        if TransferData().download_file(r'/totu.pkl', TEMP_PATH+'totu.pkl'):
+        if TransferData().download_file(r'/totu.pkl', TEMP_PATH + 'totu.pkl'):
             with open(TEMP_PATH + 'totu.pkl','rb') as f:
                 self.totu = pickle.load(f)
                 self.logger.info('Pickle loaded')
@@ -126,7 +126,7 @@ class TotuCount(commands.Cog):
     async def totu(self, ctx):
         """
         残凸数をチャットするコマンドです。
-        /zanntotu /残凸 /残り でも反応します。
+        `/zanntotu` `/残凸` `/残り` でも反応します。
         """
         if ctx.channel.id in self.totu.keys():
             await ctx.send(f'現在 {self.totu[ctx.channel.id]} 凸消化して'
@@ -136,7 +136,7 @@ class TotuCount(commands.Cog):
     async def add(self, ctx, arg1):
         """
         凸カウントを増やすコマンドです。
-        例えば /add 1 とすると1凸増やします。
+        例えば `/add 1` とすると1凸増やします。
         """
         if ctx.channel.id in self.totu.keys():
             try:
@@ -148,18 +148,13 @@ class TotuCount(commands.Cog):
             await ctx.send(f'凸数を{n}足して{self.totu[ctx.channel.id]}になりました')
 
     @commands.command()
-    async def sub(self, ctx, arg1):
+    async def sub(self, ctx, arg: int):
         """
         凸カウントを減らすコマンドです。
-        例えば /sub 1 とすると1凸減らします。
+        例えば `/sub 1` とすると1凸減らします。
         """
         if ctx.channel.id in self.totu.keys():
-            try:
-                n = int(arg1)
-            except ValueError:
-                await ctx.send('引数が無効です')
-                return
-            self.totu[ctx.channel.id] = self.totu[ctx.channel.id] - n
+            self.totu[ctx.channel.id] = self.totu[ctx.channel.id] - arg1
             await ctx.send(f'凸数を{n}引いて{self.totu[ctx.channel.id]}になりました')
 
     @commands.command()
@@ -207,6 +202,7 @@ class TotuCount(commands.Cog):
                     self.logger.info('%s count: %d', message.channel.name, a)
                 else:
                     self.logger.error('画像読み取りに失敗しました')
+                    await ctx.send('')
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
