@@ -2,6 +2,8 @@
 #
 # バトルログのスクショを読み込みエクセルに結果を書き込む
 #
+
+import logging
 from io import BytesIO
 import os
 import re
@@ -35,6 +37,7 @@ class SaveResult(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.logger = logging.getLogger('discord.SaveResult')
         # dict channels {key=channel.id value=[channel.name,rej,[col]]}
         # col: excel 列数値 rej: excel 書き込み禁止列数値(日にち判定に使用)
         self.channels = {}
@@ -70,46 +73,50 @@ class SaveResult(commands.Cog):
         # バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)
         RESOLUTIONS = [
             (1280, 760),   # 0 DMM windows枠あり
-            (1123, 628),   # 1
-            (1280, 720),   # 2 DMM windows枠なし
-            (1334, 750),   # 3 iPhone 7,8
-            (1920, 1080),  # 4 ここまで16:9
-            (2048, 1536),  # 5 4:3 iPad 9.7 mini
-            (2224, 1668),  # 6 iPad Pro 10.5inch
-            (2732, 2048),  # 7 iPad Pro 12.9inch
-            (2388, 1668),  # 8 iPad Pro 11inch
-            (2880, 1440),  # 9 2:1 android
-            (3040, 1440),  # 10 2:1 Galaxy系(左160黒い)
-            (1792, 828),   # 11 19.5:9 iPhoneXR,11
-            (2436, 1125),  # 12 19.5:9 iPhoneX,XS,11Pro
-            (2688, 1242)   # 13 19.5:9 iPhoneXS,11Pro max
+            (1000, 565),   # 1
+            (1123, 628),   # 2
+            (1280, 720),   # 3 DMM windows枠なし
+            (1334, 750),   # 4 iPhone 7,8
+            (1920, 1080),  # 5
+            (2560, 1440),  # 6 ここまで16:9
+            (2048, 1536),  # 7 4:3 iPad 9.7 mini
+            (2224, 1668),  # 8 iPad Pro 10.5inch
+            (2732, 2048),  # 9 iPad Pro 12.9inch
+            (2388, 1668),  # 10 iPad Pro 11inch
+            (2880, 1440),  # 11 2:1 android
+            (2160, 1023),  # 12 2:1 Galaxy系
+            (3040, 1440),  # 13 2:1 Galaxy系(左160黒い)
+            (1792, 828),   # 14 19.5:9 iPhoneXR,11
+            (2436, 1125),  # 15 19.5:9 iPhoneX,XS,11Pro
+            (2688, 1242)   # 16 19.5:9 iPhoneXS,11Pro max
         ]
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
             # 解像度ごとに切り取り(+-10ピクセルは許容)
-            if (im.height - 10 < i[1] < im.height + 10 and im.width\
-                    - 10 < i[0] < im.width + 10):
+            if (im.height - 13 < i[1] < im.height + 13 and
+                    im.width - 10 < i[0] < im.width + 10):
                 if num == 0:
-                    im_hd = im.resize((1920, 1080), Image.LANCZOS)
-                    im_crop = im_hd.crop((1400, 245, 1720, 900))
-                elif num <= 4:  # 16:9
-                    im_hd = im.resize((1920, 1080), Image.LANCZOS)
-                    im_crop = im_hd.crop((1400, 205, 1720, 920))
-                elif num <= 7:  # 4:3 iPad1
-                    im_hd = im.resize((2224, 1668), Image.LANCZOS)
-                    im_crop = im.crop((1625, 645, 1980, 1480))
-                elif num == 8:  # iPad2
-                    im_crop = im.crop((1730, 545, 2140, 1430))
-                elif num == 9:  # 2_1 android
-                    im_crop = im.crop((2200, 280, 2620, 1220))
-                elif num == 10:  # 2_1 Galaxy
-                    im_crop = im.crop((2360, 280, 2780, 1220))
+                    im_crop = im.crop((930, 210, 1155, 640))
+                elif num <= 6:  # 16:9
+                    im_crop = im.crop((int(im.width*0.73), int(im.height*0.239),
+                                       int(im.width*0.895), int(im.height*0.847)))
+                elif num <= 9:  # 4:3 iPad1
+                    im_crop = im.crop((int(im.width*0.73), int(im.height*0.43),
+                                       int(im.width*0.9), int(im.height*0.885)))
+                elif num == 10:  # iPad2
+                    im_crop = im.crop((1760, 630, 2160, 1425))
+                elif num == 11:  # 2_1 android
+                    im_crop = im.crop((int(im.width*0.76), int(im.height*0.243),
+                                       int(im.width*0.91), int(im.height*0.842)))
+                elif num <= 13:  # 2_1 Galaxy
+                    im_crop = im.crop((int(im.width*0.773), int(im.height*0.241),
+                                       int(im.width*0.917), int(im.height*0.838)))
                 else:  # 19.5:9 iPhone
-                    im_hd = im.resize((2668, 1242), Image.LANCZOS)
-                    im_crop = im_hd.crop((1965, 225, 2320, 1000))
+                    im_crop = im.crop((int(im.width*0.733), int(im.height*0.227),
+                                       int(im.width*0.866), int(im.height*0.79)))
                 break
         else:
-            print('非対応の解像度です')
+            self.logger.error('%d x %d: 非対応の解像度です', im.width, im.height)
             return None
         # Pillowで2値化
         im_gray = im_crop.convert('L')
@@ -117,7 +124,7 @@ class SaveResult(commands.Cog):
         # 日本語と英数字をOCR
         tools = pyocr.get_available_tools()
         if len(tools) == 0:
-            print('OCRtoolが読み込めません')
+            self.logger.error('OCRtoolが読み込めません')
             return None
         tool = tools[0]
         builder = pyocr.builders.WordBoxBuilder(tesseract_layout=6)
@@ -188,11 +195,6 @@ class SaveResult(commands.Cog):
         member = sum([[cell.value for cell in tmp] for tmp in sheet['A2:A31']], [])
         # 名前とボスとダメージのリスト抽出
         data = re.findall(r'(.+?)が(.+?)に(.[\doO]+)(ダメージで|ダメージ)', text)
-        ## ocr結果確認用
-        # print(text,
-        # end='\n--------------------OCR Result-------------------\n')
-        # print(data,
-        # end='\n--------------------Result Data-------------------\n')
         for n, m in enumerate(reversed(data)):  # nは添え字,mはタプル
             isMatch = False
             for i, j in enumerate(member):  # iは添え字,jはリスト
@@ -205,7 +207,7 @@ class SaveResult(commands.Cog):
                     isMatch = True
                 row = i + 2  # cell[A2]から始まるため+2する
                 if col[i] == rej:
-                    print(f'{m} 1日6個以上のスタンプは押せません')
+                    self.logger.info('%s 1日6個以上のスタンプは押せません', m[0])
                     return
                 if 'で' in m[3]:
                     for x, y in enumerate(BOSSES):  # LAなのでどのボスか判定
@@ -221,10 +223,8 @@ class SaveResult(commands.Cog):
                     if stu == 5:
                         channels += 1
                 continue
-            if isMatch:
-                print(f'{m} は\'{cell.coordinate}\'に\'{STUMPS[stu]}\'と書き込みました')
-            else:
-                print(f'{m} はメンバーとマッチしなかった為書き込まれません')
+            if not isMatch:
+                self.logger.info('%s はメンバーとマッチしなかった為書き込まれません', m[0])
         # Excelファイルをセーブして閉じる
         wb.save(EXCEL_PATH)
         wb.close()
@@ -256,7 +256,7 @@ class SaveResult(commands.Cog):
             for i in range(3, 39, 7):
                 write_list_2d(sheet, blank_list, 2, i)
         else:
-            print('clear_excel error: 無効な引数です')
+            self.logger.error('clear_excel: 無効な引数です')
             return False
         # Excelファイルをセーブして閉じる
         wb.save(EXCEL_PATH)

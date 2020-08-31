@@ -62,7 +62,8 @@ class TotuCount(commands.Cog):
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
             # 解像度ごとに切り取り(+-10ピクセルは許容)
-            if im.height - 13 < i[1] < im.height + 13 and im.width - 10 < i[0] < im.width + 10:
+            if (im.height - 13 < i[1] < im.height + 13 and
+                    im.width - 10 < i[0] < im.width + 10):
                 if num == 0:
                     im_crop = im.crop((930, 210, 1155, 640))
                 elif num <= 6:  # 16:9
