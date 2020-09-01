@@ -28,18 +28,18 @@ class TotuCount(commands.Cog):
         # {key = channel.id value = count}
         self.totu = {}
         if TransferData().download_file(r'/totu.pkl', TEMP_PATH + 'totu.pkl'):
-            with open(TEMP_PATH + 'totu.pkl','rb') as f:
+            with open(TEMP_PATH + 'totu.pkl', 'rb') as f:
                 self.totu = pickle.load(f)
                 self.logger.info('Pickle loaded')
 
     def cog_unload(self):
-        with open(TEMP_PATH + 'totu.pkl','wb') as f:
+        with open(TEMP_PATH + 'totu.pkl', 'wb') as f:
             pickle.dump(self.totu, f)
         TransferData().upload_file(TEMP_PATH + 'totu.pkl', r'/totu.pkl')
         self.logger.info('Pickle saved')
 
     def image_ocr(self, image):
-        # バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)
+        """バトルログを抽出(RESOLUTIONSにある解像度なら読み取れる)"""
         RESOLUTIONS = [
             (1280, 760),   # 0 DMM windows枠あり
             (1000, 565),   # 1
@@ -62,8 +62,8 @@ class TotuCount(commands.Cog):
         im = Image.open(image)
         for num, i in enumerate(RESOLUTIONS):
             # 解像度ごとに切り取り(+-10ピクセルは許容)
-            if (im.height - 13 < i[1] < im.height + 13 and
-                    im.width - 10 < i[0] < im.width + 10):
+            if (im.height - 13 < i[1] < im.height + 13
+                    and im.width - 10 < i[0] < im.width + 10):
                 if num == 0:
                     im_crop = im.crop((930, 210, 1155, 640))
                 elif num <= 6:  # 16:9
@@ -104,6 +104,7 @@ class TotuCount(commands.Cog):
         return text
 
     def count(self, text):
+        """テキストから凸数をカウント"""
         n = 0
         data = re.findall(r'ダメージで|ダメージ', text)
         # OCRtextから凸判定材料のみ抽出
@@ -123,7 +124,7 @@ class TotuCount(commands.Cog):
             self.totu[ctx.channel.id] = 0
             await ctx.send('凸カウントをリセットしました')
 
-    @commands.command(aliases=['zanntotu','残凸','残り'])
+    @commands.command(aliases=['zanntotu', '残凸', '残り'])
     async def totu(self, ctx):
         """
         残凸数をチャットするコマンドです。
@@ -131,7 +132,7 @@ class TotuCount(commands.Cog):
         """
         if ctx.channel.id in self.totu.keys():
             await ctx.send(f'現在 {self.totu[ctx.channel.id]} 凸消化して'
-                f'残り凸数は {90-self.totu[ctx.channel.id]} です')
+                           f'残り凸数は {90-self.totu[ctx.channel.id]} です')
 
     @commands.command()
     async def add(self, ctx, arg: int):
@@ -197,8 +198,8 @@ class TotuCount(commands.Cog):
                     # await message.channel.send(f'{a}凸カウント')
                     self.logger.info('%s count: %d', message.channel.name, a)
                 else:
+                    # await ctx.send('画像読み取りに失敗しました')
                     self.logger.error('画像読み取りに失敗しました')
-                    await ctx.send('')
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import os
 import asyncio
 import discord
@@ -20,7 +21,6 @@ class Ngb(commands.Cog):
             return ctx.guild.id == NIGHTGARDEN_ID
         return commands.check(predicate)
 
-    # コマンドの作成。コマンドはcommandデコレータで必ず修飾する。
     @commands.command()
     async def bot(self, ctx):
         """
@@ -68,9 +68,9 @@ class Ngb(commands.Cog):
         dm = member.dm_channel
         if dm is None:
             dm = await member.create_dm()
-        await dm.send(f'{member.mention} さん。ナイトガーデングループへようこそ！\n'\
-                                '温泉郷チャンネルで「/bot」と発言すると、あなたの所属するクラン'\
-                                '専用のチャットが見れるようになります。ご活用ください！')
+        await dm.send(f'{member.mention} さん。ナイトガーデングループへようこそ！\n'
+                    　'温泉郷チャンネルで「/bot」と発言すると、あなたの所属するクラン'
+                    　'専用のチャットが見れるようになります。ご活用ください！')
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
