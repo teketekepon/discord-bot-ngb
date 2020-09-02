@@ -33,7 +33,7 @@ class Reserve(commands.Cog):
         self.res_b3 = {}
         self.res_b4 = {}
         self.res_b5 = {}
-        
+
         if TransferData().download_file(r'/res.pkl', TEMP_PATH + 'res.pkl'):
             with open(TEMP_PATH + 'res.pkl', 'rb') as f:
                 items = pickle.load(f)
@@ -66,16 +66,11 @@ class Reserve(commands.Cog):
     def overlap_check_tri(self, user_id):
         """すでに"3つ"予約しているユーザーをはじく"""
         n = 0
-        if user_id in self.res_b1:
-            n += 1
-        if user_id in self.res_b2:
-            n += 1
-        if user_id in self.res_b3:
-            n += 1
-        if user_id in self.res_b4:
-            n += 1
-        if user_id in self.res_b5:
-            n += 1
+        if user_id in self.res_b1:n += 1
+        if user_id in self.res_b2:n += 1
+        if user_id in self.res_b3:n += 1
+        if user_id in self.res_b4:n += 1
+        if user_id in self.res_b5:n += 1
         if n >= 3:
             return True
         return False
