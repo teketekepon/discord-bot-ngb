@@ -92,6 +92,7 @@ class TotuCount(commands.Cog):
         im_bin = im_gray.point(lambda x: 255 if x > 193 else 0, mode='L')
         # 日本語と英数字をOCR
         tools = pyocr.get_available_tools()
+        
         if len(tools) == 0:
             self.logger.error('OCRtoolが読み込めません')
             return None
