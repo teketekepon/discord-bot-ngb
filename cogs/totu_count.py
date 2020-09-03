@@ -95,6 +95,7 @@ class TotuCount(commands.Cog):
         if len(tools) == 0:
             self.logger.error('OCRtoolが読み込めません')
             return None
+        #   aaa
         for tool in tools:
             print(tool.get_name())
         tool = tools[0]
