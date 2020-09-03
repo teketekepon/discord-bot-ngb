@@ -95,8 +95,6 @@ class TotuCount(commands.Cog):
         if len(tools) == 0:
             self.logger.error('OCRtoolが読み込めません')
             return None
-        for tool in tools:
-            print(tool.get_name())
         tool = tools[0]
         builder = pyocr.builders.WordBoxBuilder(tesseract_layout=6)
         res = tool.image_to_string(im_bin, lang='jpn', builder=builder)
