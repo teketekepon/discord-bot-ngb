@@ -12,7 +12,7 @@ import typing
 
 import discord
 from discord.ext import commands
-import jancov
+import jaconv
 from openpyxl import load_workbook
 from PIL import Image
 import pyocr
@@ -33,6 +33,7 @@ BOSSES = [
 # 左から[1ボスLA,2ボスLA,3ボスLA,4ボスLA,5ボスLA,凸,不明]
 STUMPS = ['△', '◆', '□', '◎', '☆', '〇', '?']
 
+
 class SaveResult(commands.Cog):
 
     def __init__(self, bot):
@@ -42,14 +43,14 @@ class SaveResult(commands.Cog):
         # col: excel 列数値 rej: excel 書き込み禁止列数値(日にち判定に使用)
         self.channels = {}
         if TransferData().download_file(r'/channels.pkl',
-                TEMP_PATH + 'channels.pkl'):
-            with open(TEMP_PATH + 'channels.pkl','rb') as f:
+                                        TEMP_PATH+'channels.pkl'):
+            with open(TEMP_PATH + 'channels.pkl', 'rb') as f:
                 self.channels = pickle.load(f)
 
     def cog_unload(self):
-        with open(TEMP_PATH + 'channels.pkl','wb') as f:
+        with open(TEMP_PATH + 'channels.pkl', 'wb') as f:
             pickle.dump(self.channels, f)
-        TransferData().upload_file(TEMP_PATH + 'channels.pkl',
+        TransferData().upload_file(TEMP_PATH+'channels.pkl',
                                    r'/channels.pkl')
 
     def unvoiced(c):
@@ -58,6 +59,7 @@ class SaveResult(commands.Cog):
             """cがひらがなのユニコードポイント範囲内か判定"""
             hiragana = range(0x3041, 0x3096 + 1)
             return ord(c) in hiragana
+
         def isKatakana(c):
             """cがカタカナのユニコードポイント範囲内か判定"""
             katakana = range(0x30A0, 0x30FA + 1)
@@ -186,13 +188,13 @@ class SaveResult(commands.Cog):
         if len(data) >= 5:
             del data[0]  # 1枚4件までのため
         for i in data:
-            if not 'で' in i:
+            if 'で' not in i:
                 n += 1
         return n
 
     def save_excel(self, sheet_name, rej, col,  text):
         workbook = load_workbook(EXCEL_PATH)
-        sheet = wb[sheet_name]
+        sheet = workbook[sheet_name]
         # excelからメンバーリストを取得
         member = sum([[cell.value for cell in tmp] for tmp in sheet['A2:A31']], [])
         # 名前とボスとダメージのリスト抽出
@@ -219,17 +221,18 @@ class SaveResult(commands.Cog):
                             break
                 else:
                     stu = 5  # 凸なので〇スタンプをセット
-                if  isMatch:
-                    cell = sheet.cell(row=row, column=col[i], value=STUMPS[stu])
+                if isMatch:
+                    sheet.cell(row=row, column=col[i], value=STUMPS[stu])
                     col[i] += 1
                     if stu == 5:
-                        channels += 1
+                        # self.channels[channel.id] += 1
+                        pass
                 continue
             if not isMatch:
                 self.logger.info('%s はメンバーとマッチしなかった為書き込まれません', m[0])
         # Excelファイルをセーブして閉じる
-        wb.save(EXCEL_PATH)
-        wb.close()
+        workbook.save(EXCEL_PATH)
+        workbook.close()
 
     # clearコマンドで利用する関数
     def clear_excel(self, sheet_name, kwd):
@@ -266,7 +269,7 @@ class SaveResult(commands.Cog):
         return True
 
     @commands.command()  # 記録する位置を変更するコマンド 全員の列位置が変更される
-    async def day(self, ctx, a :typing.Optional[int] = None):
+    async def day(self, ctx, a: typing.Optional[int] = None):
         if ctx.channel.id in self.channels.keys():
             var = self.channel[ctx.channels.id]
             if a is not None:
@@ -293,7 +296,7 @@ class SaveResult(commands.Cog):
         else:
             await ctx.send('このチャンネルでの操作は許可されていません')
 
-    @commands.command(name=del)  # セルの内容を消去(Noneに上書き)するコマンド
+    @commands.command(name='del')  # セルの内容を消去(Noneに上書き)するコマンド
     async def _del(self, ctx, a: typing.Optional[str] = None):
         if ctx.channel.id in self.channels.keys():
             var = self.channel[ctx.channels.id]
@@ -319,7 +322,7 @@ class SaveResult(commands.Cog):
             res = self.member_edit(var[0], op, *member)
             await ctx.send(f'現在のメンバー一覧です\n{res}')
         else:
-            await ctx.send('このチャンネルでの操作は許可されていません'')
+            await ctx.send('このチャンネルでの操作は許可されていません')
 
     @commands.command()
     async def pull(self, ctx):
@@ -373,6 +376,8 @@ class SaveResult(commands.Cog):
                 # var = self.channel[ctx.channels.id]
                 # self.save_excel(var[0], var[1], var[2], res)
                 pass
+
+
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(SaveResult(bot))

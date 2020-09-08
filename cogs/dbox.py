@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import os
 import dropbox
+
 
 class TransferData():
     """
     Dropboxからファイルをダウンロード、アップロードする。
     """
+
     # DROPBOX_TOKENはHeroku環境変数にしまっておく。
     ACCESS_TOKEN = os.environ["DROPBOX_TOKEN"]
+
     def __init__(self):
         self.dbx = dropbox.Dropbox(self.ACCESS_TOKEN)
+        self.logger = logging.getLogger('discord.DropBox')
 
     def upload_file(self, file_from, file_to):
         """
@@ -21,8 +26,9 @@ class TransferData():
         with open(file_from, 'rb') as f:
             try:
                 res = self.dbx.files_upload(f.read(), file_to,
-                    mode=mode, mute=True)
+                                            mode=mode, mute=True)
             except dropbox.exceptions.ApiError as err:
+                self.logger.error(err)
                 return None
         return res
 
@@ -37,5 +43,6 @@ class TransferData():
                 md, res = self.dbx.files_download(file_from)
                 f.write(res.content)
             except dropbox.exceptions.ApiError as err:
+                self.logger.error(err)
                 return False
         return True

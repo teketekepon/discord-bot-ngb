@@ -8,6 +8,7 @@ from discord.ext import commands
 # NIGHTGARDEN_IDはHeroku環境変数にしまっておく
 NIGHTGARDEN_ID = os.environ["NIGHTGARDEN_ID"]
 
+
 class Ngb(commands.Cog):
     """
     プリコネクラン「ナイトガーデン」グループのdiscord用botです。
@@ -42,11 +43,14 @@ class Ngb(commands.Cog):
             await ctx.send(f'{ctx.author.mention} タイムアウト')
         else:
             # すでにいずれかのroleがある場合削除
-            if (a := discord.utils.find(lambda o: o.name == '王宮', msg.author.roles)) is not None:
+            if (a := discord.utils.find(lambda o: o.name == '王宮',
+                                        msg.author.roles)) is not None:
                 await msg.author.remove_roles(a)
-            if (b := discord.utils.find(lambda o: o.name == '宮殿', msg.author.roles)) is not None:
+            if (b := discord.utils.find(lambda o: o.name == '宮殿',
+                                        msg.author.roles)) is not None:
                 await msg.author.remove_roles(b)
-            if (c := discord.utils.find(lambda o: o.name == '城下町', msg.author.roles)) is not None:
+            if (c := discord.utils.find(lambda o: o.name == '城下町',
+                                        msg.author.roles)) is not None:
                 await msg.author.remove_roles(c)
             # 対応する権限を付与
             if msg.content == '1':
@@ -71,6 +75,7 @@ class Ngb(commands.Cog):
         await dm.send(f'{member.mention} さん。ナイトガーデングループへようこそ！\n'
                       '温泉郷チャンネルで「/bot」と発言すると、あなたの所属するクラン'
                       '専用のチャットが見れるようになります。ご活用ください！')
+
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):

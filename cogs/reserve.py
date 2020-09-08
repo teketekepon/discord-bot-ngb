@@ -18,6 +18,7 @@ BOSSES = [
     'メデューサ'
 ]
 
+
 class Reserve(commands.Cog):
     """
     ボスの凸希望を管理します。
@@ -48,8 +49,9 @@ class Reserve(commands.Cog):
                 self.res_b5.update(list(filter(None, e)))
 
     def cog_unload(self):
-        items = zip_longest(self.res_b1.items(), self.res_b2.items(),\
-        self.res_b3.items(), self.res_b4.items(), self.res_b5.items())
+        items = zip_longest(self.res_b1.items(), self.res_b2.items(),
+                            self.res_b3.items(), self.res_b4.items(),
+                            self.res_b5.items())
         with open(TEMP_PATH + 'res.pkl', 'wb') as f:
             pickle.dump(items, f)
         TransferData().upload_file(TEMP_PATH + 'res.pkl', r'/res.pkl')
@@ -66,11 +68,16 @@ class Reserve(commands.Cog):
     def overlap_check_tri(self, user_id):
         """すでに"3つ"予約しているユーザーをはじく"""
         n = 0
-        if user_id in self.res_b1:n += 1
-        if user_id in self.res_b2:n += 1
-        if user_id in self.res_b3:n += 1
-        if user_id in self.res_b4:n += 1
-        if user_id in self.res_b5:n += 1
+        if user_id in self.res_b1:
+            n += 1
+        if user_id in self.res_b2:
+            n += 1
+        if user_id in self.res_b3:
+            n += 1
+        if user_id in self.res_b4:
+            n += 1
+        if user_id in self.res_b5:
+            n += 1
         if n >= 3:
             return True
         return False
@@ -83,20 +90,20 @@ class Reserve(commands.Cog):
         """
         embed = discord.Embed(title='**現在の凸希望者**', color=0x0000ff)
         embed.add_field(name=f'{BOSSES[0]}',
-                        value='まだ誰もいません' if not self.res_b1 else\
-                            '\n'.join(self.res_b1.values()), inline=False)
+                        value='まだ誰もいません' if not self.res_b1
+                        else '\n'.join(self.res_b1.values()), inline=False)
         embed.add_field(name=f'{BOSSES[1]}',
-                        value='まだ誰もいません' if not self.res_b2 else\
-                            '\n'.join(self.res_b2.values()), inline=False)
+                        value='まだ誰もいません' if not self.res_b2
+                        else '\n'.join(self.res_b2.values()), inline=False)
         embed.add_field(name=f'{BOSSES[2]}',
-                        value='まだ誰もいません' if not self.res_b3 else\
-                            '\n'.join(self.res_b3.values()), inline=False)
+                        value='まだ誰もいません' if not self.res_b3
+                        else '\n'.join(self.res_b3.values()), inline=False)
         embed.add_field(name=f'{BOSSES[3]}',
-                        value='まだ誰もいません' if not self.res_b4 else\
-                            '\n'.join(self.res_b4.values()), inline=False)
+                        value='まだ誰もいません' if not self.res_b4
+                        else '\n'.join(self.res_b4.values()), inline=False)
         embed.add_field(name=f'{BOSSES[4]}',
-                        value='まだ誰もいません' if not self.res_b5 else\
-                            '\n'.join(self.res_b5.values()), inline=False)
+                        value='まだ誰もいません' if not self.res_b5
+                        else '\n'.join(self.res_b5.values()), inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(name=BOSSES[0], aliases=['b1', 'boss1'])
@@ -145,7 +152,7 @@ class Reserve(commands.Cog):
             else ctx.author.display_name + f': {note}'
 
     @commands.command(aliases=['凸完了', '完了', 'クリア'])
-    async def clear(self, ctx):  #予約を削除
+    async def clear(self, ctx):  # 予約を削除
         """
         実行したユーザーの凸希望を削除します。
         /凸完了 /完了 /クリア でも反応します。
@@ -160,6 +167,8 @@ class Reserve(commands.Cog):
             del self.res_b4[ctx.author.id]
         if ctx.author.id in self.res_b5:
             del self.res_b5[ctx.author.id]
+
+
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
     bot.add_cog(Reserve(bot))

@@ -15,6 +15,7 @@ from .dbox import TransferData
 
 TEMP_PATH = r'./tmp/'
 
+
 class TotuCount(commands.Cog):
     """
     凸の消化回数をカウントします。
@@ -65,31 +66,31 @@ class TotuCount(commands.Cog):
             if (im.height - 13 < i[1] < im.height + 13
                     and im.width - 10 < i[0] < im.width + 10):
                 if num == 0:
-                    im_crop = im.crop((930, 210, 1155, 640))
+                    im = im.crop((930, 210, 1155, 640))
                 elif num <= 6:  # 16:9
-                    im_crop = im.crop((int(im.width*0.73), int(im.height*0.239),
-                                       int(im.width*0.895), int(im.height*0.847)))
+                    im = im.crop((int(im.width*0.73), int(im.height*0.239),
+                                  int(im.width*0.895), int(im.height*0.847)))
                 elif num <= 9:  # 4:3 iPad1
-                    im_crop = im.crop((int(im.width*0.73), int(im.height*0.43),
-                                       int(im.width*0.9), int(im.height*0.885)))
+                    im = im.crop((int(im.width*0.73), int(im.height*0.43),
+                                  int(im.width*0.9), int(im.height*0.885)))
                 elif num == 10:  # iPad2
-                    im_crop = im.crop((1760, 630, 2160, 1425))
+                    im = im.crop((1760, 630, 2160, 1425))
                 elif num == 11:  # 2_1 android
-                    im_crop = im.crop((int(im.width*0.76), int(im.height*0.243),
-                                       int(im.width*0.91), int(im.height*0.842)))
+                    im = im.crop((int(im.width*0.76), int(im.height*0.243),
+                                  int(im.width*0.91), int(im.height*0.842)))
                 elif num <= 13:  # 2_1 Galaxy
-                    im_crop = im.crop((int(im.width*0.773), int(im.height*0.241),
-                                       int(im.width*0.917), int(im.height*0.838)))
+                    im = im.crop((int(im.width*0.773), int(im.height*0.241),
+                                  int(im.width*0.917), int(im.height*0.838)))
                 else:  # 19.5:9 iPhone
-                    im_crop = im.crop((int(im.width*0.733), int(im.height*0.227),
-                                       int(im.width*0.866), int(im.height*0.79)))
+                    im = im.crop((int(im.width*0.733), int(im.height*0.227),
+                                  int(im.width*0.866), int(im.height*0.79)))
                 break
         else:
             self.logger.error('%d x %d: 非対応の解像度です', im.width, im.height)
             return None
         # Pillowで2値化
-        im_gray = im_crop.convert('L')
-        im_bin = im_gray.point(lambda x: 255 if x > 193 else 0, mode='L')
+        im = im.convert('L')
+        im_bin = im.point(lambda x: 255 if x > 193 else 0, mode='L')
         # 日本語と英数字をOCR
         tools = pyocr.get_available_tools()
         if len(tools) == 0:
@@ -111,7 +112,7 @@ class TotuCount(commands.Cog):
         if len(data) >= 5:
             del data[0]  # スクショ1枚につき4件までのため
         for i in data:
-            if not 'で' in i:
+            if 'で' not in i:
                 n += 1
         return n
 
@@ -201,6 +202,7 @@ class TotuCount(commands.Cog):
                     # await ctx.send('画像読み取りに失敗しました')
                     self.logger.error('画像読み取りに失敗しました')
 
+
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):
-    bot.add_cog(TotuCount(bot)) # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。
+    bot.add_cog(TotuCount(bot))  # クラスにBotを渡してインスタンス化し、Botにコグとして登録する。
