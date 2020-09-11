@@ -193,7 +193,8 @@ class TotuCount(commands.Cog):
             # messageに添付画像があり、指定のチャンネルの場合動作する
             for i in message.attachments:
                 image = BytesIO(await i.read())
-                if (res := self.image_ocr(image)) is not None:
+                res = self.image_ocr(image)
+                if res is not None:
                     a = self.count(res)
                     self.totu[message.channel.id] += a
                     # await message.channel.send(f'{a}凸カウント')
