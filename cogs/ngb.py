@@ -17,7 +17,7 @@ class Ngb(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def is_guild_nightgarden():
+    def is_guild_nightgarden(self):
         def predicate(ctx):
             return ctx.guild.id == NIGHTGARDEN_ID
         return commands.check(predicate)
