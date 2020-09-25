@@ -69,7 +69,7 @@ class Help(commands.HelpCommand):
                 content += f'```\n{self.no_category}```'
             else:
                 content += f'\n**{cog.qualified_name}**\n'\
-                    '```{cog.description}```\nコマンドリスト\n'
+                    f'```{cog.description}```\nコマンドリスト\n'
             for command in command_list:
                 content += f'`{self.context.prefix}{command.name}`'\
                     f' : {command.short_doc}\n'
@@ -84,7 +84,7 @@ class Help(commands.HelpCommand):
         content += f'```\n{cog.qualified_name} : {cog.description}```\n'
         for command in command_list:
             content += f'`{self.context.prefix}{command.name}`'\
-                ' : {command.help}\n'
+                f' : {command.help}\n'
         content += '\n'
         if command_list[0] is None:
             content = '__表示できるコマンドがありません。__'
