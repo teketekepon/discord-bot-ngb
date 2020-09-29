@@ -4,8 +4,9 @@ import logging
 from io import BytesIO
 import pickle
 import re
+import time
+import threading
 
-import discord
 from discord.ext import commands
 from PIL import Image
 import pyocr
@@ -28,10 +29,23 @@ class TotuCount(commands.Cog):
         self.logger = logging.getLogger('discord.TotuCount')
         # {key = channel.id value = count}
         self.totu = {}
-        if TransferData().download_file(r'/totu.pkl', TEMP_PATH + 'totu.pkl'):
+        self.rev = TransferData().download_file(r'/totu.pkl', TEMP_PATH
+                                                + 'totu.pkl')
+        if self.rev is not None:
             with open(TEMP_PATH + 'totu.pkl', 'rb') as f:
                 self.totu = pickle.load(f)
                 self.logger.info('Pickle loaded')
+        th = threading.Thread(target=self.second_download)
+        th.setDaemon(True)
+        th.start()
+
+    def second_download(self):
+        time.sleep(120)
+        tmp = TransferData().download_file(r'/totu.pkl', TEMP_PATH+'totu.pkl')
+        if self.rev is not None and tmp is not None and self.rev != tmp:
+            with open(TEMP_PATH + 'totu.pkl', 'rb') as f:
+                self.totu = pickle.load(f)
+                self.logger.info('Second Pickle loaded')
 
     def cog_unload(self):
         with open(TEMP_PATH + 'totu.pkl', 'wb') as f:

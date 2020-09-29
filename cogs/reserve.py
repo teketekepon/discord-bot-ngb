@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from itertools import zip_longest
+import time
+import threading
 import pickle
 
 import discord
@@ -47,6 +49,17 @@ class Reserve(commands.Cog):
                 self.res_b3.update(list(filter(None, c)))
                 self.res_b4.update(list(filter(None, d)))
                 self.res_b5.update(list(filter(None, e)))
+        th = threading.Thread(target=self.second_download)
+        th.setDaemon(True)
+        th.start()
+
+    def second_download(self):
+        time.sleep(120)
+        tmp = TransferData().download_file(r'/totu.pkl', TEMP_PATH + 'res.pkl')
+        if self.rev is not None and tmp is not None and self.rev != tmp:
+            with open(TEMP_PATH + 'res.pkl', 'rb') as f:
+                self.totu = pickle.load(f)
+                self.logger.info('Second Pickle loaded')
 
     def cog_unload(self):
         items = zip_longest(self.res_b1.items(), self.res_b2.items(),

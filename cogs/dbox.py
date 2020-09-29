@@ -5,7 +5,7 @@ import os
 import dropbox
 
 
-class TransferData():
+class TransferData:
     """
     Dropboxからファイルをダウンロード、アップロードする。
     """
@@ -25,12 +25,12 @@ class TransferData():
         mode = dropbox.files.WriteMode.overwrite
         with open(file_from, 'rb') as f:
             try:
-                res = self.dbx.files_upload(f.read(), file_to,
-                                            mode=mode, mute=True)
+                md = self.dbx.files_upload(f.read(), file_to,
+                                           mode=mode, mute=True)
             except dropbox.exceptions.ApiError as err:
                 self.logger.error(err)
                 return None
-        return res
+        return md.rev
 
     def download_file(self, file_from, file_to):
         """
@@ -44,5 +44,5 @@ class TransferData():
                 f.write(res.content)
             except dropbox.exceptions.ApiError as err:
                 self.logger.error(err)
-                return False
-        return True
+                return None
+        return md.rev
