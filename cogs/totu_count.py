@@ -29,8 +29,8 @@ class TotuCount(commands.Cog):
         self.logger = logging.getLogger('discord.TotuCount')
         # {key = channel.id value = count}
         self.totu = {}
-        self.rev = TransferData().download_file(r'/totu.pkl', TEMP_PATH
-                                                + 'totu.pkl')
+        self.rev = TransferData().download_file(r'/totu.pkl',
+                                                TEMP_PATH + 'totu.pkl')
         if self.rev is not None:
             with open(TEMP_PATH + 'totu.pkl', 'rb') as f:
                 self.totu = pickle.load(f)
