@@ -37,7 +37,9 @@ class Reserve(commands.Cog):
         self.res_b4 = {}
         self.res_b5 = {}
 
-        if TransferData().download_file(r'/res.pkl', TEMP_PATH + 'res.pkl'):
+        self.rev = TransferData().download_file(r'/res.pkl',
+                                                TEMP_PATH + 'res.pkl')
+        if self.rev is not None:
             with open(TEMP_PATH + 'res.pkl', 'rb') as f:
                 items = pickle.load(f)
             if any(True for _ in items):
