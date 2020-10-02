@@ -61,7 +61,6 @@ class Reserve(commands.Cog):
         if self.rev is not None and tmp is not None and self.rev != tmp:
             with open(TEMP_PATH + 'res.pkl', 'rb') as f:
                 self.totu = pickle.load(f)
-                self.logger.info('Second Pickle loaded')
 
     def cog_unload(self):
         items = zip_longest(self.res_b1.items(), self.res_b2.items(),
