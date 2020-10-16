@@ -28,7 +28,7 @@ RESOLUTIONS = [
 class ImageOcr:
 
     def __init__(self):
-        self.logger = logging.getlogger('discord.ImageOcr')
+        self.logger = logging.getLogger('discord.ImageOcr')
 
     def image_ocr(self, image):
         im = Image.open(image)
