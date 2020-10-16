@@ -8,7 +8,7 @@ import pickle
 import discord
 from discord.ext import commands
 
-from .dbox import TransferData
+from .lib.dbox import TransferData
 
 TEMP_PATH = r'./tmp/'
 # 8月のボス
