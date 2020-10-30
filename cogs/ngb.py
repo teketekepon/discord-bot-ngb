@@ -62,6 +62,8 @@ class Ngb(commands.Cog):
             elif msg.content == '3':
                 role = discord.utils.get(msg.guild.roles, name='城下町')
                 reply = f'{msg.author.mention} をロール「{role}」へ割り振ったわ 感謝しなさい！'
+            else:
+                return
             await msg.author.add_roles(role)
             await msg.channel.send(reply)
 
