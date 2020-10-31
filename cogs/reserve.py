@@ -11,13 +11,13 @@ from discord.ext import commands
 from .lib.dbox import TransferData
 
 TEMP_PATH = r'./tmp/'
-# 8月のボス
+# 10月のボス
 BOSSES = [
     'ゴブリングレート',
     'ライライ',
-    'レイスロード',
-    'ダークガーゴイル',
-    'グラットン'
+    'オークチーフ',
+    'オブシダンワイバーン',
+    'レサトパルト'
 ]
 
 
@@ -25,7 +25,7 @@ class Reserve(commands.Cog):
     """
     ボスの凸希望を管理します。
     各メンバー1つまで凸を希望するボスを/(ボス名) (備考)コマンドで登録します。
-    例: /ワイバーン 物理ワンパン
+    例: /ワイバーン 物理1000万
     """
 
     def __init__(self, bot):

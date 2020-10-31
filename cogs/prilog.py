@@ -1,8 +1,9 @@
 import logging
+import os
 import aiohttp
 from discord.ext import commands
 
-TOKEN = '7AVMHAykgDwkfwiKUgBueOZnUjd5xtWZkoG2iJC'
+PRILOG_TOKEN = os.environ["PRILLOG_TOKEN"]
 
 
 class PriLog(commands.Cog):
@@ -15,7 +16,7 @@ class PriLog(commands.Cog):
     async def get_response(self, url):
         async with aiohttp.CliantSession() as session:
             async with session.get('https://prilog.jp/rest/analyze'
-                                   f'?Url={url}&Token={TOKEN}') as r:
+                                   f'?Url={url}&Token={PRILOG_TOKEN}') as r:
                 self.logger.info(f'Try to get:{url}... status={r.status}')
                 try:
                     return await r.json()
@@ -23,7 +24,7 @@ class PriLog(commands.Cog):
                     return None
 
     @commands.command()
-    async def log(self, ctx, url):
+    async def log(self, ctx, url: str):
         resp = self.get_response(url)
         if resp:
             await ctx.send(resp['timeline_txt'])
