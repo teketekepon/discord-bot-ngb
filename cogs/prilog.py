@@ -1,6 +1,7 @@
 import logging
 import os
 import aiohttp
+import discord
 from discord.ext import commands
 
 PRILOG_TOKEN = os.environ["PRILOG_TOKEN"]
@@ -30,13 +31,20 @@ class PriLog(commands.Cog):
         例: /log https://www.youtube.com/watch?v=mvLSw5vCpGU
         """
         resp = await self.get_response(url)
-        if resp:
-            print(type(resp))
-            status = resp["status"]
-            self.logger.info(f'Try to get:{url}... status={status}')
-            await ctx.send(resp["result"]["timeline_txt"])
+        self.logger.info(f'Try to get:{url}... status={resp["status"]}')
+        if resp["status"] < 310:
+            embed = discord.Embed(title=resp["result"]["title"],
+                                  discription=resp["msg"],
+                                  color=0xe8e8ed)
+            name = f'総ダメージ: {resp["result"]["total_damage"]}' if \
+                resp["result"]["total_damage"] else '総ダメージ: 不明'
+            embed.add_field(name=name,
+                            value=f'```{resp["result"]["timeline_txt"]}```')
         else:
-            self.logger.error('failed to get respons from PriLog')
+            embed = discord.Embed(title='解析失敗',
+                                  discription=f'エラーメッセージ: {resp["msg"]}',
+                                  color=0xed8ab0)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
