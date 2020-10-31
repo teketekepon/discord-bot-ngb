@@ -22,6 +22,7 @@ INITIAL_EXTENSIONS = [
     'cogs.ngb',
     'cogs.reserve',
     'cogs.totu_count',
+    'cogs.prilog'
 ]
 
 
