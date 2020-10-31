@@ -32,9 +32,9 @@ class PriLog(commands.Cog):
         resp = await self.get_response(url)
         if resp:
             print(type(resp))
-            # status = resp["status"]
-            # self.logger.info(f'Try to get:{url}... status={status}')
-            # await ctx.send(resp["timeline_txt"])
+            status = resp["status"]
+            self.logger.info(f'Try to get:{url}... status={status}')
+            await ctx.send(resp["result"]["timeline_txt"])
         else:
             self.logger.error('failed to get respons from PriLog')
 
