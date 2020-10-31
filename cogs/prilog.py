@@ -3,7 +3,7 @@ import os
 import aiohttp
 from discord.ext import commands
 
-PRILOG_TOKEN = os.environ["PRILLOG_TOKEN"]
+PRILOG_TOKEN = os.environ["PRILOG_TOKEN"]
 
 
 class PriLog(commands.Cog):
