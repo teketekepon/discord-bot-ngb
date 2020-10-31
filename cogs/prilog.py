@@ -14,7 +14,7 @@ class PriLog(commands.Cog):
         self.logger = logging.getLogger('discord.PriLog')
 
     async def get_response(self, url):
-        async with aiohttp.CliantSession() as session:
+        async with aiohttp.ClientSession() as session:
             async with session.get('https://prilog.jp/rest/analyze'
                                    f'?Url={url}&Token={PRILOG_TOKEN}') as r:
                 try:
