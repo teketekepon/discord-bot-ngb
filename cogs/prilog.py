@@ -18,10 +18,7 @@ class PriLog(commands.Cog):
         async with aiohttp.ClientSession() as session:
             async with session.get('https://prilog.jp/rest/analyze'
                                    f'?Url={url}&Token={PRILOG_TOKEN}') as r:
-                try:
-                    return await r.json()
-                except Exception:
-                    return None
+                return await r.json()
 
     @commands.command()
     async def log(self, ctx, url: str):
