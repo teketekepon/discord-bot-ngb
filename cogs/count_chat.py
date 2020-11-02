@@ -31,7 +31,7 @@ class CountChat(commands.Cog):
     def cog_unload(self):
         """シャットダウン時に変数をDropboxへ保存"""
         with open(TEMP_PATH + 'chat.pkl', 'wb') as f:
-            pickle.dump(self.chat, f)
+            pickle.dump(self.work_channels, f)
         TransferData().upload_file(TEMP_PATH + 'chat.pkl', r'/chat.pkl')
         self.logger.info('Pickle saved')
         self.chat.cancel()
