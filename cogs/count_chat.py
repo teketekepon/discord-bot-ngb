@@ -1,12 +1,13 @@
 import logging
 import pickle
-from datetime import datetime
+from datetime import time
 # import discord
 from discord.ext import tasks, commands
 
 from cogs.lib.dbox import TransferData
 
 TEMP_PATH = r'./tmp/'
+EMOJI = ['0️⃣', '1️⃣', '2️⃣']
 
 
 class CountChat(commands.Cog):
@@ -55,12 +56,15 @@ class CountChat(commands.Cog):
 
     @tasks.loop(seconds=60)
     async def chat(self):
-        now = datetime.now().strftime('%H:%M')
+        now = time.now().strftime('%H:%M')
+        self.logger.info(now)
         if now == '05:00':
             for i in self.work_channels.keys():
                 self.work_channels[i] += 1
-                await i.send(f'{self.work_channels[i]} 日目開始！\n'
-                             'このチャットにリアクションを追加して、残凸数を教えてください♪')
+                msg = await i.send(f'{self.work_channels[i]} 日目開始！\n'
+                                   'このチャットにリアクションを追加して、残凸数を教えてください♪')
+                for emoji in EMOJI:
+                    await msg.reaction.add(emoji)
 
 
 def setup(bot):
