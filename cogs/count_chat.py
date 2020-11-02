@@ -59,3 +59,7 @@ class CountChat(commands.Cog):
                 self.work_channels[i] += 1
                 await i.send(f'{self.work_channels[i]} 日目開始！\n'
                              'このチャットにリアクションを追加して、残凸数を教えてください♪')
+
+
+def setup(bot):
+    bot.add_cog(CountChat(bot))
