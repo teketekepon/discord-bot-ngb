@@ -2,7 +2,7 @@
 
 かなり大雑把ですが書いておきます。
 
-## Herokuにデプロイして動かす(基本)
+## Herokuにデプロイして動かす
 
 1. Discord botアカウントの作成 APIアクセストークンの取得
     [qiitaの記事](https://qiita.com/1ntegrale9/items/cb285053f2fa5d0cccdf)で丁寧に解説してくださってます。

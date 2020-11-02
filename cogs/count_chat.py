@@ -57,11 +57,12 @@ class CountChat(commands.Cog):
     @tasks.loop(seconds=60)
     async def chat(self):
         now = datetime.now().strftime('%H:%M')
-        if now == '05:00':
+        if now == '05:10':
             for i in self.work_channels.keys():
                 self.work_channels[i] += 1
-                msg = await i.send(f'{self.work_channels[i]} 日目開始！\n'
-                                   'このチャットにリアクションを追加して、残凸数を教えてください♪')
+                channel = self.bot.get_channel(i)
+                msg = await channel.send(f'{self.work_channels[i]} 日目開始！\n'
+                                         'このチャットにリアクションを追加して、残凸数を教えてください♪')
                 for emoji in EMOJI:
                     await msg.reaction.add(emoji)
 
