@@ -12,7 +12,7 @@ TEMP_PATH = r'./tmp/'
 class CountChat(commands.Cog):
     """
     チャット形式で残凸管理を行う。
-    /chat_startコマンドを実行したチャンネル上で5日間,朝5時にbotがコメントする。
+    /chat_startコマンドを実行したチャンネル上で、朝5時にbotがコメントする。
     このコメントにリアクションをつけることで残凸数を把握する。
     """
     def __init__(self, bot):
@@ -25,6 +25,7 @@ class CountChat(commands.Cog):
             with open(TEMP_PATH + 'chat.pkl', 'rb') as f:
                 self.work_channels = pickle.load(f)
                 self.logger.info('Pickle loaded')
+        self.chat.start()
 
     def cog_unload(self):
         """シャットダウン時に変数をDropboxへ保存"""
@@ -32,6 +33,7 @@ class CountChat(commands.Cog):
             pickle.dump(self.chat, f)
         TransferData().upload_file(TEMP_PATH + 'chat.pkl', r'/chat.pkl')
         self.logger.info('Pickle saved')
+        self.chat.cancel()
 
     @commands.command()
     async def chat_start(self, ctx):
@@ -52,7 +54,7 @@ class CountChat(commands.Cog):
             await ctx.send('このチャンネルではカウントが行われていません')
 
     @tasks.loop(seconds=60)
-    async def send_messages(self):
+    async def chat(self):
         now = datetime.now().strftime('%H:%M')
         if now == '05:00':
             for i in self.work_channels.keys():

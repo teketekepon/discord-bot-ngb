@@ -109,7 +109,7 @@ class Help(commands.HelpCommand):
 
 
 if __name__ == '__main__':
-    # MyBotのインスタンス化及び起動処理。
+    # Botのインスタンス化及び起動処理。
     # command_prefixはコマンドの最初の文字として使うもの。
     bot = MyBot(command_prefix='/', help_command=Help())
     bot.run(TOKEN)  # Botを動かす
