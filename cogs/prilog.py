@@ -31,7 +31,7 @@ class PriLog(commands.Cog):
         self.logger.info(f'Try to get:{url}... status={resp["status"]}')
         if resp["status"] < 310:
             embed = discord.Embed(title=resp["result"]["title"],
-                                  discription=resp["msg"],
+                                  description=resp["msg"],
                                   color=0xe8e8ed)
             name = f'総ダメージ: {resp["result"]["total_damage"]}' if \
                 resp["result"]["total_damage"] else '総ダメージ: 不明'
@@ -41,7 +41,7 @@ class PriLog(commands.Cog):
                             + '```')
         else:
             embed = discord.Embed(title='解析失敗',
-                                  discription=f'エラーメッセージ: {resp["msg"]}',
+                                  description=f'エラーメッセージ: {resp["msg"]}',
                                   color=0xed8ab0)
         await ctx.send(embed=embed)
 
@@ -56,7 +56,7 @@ class PriLog(commands.Cog):
         self.logger.info(f'Try to get:{url}... status={resp["status"]}')
         if resp["status"] < 310:
             embed = discord.Embed(title=resp["result"]["title"],
-                                  discription=resp["msg"],
+                                  description=resp["msg"],
                                   color=0xe8e8ed)
             name = f'総ダメージ: {resp["result"]["total_damage"]}' if \
                 resp["result"]["total_damage"] else '総ダメージ: 不明'
@@ -66,7 +66,7 @@ class PriLog(commands.Cog):
                             + '```')
         else:
             embed = discord.Embed(title='解析失敗',
-                                  discription=f'エラーメッセージ: {resp["msg"]}',
+                                  description=f'エラーメッセージ: {resp["msg"]}',
                                   color=0xed8ab0)
         await ctx.send(embed=embed)
 
