@@ -18,6 +18,7 @@ class CountChat(commands.Cog):
     """
     def __init__(self, bot):
         self.bot = bot
+        # work_channels {channel.id:[count, message.id]}
         self.work_channels = {}
         self.logger = logging.getLogger('discord.CountChat')
         r = TransferData().download_file(r'/chat.pkl',
@@ -42,7 +43,7 @@ class CountChat(commands.Cog):
         if ctx.channel.id in self.work_channels.keys():
             await ctx.send('このチャンネルではすでにカウントが行われています')
         else:
-            self.work_channels[ctx.channel.id] = 0
+            self.work_channels[ctx.channel.id] = [0, 0]
             await ctx.send('このチャンネルでのカウントを開始します')
 
     @commands.command()
@@ -57,14 +58,15 @@ class CountChat(commands.Cog):
     @tasks.loop(seconds=60)
     async def chat(self):
         now = datetime.now().strftime('%H:%M')
-        if now == '05:10':
+        if now == '05:00':
             for i in self.work_channels.keys():
-                self.work_channels[i] += 1
+                self.work_channels[i][0] += 1
                 channel = self.bot.get_channel(i)
                 msg = await channel.send(f'{self.work_channels[i]} 日目開始！\n'
                                          'このチャットにリアクションを追加して、残凸数を教えてください♪')
                 for emoji in EMOJI:
-                    await msg.reaction.add(emoji)
+                    await msg.add_reaction(emoji)
+                self.work_channels[i][1] = msg.channel.id
 
 
 def setup(bot):
