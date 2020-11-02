@@ -63,6 +63,7 @@ class Reserve(commands.Cog):
                 self.totu = pickle.load(f)
 
     def cog_unload(self):
+        """シャットダウン時に変数をDropboxへ保存"""
         items = zip_longest(self.res_b1.items(), self.res_b2.items(),
                             self.res_b3.items(), self.res_b4.items(),
                             self.res_b5.items())

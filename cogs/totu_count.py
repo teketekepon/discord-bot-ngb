@@ -46,6 +46,7 @@ class TotuCount(commands.Cog):
                 self.logger.info('Second Pickle loaded')
 
     def cog_unload(self):
+        """シャットダウン時に変数をDropboxへ保存"""
         with open(TEMP_PATH + 'totu.pkl', 'wb') as f:
             pickle.dump(self.totu, f)
         TransferData().upload_file(TEMP_PATH + 'totu.pkl', r'/totu.pkl')
