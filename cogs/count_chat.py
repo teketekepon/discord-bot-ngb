@@ -57,7 +57,6 @@ class CountChat(commands.Cog):
     @tasks.loop(seconds=60)
     async def chat(self):
         now = datetime.now().strftime('%H:%M')
-        self.logger.info(now)
         if now == '05:00':
             for i in self.work_channels.keys():
                 self.work_channels[i] += 1
