@@ -117,4 +117,6 @@ botからレスポンスがあるので、その後 1 2 3 いずれかの半角�
 
 ### LICENSE
 
+Copyright (c) 2020 Takahiro Furukawa
+This software is released under the MIT License, see [LICENSE.md](/LICENSE.md).
 This software includes the work that is distributed in the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0 "Apache License Version 2.0").
