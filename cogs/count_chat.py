@@ -1,6 +1,6 @@
 import logging
 import pickle
-from datetime import time
+from datetime import datetime
 # import discord
 from discord.ext import tasks, commands
 
@@ -56,7 +56,7 @@ class CountChat(commands.Cog):
 
     @tasks.loop(seconds=60)
     async def chat(self):
-        now = time.now().strftime('%H:%M')
+        now = datetime.now().strftime('%H:%M')
         self.logger.info(now)
         if now == '05:00':
             for i in self.work_channels.keys():
