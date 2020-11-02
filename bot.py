@@ -21,7 +21,7 @@ TOKEN = os.environ["ACCESS_TOKEN"]
 INITIAL_EXTENSIONS = [
     'cogs.ngb',
     'cogs.reserve',
-    'cogs.totu_count',
+    'cogs.count_chat',
     'cogs.prilog'
 ]
 
