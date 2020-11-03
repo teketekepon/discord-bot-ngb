@@ -17,7 +17,7 @@ class CountChat(commands.Cog):
     このコメントにリアクションをつけることで残凸数を把握する。
     """
     def __init__(self, bot):
-        self.i == 0
+        self.i = 0
         self.bot = bot
         # work_channels {channel.id:[count, message.id]}
         self.work_channels = {}
