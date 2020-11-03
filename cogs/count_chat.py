@@ -97,9 +97,9 @@ class CountChat(commands.Cog):
                             continue
                         display_name.append(user.display_name)
                     embed.add_field(name=f'残り{count}凸',
-                                    value=display_name.join(', '))
+                                    value=', '.join(display_name))
 
-    @tasks.loop(seconds=180)
+    @tasks.loop(seconds=60)
     async def chat(self):
         # now = datetime.now().strftime('%H:%M')
         # if now == '05:00':
