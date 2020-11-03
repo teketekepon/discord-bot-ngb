@@ -59,7 +59,7 @@ class CountChat(commands.Cog):
     async def count(self, ctx):
         """このコマンドを実行したチャンネルのその日のリアクション数から、残り凸数を数えます"""
         if (ctx.channel.id not in self.work_channels.keys()
-                or self.work_channels[ctx.channel.id][1] == 0):
+                or self.work_channels[ctx.channel.id] in 0):
             await ctx.send('このチャンネルはカウントチャンネルではないか、'
                            'まだメッセージを作成していません。')
             return
@@ -78,7 +78,7 @@ class CountChat(commands.Cog):
         このコマンドを実行したチャンネルのその日のリアクションしたユーザーを集計します
         """
         if (ctx.channel.id not in self.work_channels.keys()
-                or 0 in self.work_channels[ctx.channel.id]):
+                or self.work_channels[ctx.channel.id] in 0):
             await ctx.send('このチャンネルはカウントチャンネルではないか、'
                            'まだメッセージを作成していません。')
             return
