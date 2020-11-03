@@ -17,6 +17,7 @@ class CountChat(commands.Cog):
     このコメントにリアクションをつけることで残凸数を把握する。
     """
     def __init__(self, bot):
+        self.i == 0
         self.bot = bot
         # work_channels {channel.id:[count, message.id]}
         self.work_channels = {}
@@ -98,10 +99,11 @@ class CountChat(commands.Cog):
                     embed.add_field(name=f'残り{count}凸',
                                     value=display_name.join(', '))
 
-    @tasks.loop(seconds=60)
+    @tasks.loop(seconds=180)
     async def chat(self):
-        now = datetime.now().strftime('%H:%M')
-        if now == '05:00':
+        # now = datetime.now().strftime('%H:%M')
+        # if now == '05:00':
+        if self.i < 3:
             for i in self.work_channels.keys():
                 self.work_channels[i][0] += 1
                 channel = self.bot.get_channel(i)
@@ -110,6 +112,7 @@ class CountChat(commands.Cog):
                 for emoji in EMOJI:
                     await msg.add_reaction(emoji)
                 self.work_channels[i][1] = msg.id
+        self.i += 1
 
 
 def setup(bot):
