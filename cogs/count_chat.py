@@ -107,8 +107,11 @@ class CountChat(commands.Cog):
             for i in self.work_channels.keys():
                 self.work_channels[i][0] += 1
                 channel = self.bot.get_channel(i)
-                msg = await channel.send(f'{self.work_channels[i][0]} 日目開始！\n'
-                                         'このチャットにリアクションを追加して、残凸数を教えてください♪')
+                try:
+                    msg = await channel.send(f'{self.work_channels[i][0]} 日目開始！\n'
+                                             'このチャットにリアクションを追加して、残凸数を教えてください♪')
+                except AttributeError:
+                    return
                 for emoji in EMOJI:
                     await msg.add_reaction(emoji)
                 self.work_channels[i][1] = msg.id
