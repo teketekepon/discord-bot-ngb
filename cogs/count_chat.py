@@ -94,7 +94,7 @@ class CountChat(commands.Cog):
                     users = await reactions.users().flatten()
                     for user in users:
                         if user.bot:
-                            return
+                            continue
                         display_name.append(user.display_name)
                     embed.add_field(name=f'残り{count}凸',
                                     value=display_name.join(', '))
