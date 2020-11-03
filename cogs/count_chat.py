@@ -1,7 +1,7 @@
 import logging
 import pickle
 from datetime import datetime
-# import discord
+import discord
 from discord.ext import tasks, commands
 
 from cogs.lib.dbox import TransferData
@@ -54,6 +54,49 @@ class CountChat(commands.Cog):
             await ctx.send('このチャンネルでのカウントを停止しました')
         else:
             await ctx.send('このチャンネルではカウントが行われていません')
+
+    @commands.command()
+    async def count(self, ctx):
+        """このコマンドを実行したチャンネルのその日のリアクション数から、残り凸数を数えます"""
+        if (ctx.channel.id not in self.work_channels.keys()
+                or self.work_channels[ctx.channel.id][1] == 0):
+            await ctx.send('このチャンネルはカウントチャンネルではないか、'
+                           'まだメッセージを作成していません。')
+            return
+        msg = await ctx.channel.fetch_message(self.work_channels
+                                              [ctx.channel.id][1])
+        totu = 96
+        for reactions in msg.reactions:
+            for i, emoji in enumerate(EMOJI):
+                if reactions.emoji == emoji:
+                    totu -= reactions.count * (3-i)
+        await ctx.send(f'残り{totu}凸')
+
+    @commands.command()
+    async def count_users(self, ctx):
+        """
+        このコマンドを実行したチャンネルのその日のリアクションしたユーザーを集計します
+        """
+        if (ctx.channel.id not in self.work_channels.keys()
+                or self.work_channels[ctx.channel.id][1] == 0):
+            await ctx.send('このチャンネルはカウントチャンネルではないか、'
+                           'まだメッセージを作成していません。')
+            return
+        msg = await ctx.channel.fetch_message(self.work_channels
+                                              [ctx.channel.id][1])
+        embed = discord.Embed(title='凸状況')
+        count = 0
+        display_name = []
+        for reactions in msg.reactions:
+            for emoji in EMOJI:
+                if reactions.emoji == emoji:
+                    users = await reactions.users().flatten()
+                    for user in users:
+                        if user.bot:
+                            return
+                        display_name.append(user.display_name)
+                    embed.add_field(name=f'残り{count}凸',
+                                    value=display_name.join(', '))
 
     @tasks.loop(seconds=60)
     async def chat(self):
