@@ -93,11 +93,12 @@ class CountChat(commands.Cog):
                 if reactions.emoji == emoji:
                     users = await reactions.users().flatten()
                     for user in users:
-                        # if user.bot:
-                        #     continue
+                        if user.bot:
+                            continue
                         display_name.append(user.display_name)
                     embed.add_field(name=f'残り{count}凸',
                                     value=', '.join(display_name))
+        await ctx.send(embed=embed)
 
     @tasks.loop(seconds=60)
     async def chat(self):
@@ -108,8 +109,9 @@ class CountChat(commands.Cog):
                 self.work_channels[i][0] += 1
                 channel = self.bot.get_channel(i)
                 try:
-                    msg = await channel.send(f'{self.work_channels[i][0]} 日目開始！\n'
-                                             'このチャットにリアクションを追加して、残凸数を教えてください♪')
+                    msg = await channel.send(f'{self.work_channels[i][0]} '
+                                             '日目開始！\nこのチャットに'
+                                             'リアクションを追加して、残凸数を教えてください♪')
                 except AttributeError:
                     return
                 for emoji in EMOJI:
