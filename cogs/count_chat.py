@@ -96,13 +96,11 @@ class CountChat(commands.Cog):
                         if user.bot:
                             continue
                         display_name.append(user.display_name)
-                    embed.add_field(name=f'残り{count}凸',
-                                    value=', '.join(display_name))
+                    if display_name:
+                        embed.add_field(name=f'残り{count}凸',
+                                        value=', '.join(display_name))
                     count += 1
-        try:
-            await ctx.send(embed=embed)
-        except Exception as e:
-            self.logger.error(e)
+        await ctx.send(embed=embed)
 
     @tasks.loop(seconds=60)
     async def chat(self):
