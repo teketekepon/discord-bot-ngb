@@ -87,10 +87,10 @@ class CountChat(commands.Cog):
                                               [ctx.channel.id][1])
         embed = discord.Embed(title='凸状況')
         count = 0
-        display_name = []
         for reactions in msg.reactions:
             for emoji in EMOJI:
                 if reactions.emoji == emoji:
+                    display_name = []
                     users = await reactions.users().flatten()
                     for user in users:
                         if user.bot:
@@ -98,7 +98,11 @@ class CountChat(commands.Cog):
                         display_name.append(user.display_name)
                     embed.add_field(name=f'残り{count}凸',
                                     value=', '.join(display_name))
-        await ctx.send(embed=embed)
+                    count += 1
+        try:
+            await ctx.send(embed=embed)
+        except Exception as e:
+            self.logger.error(e)
 
     @tasks.loop(seconds=60)
     async def chat(self):
