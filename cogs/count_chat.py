@@ -78,7 +78,7 @@ class CountChat(commands.Cog):
         このコマンドを実行したチャンネルのその日のリアクションしたユーザーを集計します
         """
         if (ctx.channel.id not in self.work_channels.keys()
-                or self.work_channels[ctx.channel.id][1] == 0):
+                or 0 in self.work_channels[ctx.channel.id]):
             await ctx.send('このチャンネルはカウントチャンネルではないか、'
                            'まだメッセージを作成していません。')
             return
