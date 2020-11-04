@@ -17,14 +17,13 @@ class Ngb(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @staticmethod
     def is_guild_nightgarden():
         def predicate(ctx):
             return ctx.guild.id == NIGHTGARDEN_ID
         return commands.check(predicate)
 
     @commands.command()
-    @is_guild_nightgarden()
+    # @is_guild_nightgarden()
     async def bot(self, ctx):
         """
         実行したユーザーに、各クランに対応したロールを付与します。
@@ -70,7 +69,7 @@ class Ngb(commands.Cog):
             await msg.channel.send(reply)
 
     @commands.Cog.listener()
-    @is_guild_nightgarden()
+    # @is_guild_nightgarden()
     async def on_member_join(self, member):
         if member.guild.id != NIGHTGARDEN_ID:
             return
