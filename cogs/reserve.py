@@ -106,19 +106,19 @@ class Reserve(commands.Cog):
         embed = discord.Embed(title='**現在の凸希望者**', color=0x0000ff)
         embed.add_field(name=f'{BOSSES[0]}',
                         value='まだ誰もいません' if not self.res_b1
-                        else '\n'.join(self.res_b1.values()), inline=False)
+                        else ', '.join(self.res_b1.values()), inline=False)
         embed.add_field(name=f'{BOSSES[1]}',
                         value='まだ誰もいません' if not self.res_b2
-                        else '\n'.join(self.res_b2.values()), inline=False)
+                        else ', '.join(self.res_b2.values()), inline=False)
         embed.add_field(name=f'{BOSSES[2]}',
                         value='まだ誰もいません' if not self.res_b3
-                        else '\n'.join(self.res_b3.values()), inline=False)
+                        else ', '.join(self.res_b3.values()), inline=False)
         embed.add_field(name=f'{BOSSES[3]}',
                         value='まだ誰もいません' if not self.res_b4
-                        else '\n'.join(self.res_b4.values()), inline=False)
+                        else ', '.join(self.res_b4.values()), inline=False)
         embed.add_field(name=f'{BOSSES[4]}',
                         value='まだ誰もいません' if not self.res_b5
-                        else '\n'.join(self.res_b5.values()), inline=False)
+                        else ', '.join(self.res_b5.values()), inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(name=BOSSES[0], aliases=['b1', 'boss1'])

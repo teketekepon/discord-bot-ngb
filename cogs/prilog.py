@@ -14,7 +14,7 @@ class PriLog(commands.Cog):
         self.bot = bot
         self.logger = logging.getLogger('discord.PriLog')
 
-    async def get_response(self, url):
+    async def get_prilog(self, url):
         async with aiohttp.ClientSession() as session:
             async with session.get('https://prilog.jp/rest/analyze'
                                    f'?Url={url}&Token={PRILOG_TOKEN}') as r:
@@ -27,7 +27,7 @@ class PriLog(commands.Cog):
         コマンドとURLの間に半角スペースを空けてください。
         例: /log https://www.youtube.com/watch?v=mvLSw5vCpGU
         """
-        resp = await self.get_response(url)
+        resp = await self.get_prilog(url)
         self.logger.info(f'Try to get:{url}... status={resp["status"]}')
         if resp["status"] < 310:
             embed = discord.Embed(title=resp["result"]["title"],
@@ -53,7 +53,7 @@ class PriLog(commands.Cog):
         /logbでは敵UB入りのタイムラインを取得します。
         例: /logb https://www.youtube.com/watch?v=mvLSw5vCpGU
         """
-        resp = await self.get_response(url)
+        resp = await self.get_prilog(url)
         self.logger.info(f'Try to get:{url}... status={resp["status"]}')
         if resp["status"] < 310:
             embed = discord.Embed(title=resp["result"]["title"],
