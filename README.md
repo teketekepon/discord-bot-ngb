@@ -151,7 +151,7 @@ botからレスポンスがあるので、その後 1 2 3 いずれかの半角�
 
 ### LICENSE
 
-Copyright (c) 2020 Takahiro Furukawa
+Copyright (c) 2020 teketekepon
 
 This software is released under the MIT License, see [LICENSE.md](/LICENSE.md).
 
