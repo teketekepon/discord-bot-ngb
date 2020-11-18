@@ -7,6 +7,7 @@ from discord.ext import commands
 
 # NIGHTGARDEN_IDはHeroku環境変数にしまっておく
 NIGHTGARDEN_ID = os.environ["NIGHTGARDEN_ID"]
+CLAN_NAMES = ['王宮', '宮殿', '城下町']
 
 
 class Ngb(commands.Cog):

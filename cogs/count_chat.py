@@ -89,15 +89,15 @@ class CountChat(commands.Cog):
         for reactions in msg.reactions:
             for emoji in EMOJI:
                 if reactions.emoji == emoji:
-                    display_name = []
+                    reacted_users = []
                     users = await reactions.users().flatten()
                     for user in users:
                         if user.bot:
                             continue
-                        display_name.append(user.display_name)
-                    if display_name:
+                        reacted_users.append(user.display_name)
+                    if reacted_users:
                         embed.add_field(name=f'残り{count}凸',
-                                        value=', '.join(display_name))
+                                        value=', '.join(reacted_users))
                     count += 1
         await ctx.send(embed=embed)
 

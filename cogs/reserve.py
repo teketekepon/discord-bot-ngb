@@ -41,10 +41,10 @@ class Reserve(commands.Cog):
                                                 TEMP_PATH + 'res.pkl')
         if self.rev is not None:
             with open(TEMP_PATH + 'res.pkl', 'rb') as f:
-                items = pickle.load(f)
-            if any(True for _ in items):
+                self.items = pickle.load(f)
+            if any(True for _ in self.items):
                 # zipをアンパック ((keys,values),...)
-                a, b, c, d, e = zip(*items)
+                a, b, c, d, e = zip(*self.items)
                 # Noneを除外し辞書に追加
                 self.res_b1.update(list(filter(None, a)))
                 self.res_b2.update(list(filter(None, b)))
@@ -57,10 +57,10 @@ class Reserve(commands.Cog):
 
     def second_download(self):
         time.sleep(120)
-        tmp = TransferData().download_file(r'/totu.pkl', TEMP_PATH + 'res.pkl')
+        tmp = TransferData().download_file(r'/res.pkl', TEMP_PATH + 'res.pkl')
         if self.rev is not None and tmp is not None and self.rev != tmp:
             with open(TEMP_PATH + 'res.pkl', 'rb') as f:
-                self.totu = pickle.load(f)
+                self.res = pickle.load(f)
 
     def cog_unload(self):
         """シャットダウン時に変数をDropboxへ保存"""
@@ -70,6 +70,7 @@ class Reserve(commands.Cog):
         with open(TEMP_PATH + 'res.pkl', 'wb') as f:
             pickle.dump(items, f)
         TransferData().upload_file(TEMP_PATH + 'res.pkl', r'/res.pkl')
+        self.logger.info('Pickle saved')
 
     def overlap_check(self, user_id):
         """すでに予約しているユーザーをはじく"""
@@ -123,7 +124,7 @@ class Reserve(commands.Cog):
 
     @commands.command(name=BOSSES[0], aliases=['b1', 'boss1'])
     async def res1(self, ctx, note=''):
-        """1体目のボスを希望するコマンド"""
+        """1体目のボスを希望するコマンド /b1 /boss1でも反応します"""
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
@@ -132,7 +133,7 @@ class Reserve(commands.Cog):
 
     @commands.command(name=BOSSES[1], aliases=['b2', 'boss2'])
     async def res2(self, ctx, note=''):
-        """2体目のボスを希望するコマンド"""
+        """2体目のボスを希望するコマンド /b2 /boss2でも反応します"""
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
@@ -141,7 +142,7 @@ class Reserve(commands.Cog):
 
     @commands.command(name=BOSSES[2], aliases=['b3', 'boss3'])
     async def res3(self, ctx, note=''):
-        """3体目のボスを希望するコマンド"""
+        """3体目のボスを希望するコマンド /b3 /boss3でも反応します"""
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
@@ -150,7 +151,7 @@ class Reserve(commands.Cog):
 
     @commands.command(name=BOSSES[3], aliases=['b4', 'boss4'])
     async def res4(self, ctx, note=''):
-        """4体目のボスを希望するコマンド"""
+        """4体目のボスを希望するコマンド /b4 /boss4でも反応します"""
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
@@ -159,7 +160,7 @@ class Reserve(commands.Cog):
 
     @commands.command(name=BOSSES[4], aliases=['b5', 'boss5'])
     async def res5(self, ctx, note=''):
-        """5体目のボスを希望するコマンド"""
+        """5体目のボスを希望するコマンド /b5 /boss5でも反応します"""
         if self.overlap_check(ctx.author.id):
             await ctx.send('予約はひとり1つまでです。')
             return
