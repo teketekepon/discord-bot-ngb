@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from itertools import zip_longest
 import time
 import threading
 import pickle
@@ -55,11 +54,8 @@ class Reserve(commands.Cog):
 
     def cog_unload(self):
         """シャットダウン時に変数をDropboxへ保存"""
-        items = zip_longest(self.res[0].items(), self.res[1].items(),
-                            self.res[2].items(), self.res[3].items(),
-                            self.res[4].items())
         with open(TEMP_PATH + 'res.pkl', 'wb') as f:
-            pickle.dump(items, f)
+            pickle.dump(self.res, f)
         TransferData().upload_file(TEMP_PATH + 'res.pkl', r'/res.pkl')
 
     def overlap_check(self, user_id):
