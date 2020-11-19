@@ -36,11 +36,7 @@ class Reserve(commands.Cog):
                                                 TEMP_PATH + 'res.pkl')
         if self.rev is not None:
             with open(TEMP_PATH + 'res.pkl', 'rb') as f:
-                items = pickle.load(f)
-            if any(True for _ in items):
-                for x, i in enumerate(items):
-                    # Noneを除外し辞書に追加
-                    self.res[x].update(list(filter(None, i)))
+                self.res = pickle.load(f)
         th = threading.Thread(target=self.second_download)
         th.setDaemon(True)
         th.start()
