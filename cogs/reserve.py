@@ -31,7 +31,7 @@ class Reserve(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         # ボスごとの予約者 {key = user.id(int) value = name + note(str)}
-        self.res = {}
+        self.res = [{} for _ in range(5)]
 
         self.rev = TransferData().download_file(r'/res.pkl',
                                                 TEMP_PATH + 'res.pkl')
