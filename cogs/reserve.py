@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import time
-import threading
+import logging
 import pickle
 
 import discord
 from discord.ext import commands
 
-from .lib.dbox import TransferData
+from cogs.lib.dbox import TransferData
 
 TEMP_PATH = r'./tmp/'
 # 10月のボス
@@ -31,20 +30,10 @@ class Reserve(commands.Cog):
         self.bot = bot
         # ボスごとの予約者 {key = user.id(int) value = name + note(str)}
         self.res = [{} for _ in range(5)]
-
+        self.logger = logging.getLogger('discord.Reserve')
         self.rev = TransferData().download_file(r'/res.pkl',
                                                 TEMP_PATH + 'res.pkl')
         if self.rev is not None:
-            with open(TEMP_PATH + 'res.pkl', 'rb') as f:
-                self.res = pickle.load(f)
-        th = threading.Thread(target=self.second_download)
-        th.setDaemon(True)
-        th.start()
-
-    def second_download(self):
-        time.sleep(120)
-        tmp = TransferData().download_file(r'/res.pkl', TEMP_PATH + 'res.pkl')
-        if self.rev is not None and tmp is not None and self.rev != tmp:
             with open(TEMP_PATH + 'res.pkl', 'rb') as f:
                 self.res = pickle.load(f)
 
@@ -56,26 +45,17 @@ class Reserve(commands.Cog):
 
     def overlap_check(self, user_id):
         """すでに予約しているユーザーをはじく"""
-        union_key = self.res[0].keys() | self.res[1].keys() | \
-            self.res[2].keys() | self.res[3].keys() | self.res[4].keys()
-        for i in union_key:
-            if user_id == i:
+        for i in self.res:
+            if user_id in i:
                 return True
         return False
 
     def overlap_check_tri(self, user_id):
         """すでに"3つ"予約しているユーザーをはじく"""
         n = 0
-        if user_id in self.res[0]:
-            n += 1
-        if user_id in self.res[1]:
-            n += 1
-        if user_id in self.res[2]:
-            n += 1
-        if user_id in self.res[3]:
-            n += 1
-        if user_id in self.res[4]:
-            n += 1
+        for i in self.res:
+            if user_id in i:
+                n += 1
         if n >= 3:
             return True
         return False
