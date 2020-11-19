@@ -41,16 +41,14 @@ class Reserve(commands.Cog):
                                                 TEMP_PATH + 'res.pkl')
         if self.rev is not None:
             with open(TEMP_PATH + 'res.pkl', 'rb') as f:
-                self.items = pickle.load(f)
-            if any(True for _ in self.items):
-                # zipをアンパック ((keys,values),...)
-                a, b, c, d, e = zip(*self.items)
+                items = pickle.load(f)
+            if any(True for _ in items):
                 # Noneを除外し辞書に追加
-                self.res_b1.update(list(filter(None, a)))
-                self.res_b2.update(list(filter(None, b)))
-                self.res_b3.update(list(filter(None, c)))
-                self.res_b4.update(list(filter(None, d)))
-                self.res_b5.update(list(filter(None, e)))
+                self.res_b1.update(list(filter(None, next(items))))
+                self.res_b2.update(list(filter(None, next(items))))
+                self.res_b3.update(list(filter(None, next(items))))
+                self.res_b4.update(list(filter(None, next(items))))
+                self.res_b5.update(list(filter(None, next(items))))
         th = threading.Thread(target=self.second_download)
         th.setDaemon(True)
         th.start()
@@ -70,7 +68,6 @@ class Reserve(commands.Cog):
         with open(TEMP_PATH + 'res.pkl', 'wb') as f:
             pickle.dump(items, f)
         TransferData().upload_file(TEMP_PATH + 'res.pkl', r'/res.pkl')
-        self.logger.info('Pickle saved')
 
     def overlap_check(self, user_id):
         """すでに予約しているユーザーをはじく"""
