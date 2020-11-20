@@ -36,12 +36,14 @@ class Reserve(commands.Cog):
         if self.rev is not None:
             with open(TEMP_PATH + 'res.pkl', 'rb') as f:
                 self.res = pickle.load(f)
+            self.logger.info('Pickle loaded')
 
     def cog_unload(self):
         """シャットダウン時に変数をDropboxへ保存"""
         with open(TEMP_PATH + 'res.pkl', 'wb') as f:
             pickle.dump(self.res, f)
         TransferData().upload_file(TEMP_PATH + 'res.pkl', r'/res.pkl')
+        self.logger.info('Pickle saved')
 
     def overlap_check(self, user_id):
         """すでに予約しているユーザーをはじく"""

@@ -9,8 +9,8 @@ import threading
 
 from discord.ext import commands
 
-from .lib.dbox import TransferData
-from .lib.image_ocr import ImageOcr
+from cogs.lib.dbox import TransferData
+from cogs.lib.image_ocr import ImageOcr
 
 TEMP_PATH = r'./tmp/'
 
@@ -32,7 +32,7 @@ class TotuCount(commands.Cog):
         if self.rev is not None:
             with open(TEMP_PATH + 'totu.pkl', 'rb') as f:
                 self.totu = pickle.load(f)
-                self.logger.info('Pickle loaded')
+            self.logger.info('Pickle loaded')
         th = threading.Thread(target=self.second_download)
         th.setDaemon(True)
         th.start()
