@@ -69,21 +69,9 @@ class Reserve(commands.Cog):
         /予約 /凸予約 /予定 でも反応します。
         """
         embed = discord.Embed(title='**現在の凸希望者**', color=0x0000ff)
-        embed.add_field(name=f'{BOSSES[0]}',
-                        value='まだ誰もいません' if not self.res[0]
-                        else ', '.join(self.res[0].values()), inline=False)
-        embed.add_field(name=f'{BOSSES[1]}',
-                        value='まだ誰もいません' if not self.res[1]
-                        else ', '.join(self.res[1].values()), inline=False)
-        embed.add_field(name=f'{BOSSES[2]}',
-                        value='まだ誰もいません' if not self.res[2]
-                        else ', '.join(self.res[2].values()), inline=False)
-        embed.add_field(name=f'{BOSSES[3]}',
-                        value='まだ誰もいません' if not self.res[3]
-                        else ', '.join(self.res[3].values()), inline=False)
-        embed.add_field(name=f'{BOSSES[4]}',
-                        value='まだ誰もいません' if not self.res[4]
-                        else ', '.join(self.res[4].values()), inline=False)
+        for x, i in enumerate(BOSSES):
+            embed.add_field(name=i, value='まだ誰もいません' if not self.res[x]
+                            else ', '.join(self.res[x].values()), inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(name=BOSSES[0], aliases=['b1', 'boss1'])
@@ -137,16 +125,9 @@ class Reserve(commands.Cog):
         実行したユーザーの凸希望を削除します。
         /凸完了 /完了 /クリア でも反応します。
         """
-        if ctx.author.id in self.res[0]:
-            del self.res[0][ctx.author.id]
-        if ctx.author.id in self.res[1]:
-            del self.res[1][ctx.author.id]
-        if ctx.author.id in self.res[2]:
-            del self.res[2][ctx.author.id]
-        if ctx.author.id in self.res[3]:
-            del self.res[3][ctx.author.id]
-        if ctx.author.id in self.res[4]:
-            del self.res[4][ctx.author.id]
+        for i in range(5):
+            if ctx.author.id in self.res[i]:
+                del self.res[i][ctx.author.id]
 
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
