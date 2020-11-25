@@ -9,13 +9,13 @@ from discord.ext import commands
 from cogs.lib.dbox import TransferData
 
 TEMP_PATH = r'./tmp/'
-# 10月のボス
+# 11月のボス
 BOSSES = [
-    'ゴブリングレート',
-    'ライライ',
-    'オークチーフ',
-    'オブシダンワイバーン',
-    'レサトパルト'
+    'ワイバーン',
+    'ワイルドグリフォン',
+    'スカイワルキューレ',
+    'マスターセンリ',
+    'サジタリウス'
 ]
 
 
