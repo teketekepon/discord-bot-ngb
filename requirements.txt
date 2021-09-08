@@ -1,4 +1,4 @@
-Pillow == 8.2.0
+Pillow == 8.
 pyocr == 0.7.2
 asyncio == 3.4.3
 discord.py == 1.4.1
